@@ -1,0 +1,385 @@
+<?xml version="1.0"?>
+
+<valgrindoutput>
+
+<protocolversion>4</protocolversion>
+<protocoltool>memcheck</protocoltool>
+
+<preamble>
+  <line>Memcheck, a memory error detector</line>
+  <line>Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.</line>
+  <line>Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info</line>
+  <line>Command: /home/wunl/workspace/WuNL/bin/Debug/WuNL </line>
+</preamble>
+
+<pid>7443</pid>
+<ppid>6818</ppid>
+<tool>memcheck</tool>
+
+<args>
+  <vargv>
+    <exe>/usr/bin/valgrind.bin</exe>
+    <arg>--leak-check=full</arg>
+    <arg>--track-origins=yes</arg>
+    <arg>--xml=yes</arg>
+    <arg>--xml-file=/home/wunl/workspace/WuNL/ValgrindOut.xml</arg>
+  </vargv>
+  <argv>
+    <exe>/home/wunl/workspace/WuNL/bin/Debug/WuNL</exe>
+    <arg></arg>
+  </argv>
+</args>
+
+<status>
+  <state>RUNNING</state>
+  <time>00:00:00:00.068 </time>
+</status>
+
+
+<status>
+  <state>FINISHED</state>
+  <time>00:00:00:00.980 </time>
+</status>
+
+<error>
+  <unique>0x3</unique>
+  <tid>1</tid>
+  <kind>Leak_PossiblyLost</kind>
+  <xwhat>
+    <text>29 bytes in 1 blocks are possibly lost in loss record 4 of 18</text>
+    <leakedbytes>29</leakedbytes>
+    <leakedblocks>1</leakedblocks>
+  </xwhat>
+  <stack>
+    <frame>
+      <ip>0x4C2B0E0</ip>
+      <obj>/usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so</obj>
+      <fn>operator new(unsigned long)</fn>
+    </frame>
+    <frame>
+      <ip>0x5317248</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator&lt;char&gt; const&amp;)</fn>
+    </frame>
+    <frame>
+      <ip>0x5318970</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>char* std::string::_S_construct&lt;char const*&gt;(char const*, char const*, std::allocator&lt;char&gt; const&amp;, std::forward_iterator_tag)</fn>
+    </frame>
+    <frame>
+      <ip>0x5318D87</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>std::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;::basic_string(char const*, std::allocator&lt;char&gt; const&amp;)</fn>
+    </frame>
+    <frame>
+      <ip>0x40872B</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>boost::system::system_error::system_error(boost::system::error_code, char const*)</fn>
+    </frame>
+    <frame>
+      <ip>0x409412</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>boost::asio::detail::do_throw_error(boost::system::error_code const&amp;, char const*)</fn>
+      <dir>/usr/local/include/boost/asio/detail/impl</dir>
+      <file>throw_error.ipp</file>
+      <line>37</line>
+    </frame>
+    <frame>
+      <ip>0x40939A</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>boost::asio::detail::throw_error(boost::system::error_code const&amp;, char const*)</fn>
+      <dir>/usr/local/include/boost/asio/detail</dir>
+      <file>throw_error.hpp</file>
+      <line>42</line>
+    </frame>
+    <frame>
+      <ip>0x40E788</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>boost::asio::basic_socket&lt;boost::asio::ip::udp, boost::asio::datagram_socket_service&lt;boost::asio::ip::udp&gt; &gt;::basic_socket(boost::asio::io_service&amp;, boost::asio::ip::basic_endpoint&lt;boost::asio::ip::udp&gt; const&amp;)</fn>
+      <dir>/usr/local/include/boost/asio</dir>
+      <file>basic_socket.hpp</file>
+      <line>119</line>
+    </frame>
+    <frame>
+      <ip>0x40D840</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>boost::asio::basic_datagram_socket&lt;boost::asio::ip::udp, boost::asio::datagram_socket_service&lt;boost::asio::ip::udp&gt; &gt;::basic_datagram_socket(boost::asio::io_service&amp;, boost::asio::ip::basic_endpoint&lt;boost::asio::ip::udp&gt; const&amp;)</fn>
+      <dir>/usr/local/include/boost/asio</dir>
+      <file>basic_datagram_socket.hpp</file>
+      <line>110</line>
+    </frame>
+    <frame>
+      <ip>0x407891</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>rtpReceiver::rtpReceiver(char const*, int, int)</fn>
+      <dir>/home/wunl/workspace/WuNL/src</dir>
+      <file>rtpReceiver.cpp</file>
+      <line>24</line>
+    </frame>
+    <frame>
+      <ip>0x405CB4</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>boost::detail::sp_if_not_array&lt;rtpReceiver&gt;::type boost::make_shared&lt;rtpReceiver, char [10], int, int&gt;(char const (&amp;) [10], int const&amp;, int const&amp;)</fn>
+      <dir>/usr/local/include/boost/smart_ptr</dir>
+      <file>make_shared_object.hpp</file>
+      <line>880</line>
+    </frame>
+    <frame>
+      <ip>0x404555</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>main</fn>
+      <dir>/home/wunl/workspace/WuNL</dir>
+      <file>main.cpp</file>
+      <line>16</line>
+    </frame>
+  </stack>
+</error>
+
+<error>
+  <unique>0x4</unique>
+  <tid>1</tid>
+  <kind>Leak_PossiblyLost</kind>
+  <xwhat>
+    <text>38 bytes in 1 blocks are possibly lost in loss record 5 of 18</text>
+    <leakedbytes>38</leakedbytes>
+    <leakedblocks>1</leakedblocks>
+  </xwhat>
+  <stack>
+    <frame>
+      <ip>0x4C2B0E0</ip>
+      <obj>/usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so</obj>
+      <fn>operator new(unsigned long)</fn>
+    </frame>
+    <frame>
+      <ip>0x5317248</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator&lt;char&gt; const&amp;)</fn>
+    </frame>
+    <frame>
+      <ip>0x5318970</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>char* std::string::_S_construct&lt;char const*&gt;(char const*, char const*, std::allocator&lt;char&gt; const&amp;, std::forward_iterator_tag)</fn>
+    </frame>
+    <frame>
+      <ip>0x5318D87</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>std::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;::basic_string(char const*, std::allocator&lt;char&gt; const&amp;)</fn>
+    </frame>
+    <frame>
+      <ip>0x505A4DF</ip>
+      <obj>/usr/local/lib/libboost_system.so.1.62.0</obj>
+      <fn>boost::system::(anonymous namespace)::generic_error_category::message(int) const</fn>
+    </frame>
+    <frame>
+      <ip>0x505AD7D</ip>
+      <obj>/usr/local/lib/libboost_system.so.1.62.0</obj>
+      <fn>boost::system::(anonymous namespace)::system_error_category::message(int) const</fn>
+    </frame>
+    <frame>
+      <ip>0x404A48</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>boost::system::error_code::message() const</fn>
+      <dir>/usr/local/include/boost/system</dir>
+      <file>error_code.hpp</file>
+      <line>357</line>
+    </frame>
+    <frame>
+      <ip>0x404C64</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>boost::system::system_error::what() const</fn>
+      <dir>/usr/local/include/boost/system</dir>
+      <file>system_error.hpp</file>
+      <line>70</line>
+    </frame>
+    <frame>
+      <ip>0x52BD4EC</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>__gnu_cxx::__verbose_terminate_handler()</fn>
+    </frame>
+    <frame>
+      <ip>0x52BB6D5</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+    </frame>
+    <frame>
+      <ip>0x52BB702</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>std::terminate()</fn>
+    </frame>
+    <frame>
+      <ip>0x52BB921</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>__cxa_throw</fn>
+    </frame>
+  </stack>
+</error>
+
+<error>
+  <unique>0x6</unique>
+  <tid>1</tid>
+  <kind>Leak_PossiblyLost</kind>
+  <xwhat>
+    <text>53 bytes in 1 blocks are possibly lost in loss record 7 of 18</text>
+    <leakedbytes>53</leakedbytes>
+    <leakedblocks>1</leakedblocks>
+  </xwhat>
+  <stack>
+    <frame>
+      <ip>0x4C2B0E0</ip>
+      <obj>/usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so</obj>
+      <fn>operator new(unsigned long)</fn>
+    </frame>
+    <frame>
+      <ip>0x5317248</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator&lt;char&gt; const&amp;)</fn>
+    </frame>
+    <frame>
+      <ip>0x5317E0A</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>std::string::_Rep::_M_clone(std::allocator&lt;char&gt; const&amp;, unsigned long)</fn>
+    </frame>
+    <frame>
+      <ip>0x5317EA3</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>std::string::reserve(unsigned long)</fn>
+    </frame>
+    <frame>
+      <ip>0x5317F47</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>std::string::append(std::string const&amp;)</fn>
+    </frame>
+    <frame>
+      <ip>0x404C7B</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>boost::system::system_error::what() const</fn>
+      <dir>/usr/local/include/boost/system</dir>
+      <file>system_error.hpp</file>
+      <line>70</line>
+    </frame>
+    <frame>
+      <ip>0x52BD4EC</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>__gnu_cxx::__verbose_terminate_handler()</fn>
+    </frame>
+    <frame>
+      <ip>0x52BB6D5</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+    </frame>
+    <frame>
+      <ip>0x52BB702</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>std::terminate()</fn>
+    </frame>
+    <frame>
+      <ip>0x52BB921</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>__cxa_throw</fn>
+    </frame>
+    <frame>
+      <ip>0x40CC49</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>void boost::throw_exception&lt;boost::system::system_error&gt;(boost::system::system_error const&amp;)</fn>
+    </frame>
+    <frame>
+      <ip>0x40941E</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>boost::asio::detail::do_throw_error(boost::system::error_code const&amp;, char const*)</fn>
+      <dir>/usr/local/include/boost/asio/detail/impl</dir>
+      <file>throw_error.ipp</file>
+      <line>38</line>
+    </frame>
+  </stack>
+</error>
+
+<error>
+  <unique>0xf</unique>
+  <tid>1</tid>
+  <kind>Leak_PossiblyLost</kind>
+  <xwhat>
+    <text>216 bytes in 1 blocks are possibly lost in loss record 16 of 18</text>
+    <leakedbytes>216</leakedbytes>
+    <leakedblocks>1</leakedblocks>
+  </xwhat>
+  <stack>
+    <frame>
+      <ip>0x4C2AB80</ip>
+      <obj>/usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so</obj>
+      <fn>malloc</fn>
+    </frame>
+    <frame>
+      <ip>0x52BA382</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19</obj>
+      <fn>__cxa_allocate_exception</fn>
+    </frame>
+    <frame>
+      <ip>0x40CC06</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>void boost::throw_exception&lt;boost::system::system_error&gt;(boost::system::system_error const&amp;)</fn>
+    </frame>
+    <frame>
+      <ip>0x40941E</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>boost::asio::detail::do_throw_error(boost::system::error_code const&amp;, char const*)</fn>
+      <dir>/usr/local/include/boost/asio/detail/impl</dir>
+      <file>throw_error.ipp</file>
+      <line>38</line>
+    </frame>
+    <frame>
+      <ip>0x40939A</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>boost::asio::detail::throw_error(boost::system::error_code const&amp;, char const*)</fn>
+      <dir>/usr/local/include/boost/asio/detail</dir>
+      <file>throw_error.hpp</file>
+      <line>42</line>
+    </frame>
+    <frame>
+      <ip>0x40E788</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>boost::asio::basic_socket&lt;boost::asio::ip::udp, boost::asio::datagram_socket_service&lt;boost::asio::ip::udp&gt; &gt;::basic_socket(boost::asio::io_service&amp;, boost::asio::ip::basic_endpoint&lt;boost::asio::ip::udp&gt; const&amp;)</fn>
+      <dir>/usr/local/include/boost/asio</dir>
+      <file>basic_socket.hpp</file>
+      <line>119</line>
+    </frame>
+    <frame>
+      <ip>0x40D840</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>boost::asio::basic_datagram_socket&lt;boost::asio::ip::udp, boost::asio::datagram_socket_service&lt;boost::asio::ip::udp&gt; &gt;::basic_datagram_socket(boost::asio::io_service&amp;, boost::asio::ip::basic_endpoint&lt;boost::asio::ip::udp&gt; const&amp;)</fn>
+      <dir>/usr/local/include/boost/asio</dir>
+      <file>basic_datagram_socket.hpp</file>
+      <line>110</line>
+    </frame>
+    <frame>
+      <ip>0x407891</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>rtpReceiver::rtpReceiver(char const*, int, int)</fn>
+      <dir>/home/wunl/workspace/WuNL/src</dir>
+      <file>rtpReceiver.cpp</file>
+      <line>24</line>
+    </frame>
+    <frame>
+      <ip>0x405CB4</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>boost::detail::sp_if_not_array&lt;rtpReceiver&gt;::type boost::make_shared&lt;rtpReceiver, char [10], int, int&gt;(char const (&amp;) [10], int const&amp;, int const&amp;)</fn>
+      <dir>/usr/local/include/boost/smart_ptr</dir>
+      <file>make_shared_object.hpp</file>
+      <line>880</line>
+    </frame>
+    <frame>
+      <ip>0x404555</ip>
+      <obj>/home/wunl/workspace/WuNL/bin/Debug/WuNL</obj>
+      <fn>main</fn>
+      <dir>/home/wunl/workspace/WuNL</dir>
+      <file>main.cpp</file>
+      <line>16</line>
+    </frame>
+  </stack>
+</error>
+
+<errorcounts>
+</errorcounts>
+
+<suppcounts>
+</suppcounts>
+
+</valgrindoutput>
+

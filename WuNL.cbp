@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="WuNL" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/WuNL" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-m64" />
+					<Add option="-g" />
+					<Add directory="include" />
+					<Add directory="/home/wunl/Downloads/ffmpeg-3.2.4" />
+				</Compiler>
+				<Linker>
+					<Add option="-m64" />
+					<Add option="-lGL -lGLU -lglfw3 -lGLEW -lXxf86vm  -lXcursor -lpthread -lXinerama -lXi -lXrandr" />
+					<Add option="-lX11 -lSOIL" />
+					<Add library="boost_filesystem" />
+					<Add library="boost_thread" />
+					<Add library="boost_system" />
+					<Add library="libavcodec" />
+					<Add library="libavformat" />
+					<Add library="libswscale" />
+					<Add library="libavfilter" />
+					<Add library="libavdevice" />
+					<Add library="libavutil" />
+					<Add library="libpthread" />
+					<Add library="libswresample" />
+					<Add library="libz" />
+					<Add library="libm" />
+					<Add library="libdl" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/WuNL" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="include/Shader.h" />
+		<Unit filename="include/channel.h" />
+		<Unit filename="include/fmDecoder.h" />
+		<Unit filename="include/glViewer.h" />
+		<Unit filename="include/params.h" />
+		<Unit filename="include/rtpReceiver.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="src/Shader.cpp" />
+		<Unit filename="src/channel.cpp" />
+		<Unit filename="src/fmDecoder.cpp" />
+		<Unit filename="src/glViewer.cpp" />
+		<Unit filename="src/rtpReceiver.cpp" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<lib_finder disable_auto="1" />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
