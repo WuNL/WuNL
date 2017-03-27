@@ -51,13 +51,21 @@ int glViewer::init()
 
 
     // Set up vertex data (and buffer(s)) and attribute pointers
+//    GLfloat vertices[] =
+//    {
+//        // Positions          // Colors           // Texture Coords
+//        0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Top Right
+//        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Bottom Right
+//        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Bottom Left
+//        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // Top Left
+//    };
     GLfloat vertices[] =
     {
-        // Positions          // Colors           // Texture Coords
-        0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Top Right
-        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Bottom Right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Bottom Left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // Top Left
+        // Positions          // Colors           // Texture Coords Y U V
+        0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,          1.0f, 1.0f,             0.5f, (GLfloat)1/3,      1.0f, (GLfloat)1/3, // Top Right
+        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,          1.0f, (GLfloat)1/3,     0.5f, 0.0f,              1.0f, 0.0f,// Bottom Right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,         0.0f, (GLfloat)1/3,     0.0f, 0.0f ,             0.5f, 0.0f,// Bottom Left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,         0.0f, 1.0f,             (GLfloat)1/3, 0.0f,      0.5f, (GLfloat)1/3// Top Left
     };
     GLuint indices[] =    // Note that we start from 0!
     {
@@ -77,15 +85,18 @@ int glViewer::init()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
     // Color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
     // TexCoord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
     glEnableVertexAttribArray(2);
-
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (GLvoid*)(8 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (GLvoid*)(10 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(4);
     glBindVertexArray(0); // Unbind VAO
 
 
@@ -99,27 +110,10 @@ int glViewer::init()
     // Set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920,1080, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920,1080*3/2, 0, GL_ALPHA, GL_UNSIGNED_BYTE,NULL);
 
 
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
-    // Set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // Set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-
-    glGenTextures(1, &texture2);
-    glBindTexture(GL_TEXTURE_2D, texture2); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
-    // Set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // Set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 //     Load image, create texture and generate mipmaps
     //int width, height;
@@ -169,23 +163,12 @@ int glViewer::init()
             //glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920,1080, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
 //            std::cerr << "OpenGL error 0: " << glGetError() << std::endl;
             glTexSubImage2D(GL_TEXTURE_2D,0,0,0,1920,1080,GL_RED,GL_UNSIGNED_BYTE,pFrame->data[0]);
+            glTexSubImage2D(GL_TEXTURE_2D,0,0,1080,1920/2,1080/2,GL_RED,GL_UNSIGNED_BYTE,pFrame->data[1]);
+            glTexSubImage2D(GL_TEXTURE_2D,0,1920/2,1080,1920/2,1080/2,GL_RED,GL_UNSIGNED_BYTE,pFrame->data[2]);
 //            std::cerr << "OpenGL error: " << glGetError() << std::endl;
             //glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920,1080, 0, GL_RED, GL_UNSIGNED_BYTE, pFrame->data[0]);
             glUniform1i(glGetUniformLocation(ourShader->Program, "ourTexture1"), 0);
 
-
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, texture1);
-            //glTexSubImage2D(GL_TEXTURE_2D,0,0,0,1920/2,1080/2,GL_RED,GL_UNSIGNED_BYTE,pFrame->data[1]);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920/2,1080/2, 0, GL_RED, GL_UNSIGNED_BYTE, pFrame->data[1]);
-            glUniform1i(glGetUniformLocation(ourShader->Program, "ourTexture2"), 1);
-
-
-            glActiveTexture(GL_TEXTURE2);
-            glBindTexture(GL_TEXTURE_2D, texture2);
-            //glTexSubImage2D(GL_TEXTURE_2D,0,0,0,1920/2,1080/2,GL_RED,GL_UNSIGNED_BYTE,pFrame->data[2]);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920/2,1080/2, 0, GL_RED, GL_UNSIGNED_BYTE, pFrame->data[2]);
-            glUniform1i(glGetUniformLocation(ourShader->Program, "ourTexture3"), 2);
 
             glBindVertexArray(VAO);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
