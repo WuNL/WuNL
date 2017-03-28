@@ -51,22 +51,22 @@ int glViewer::init()
 
 
     // Set up vertex data (and buffer(s)) and attribute pointers
-//    GLfloat vertices[] =
-//    {
-//        // Positions          // Colors           // Texture Coords
-//        0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Top Right
-//        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Bottom Right
-//        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Bottom Left
-//        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // Top Left
-//    };
     GLfloat vertices[] =
     {
-        // Positions          // Colors           // Texture Coords Y U V
-        0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,          1.0f, 1.0f,             0.5f, (GLfloat)1/3,      1.0f, (GLfloat)1/3, // Top Right
-        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,          1.0f, (GLfloat)1/3,     0.5f, 0.0f,              1.0f, 0.0f,// Bottom Right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,         0.0f, (GLfloat)1/3,     0.0f, 0.0f ,             0.5f, 0.0f,// Bottom Left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,         0.0f, 1.0f,             (GLfloat)1/3, 0.0f,      0.5f, (GLfloat)1/3// Top Left
+        // Positions          // Colors           // Texture Coords
+        0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Top Right
+        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Bottom Right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Bottom Left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // Top Left
     };
+//    GLfloat vertices[] =
+//    {
+//        // Positions          // Colors           // Texture Coords Y U V
+//        0.0f,  1.0f, 0.0f,   1.0f, 0.0f, 0.0f,          1.0f, 1.0f,             0.5f, (GLfloat)1/3,      1.0f, (GLfloat)1/3, // Top Right
+//        0.0f,  0.0f, 0.0f,   0.0f, 1.0f, 0.0f,          1.0f, (GLfloat)1/3,     0.5f, 0.0f,              1.0f, 0.0f,// Bottom Right
+//        -1.0f,  0.0f, 0.0f,   0.0f, 0.0f, 1.0f,         0.0f, (GLfloat)1/3,     0.0f, 0.0f ,             0.5f, 0.0f,// Bottom Left
+//        -1.0f,  1.0f, 0.0f,   1.0f, 1.0f, 0.0f,         0.0f, 1.0f,             0.0f, (GLfloat)1/3,      0.5f, (GLfloat)1/3// Top Left
+//    };
     GLuint indices[] =    // Note that we start from 0!
     {
         0, 1, 3, // First Triangle
@@ -85,18 +85,18 @@ int glViewer::init()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (GLvoid*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
     // Color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
     // TexCoord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (GLvoid*)(8 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (GLvoid*)(10 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(4);
+//    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (GLvoid*)(8 * sizeof(GLfloat)));
+//    glEnableVertexAttribArray(3);
+//    glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (GLvoid*)(10 * sizeof(GLfloat)));
+//    glEnableVertexAttribArray(4);
     glBindVertexArray(0); // Unbind VAO
 
 
@@ -110,7 +110,7 @@ int glViewer::init()
     // Set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920,1080*3/2, 0, GL_ALPHA, GL_UNSIGNED_BYTE,NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920,1080*3.0f/2.0f, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
 
 
 
@@ -134,7 +134,7 @@ int glViewer::init()
             AVFrame	*pFrame ;//= av_frame_alloc();
             pFrame=(*pFrameQueueVecPtr_)[0].front();
 
-            //std::cout<<"size:"<<(*pFrameQueueVecPtr_)[0].size()<<"\t";
+            std::cout<<"size:"<<(*pFrameQueueVecPtr_)[0].size()<<std::endl;;
 
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
@@ -167,7 +167,7 @@ int glViewer::init()
             glTexSubImage2D(GL_TEXTURE_2D,0,1920/2,1080,1920/2,1080/2,GL_RED,GL_UNSIGNED_BYTE,pFrame->data[2]);
 //            std::cerr << "OpenGL error: " << glGetError() << std::endl;
             //glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920,1080, 0, GL_RED, GL_UNSIGNED_BYTE, pFrame->data[0]);
-            glUniform1i(glGetUniformLocation(ourShader->Program, "ourTexture1"), 0);
+            glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureYUV"), 0);
 
 
             glBindVertexArray(VAO);
@@ -189,10 +189,6 @@ int glViewer::init()
             glClear(GL_COLOR_BUFFER_BIT);
             // Bind Texture
             glBindTexture(GL_TEXTURE_2D, texture);
-            ourShader->Use();
-            glBindTexture(GL_TEXTURE_2D, texture1);
-            ourShader->Use();
-            glBindTexture(GL_TEXTURE_2D, texture2);
             ourShader->Use();
             glBindVertexArray(VAO);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
