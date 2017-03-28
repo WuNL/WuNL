@@ -93,15 +93,11 @@ int glViewer::init()
     // TexCoord attribute
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
     glEnableVertexAttribArray(2);
-//    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (GLvoid*)(8 * sizeof(GLfloat)));
-//    glEnableVertexAttribArray(3);
-//    glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(GLfloat), (GLvoid*)(10 * sizeof(GLfloat)));
-//    glEnableVertexAttribArray(4);
     glBindVertexArray(0); // Unbind VAO
 
 
     // Load and create a texture
-    GLuint texture,texture1,texture2;
+    GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
     // Set the texture wrapping parameters
@@ -113,15 +109,6 @@ int glViewer::init()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920,1080*3.0f/2.0f, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
 
 
-
-
-//     Load image, create texture and generate mipmaps
-    //int width, height;
-    //unsigned char* image = SOIL_load_image("sdt.jpg", &width, &height, 0, SOIL_LOAD_RGBA);
-    //std::cout<<width<<" "<<height<<std::endl;
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width,height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    //glGenerateMipmap(GL_TEXTURE_2D);
-    //SOIL_free_image_data(image);
     glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
     FILE *fp_out1;
     fp_out1 = fopen("out1.yuv", "wb");
