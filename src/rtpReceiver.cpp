@@ -47,6 +47,7 @@ void rtpReceiver::run()
         boost::array<char, 2000> recv_buf;
         ip::udp::endpoint remote_endpoint;
         boost::system::error_code error;
+
         // 接收一个字符，这样就得到了远程端点(remote_endpoint)
         int bytes = recvSock_.receive_from(boost::asio::buffer(recv_buf),remote_endpoint, 0, error);
         if (error && error != boost::asio::error::message_size)

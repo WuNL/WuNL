@@ -46,7 +46,6 @@ int main()
     glViewer gv;
     gv.setQueuePtr(pFrameQueueVecPtr);
     gv.init();
-    //gv.render();
     getchar();
     return 0;
 }

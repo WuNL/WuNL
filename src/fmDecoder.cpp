@@ -95,7 +95,7 @@ void fmDecoder::run()
         }
         else
         {
-            usleep(5);
+            usleep(5000);
             continue;
         }
         if (cur_size == 0)
@@ -205,6 +205,7 @@ int fmDecoder::Decode(AVFrame *pFrame)
 {
     static int mc = 0;
     int got_picture = 0;
+
     //pFrameYUV=av_frame_alloc();
     int ret = avcodec_decode_video2(pCodecCtx, pFrame, &got_picture, &packet);
     if(ret < 0)

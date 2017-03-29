@@ -26,7 +26,7 @@ protected:
 
 private:
     GLFWwindow* window;
-    GLuint VBO, VAO, EBO;
+    GLuint VBO[2], VAO[2], EBO;
     GLuint texture;
     Shader* ourShader;
     boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr_;

@@ -54,10 +54,18 @@ int glViewer::init()
     GLfloat vertices[] =
     {
         // Positions          // Colors           // Texture Coords
-        0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Top Right
-        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Bottom Right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Bottom Left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // Top Left
+        0.0f,  1.0f, 0.0f,      1.0f, 1.0f, 0.0f,       1.0f, 1.0f,            // Top Right
+        0.0f,  0.0f, 0.0f,      1.0f, -1.0f, 0.0f,      1.0f, 0.0f, // Bottom Right
+        -1.0f,  0.0f, 0.0f,     -1.0f, -1.0f, 0.0f,     0.0f, 0.0f, // Bottom Left
+        -1.0f,  1.0f, 0.0f,     -1.0f, 1.0f, 0.0f,      0.0f, 1.0f  // Top Left
+    };
+    GLfloat vertices1[] =
+    {
+        // Positions          // Colors           // Texture Coords
+        1.0f,  1.0f, 0.0f,      1.0f, 1.0f, 0.0f,       1.0f, 1.0f,            // Top Right
+        1.0f,  0.0f, 0.0f,      1.0f, -1.0f, 0.0f,      1.0f, 0.0f, // Bottom Right
+        0.0f,  0.0f, 0.0f,      -1.0f, -1.0f, 0.0f,     0.0f, 0.0f, // Bottom Left
+        0.0f,  1.0f, 0.0f,      -1.0f, 1.0f, 0.0f,      0.0f, 1.0f  // Top Left
     };
 //    GLfloat vertices[] =
 //    {
@@ -72,15 +80,12 @@ int glViewer::init()
         0, 1, 3, // First Triangle
         1, 2, 3  // Second Triangle
     };
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    glGenVertexArrays(2, VAO);
+    glGenBuffers(2, VBO);
     glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindVertexArray(VAO[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
@@ -96,10 +101,28 @@ int glViewer::init()
     glBindVertexArray(0); // Unbind VAO
 
 
+    glBindVertexArray(VAO[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+     // Position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+    // Color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+    // TexCoord attribute
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(2);
+    glBindVertexArray(0); // Unbind VAO
+
+
+
     // Load and create a texture
-    GLuint texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
+    GLuint texture[2];
+    glGenTextures(2, texture);
+    glBindTexture(GL_TEXTURE_2D, texture[0]); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
     // Set the texture wrapping parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -108,6 +131,14 @@ int glViewer::init()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920,1080*3.0f/2.0f, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
 
+    glBindTexture(GL_TEXTURE_2D, texture[1]); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
+    // Set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // Set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920,1080*3.0f/2.0f, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
 
     glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
     FILE *fp_out1;
@@ -145,19 +176,21 @@ int glViewer::init()
 
 
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture);
-            //glTexStorage2D(GL_TEXTURE_2D,0,GL_RED,1920,1080);
-            //glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920,1080, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
-//            std::cerr << "OpenGL error 0: " << glGetError() << std::endl;
+            glBindTexture(GL_TEXTURE_2D, texture[0]);
             glTexSubImage2D(GL_TEXTURE_2D,0,0,0,1920,1080,GL_RED,GL_UNSIGNED_BYTE,pFrame->data[0]);
             glTexSubImage2D(GL_TEXTURE_2D,0,0,1080,1920/2,1080/2,GL_RED,GL_UNSIGNED_BYTE,pFrame->data[1]);
             glTexSubImage2D(GL_TEXTURE_2D,0,1920/2,1080,1920/2,1080/2,GL_RED,GL_UNSIGNED_BYTE,pFrame->data[2]);
-//            std::cerr << "OpenGL error: " << glGetError() << std::endl;
-            //glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920,1080, 0, GL_RED, GL_UNSIGNED_BYTE, pFrame->data[0]);
             glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureYUV"), 0);
+            glBindVertexArray(VAO[0]);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-
-            glBindVertexArray(VAO);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, texture[1]);
+            glTexSubImage2D(GL_TEXTURE_2D,0,0,0,1920,1080,GL_RED,GL_UNSIGNED_BYTE,pFrame->data[0]);
+            glTexSubImage2D(GL_TEXTURE_2D,0,0,1080,1920/2,1080/2,GL_RED,GL_UNSIGNED_BYTE,pFrame->data[1]);
+            glTexSubImage2D(GL_TEXTURE_2D,0,1920/2,1080,1920/2,1080/2,GL_RED,GL_UNSIGNED_BYTE,pFrame->data[2]);
+            glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureYUV"), 0);
+            glBindVertexArray(VAO[1]);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             glBindVertexArray(0);
             //glBindTexture(GL_TEXTURE_2D, 0);
@@ -175,9 +208,15 @@ int glViewer::init()
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
             // Bind Texture
-            glBindTexture(GL_TEXTURE_2D, texture);
+            glBindTexture(GL_TEXTURE_2D, texture[0]);
             ourShader->Use();
-            glBindVertexArray(VAO);
+            glBindVertexArray(VAO[0]);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
+            glBindTexture(GL_TEXTURE_2D, texture[1]);
+            ourShader->Use();
+            glBindVertexArray(VAO[1]);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             glBindVertexArray(0);
 //          Swap the screen buffers
