@@ -42,9 +42,10 @@ void rtpReceiver::start()
 void rtpReceiver::run()
 {
     //std::cout<<cvPtr_.use_count()<<std::endl;
+
     while(true)
     {
-        boost::array<char, 2000> recv_buf;
+        std::array<char, 2000> recv_buf;
         ip::udp::endpoint remote_endpoint;
         boost::system::error_code error;
 

@@ -14,6 +14,15 @@ typedef std::vector<boost::shared_ptr<fmDecoder> > fmDecoderPtrVec;
 typedef std::vector<boost::shared_ptr<int> > vs;
 int main()
 {
+    pthread_t thread = pthread_self();
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    thread = pthread_self();
+    CPU_ZERO(&cpuset);
+    CPU_SET(3, &cpuset);
+    int rc = pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
+    if (rc != 0)
+        std::cout << "Error calling pthread_setaffinity_np !!! ";
     boost::shared_ptr<std::vector<channel> >  channelVecPtr = boost::make_shared<std::vector<channel> >(CHANNELNUM);
     rtpRecvPtrVec v(CHANNELNUM);
     fmDecoderPtrVec fv(CHANNELNUM);
@@ -45,7 +54,8 @@ int main()
     }
     glViewer gv;
     gv.setQueuePtr(pFrameQueueVecPtr);
-    gv.init();
+    gv.test();
+    //gv.init();
     getchar();
     return 0;
 }

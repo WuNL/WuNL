@@ -10,6 +10,8 @@
 #include "channel.h"
 #include "params.h"
 #include <queue>
+#include <sched.h>
+#include <thread>
 using namespace boost::asio;
 class fmDecoder
 {

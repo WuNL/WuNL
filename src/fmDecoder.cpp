@@ -1,4 +1,5 @@
 #include "fmDecoder.h"
+
 FILE *fp_out;
 int mycount = 0;
 fmDecoder::fmDecoder()
@@ -56,6 +57,39 @@ boost::mutex mt;
 
 void fmDecoder::run()
 {
+    int rc, i;
+    cpu_set_t cpuset;
+    pthread_t thread;
+
+    thread = pthread_self();
+
+    //Check no. of cores on the machine
+    std::cout << "position:"<<threadSeq_<<"  "<<std::thread::hardware_concurrency() << std::endl;
+
+    /* Set affinity mask */
+    CPU_ZERO(&cpuset);
+    int mask = threadSeq_%4;
+    //for (i = 0; i < 8; i++) //I have 4 cores with 2 threads per core so running it for 8 times, modify it according to your lscpu o/p
+    CPU_SET(mask, &cpuset);
+
+    rc = pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
+    if (rc != 0)
+        std::cout << "Error calling pthread_setaffinity_np !!! ";
+
+    /* Assign affinity mask to the thread */
+    rc = pthread_getaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
+    if (rc != 0)
+        std::cout << "Error calling pthread_getaffinity_np !!!";
+
+    std::cout << "pthread_getaffinity_np() returns:\n";
+    for (i = 0; i < CPU_SETSIZE; i++)
+    {
+        if (CPU_ISSET(i, &cpuset))
+        {
+            std::cout << " CPU " << i << std::endl;
+            std::cout << "This program (main thread) is on CPU " << sched_getcpu() << std::endl;
+        }
+    }
     while(1)
     {
 

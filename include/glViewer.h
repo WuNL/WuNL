@@ -17,6 +17,7 @@ public:
     glViewer();
     virtual ~glViewer();
     int init();
+    int test();
     int render();
     void setQueuePtr(boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr)
     {
@@ -26,7 +27,7 @@ protected:
 
 private:
     GLFWwindow* window;
-    GLuint VBO[2], VAO[2], EBO;
+    GLuint VBO[2], VAO[2], EBO,pboIds[2];
     GLuint texture;
     Shader* ourShader;
     boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr_;
