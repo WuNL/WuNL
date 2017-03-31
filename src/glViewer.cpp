@@ -106,6 +106,24 @@ int glViewer::test()
         0.0f,  0.0f, 0.0f,      -1.0f, -1.0f, 0.0f,     0.0f, 0.0f, // Bottom Left
         0.0f,  1.0f, 0.0f,      -1.0f, 1.0f, 0.0f,      0.0f, 1.0f  // Top Left
     };
+
+    GLfloat vertices2[] =
+    {
+        // Positions          // Colors           // Texture Coords
+        0.0f,  0.0f, 0.0f,      1.0f, 1.0f, 0.0f,       1.0f, 1.0f,            // Top Right
+        0.0f,  -1.0f, 0.0f,      1.0f, -1.0f, 0.0f,      1.0f, 0.0f, // Bottom Right
+        -1.0f,  -1.0f, 0.0f,      -1.0f, -1.0f, 0.0f,     0.0f, 0.0f, // Bottom Left
+        -1.0f,  0.0f, 0.0f,      -1.0f, 1.0f, 0.0f,      0.0f, 1.0f  // Top Left
+    };
+    GLfloat vertices3[] =
+    {
+        // Positions          // Colors           // Texture Coords
+        1.0f,  0.0f, 0.0f,      1.0f, 1.0f, 0.0f,       1.0f, 1.0f,            // Top Right
+        1.0f,  -1.0f, 0.0f,      1.0f, -1.0f, 0.0f,      1.0f, 0.0f, // Bottom Right
+        0.0f,  -1.0f, 0.0f,      -1.0f, -1.0f, 0.0f,     0.0f, 0.0f, // Bottom Left
+        0.0f,  0.0f, 0.0f,      -1.0f, 1.0f, 0.0f,      0.0f, 1.0f  // Top Left
+    };
+    GLfloat* verticesVec[]={vertices,vertices1,vertices2,vertices3};
 //    GLfloat vertices[] =
 //    {
 //        // Positions          // Colors           // Texture Coords Y U V
@@ -122,78 +140,46 @@ int glViewer::test()
 
 
     int DATA_SIZE = 1920*1080*3/2;
-    glGenBuffers(2, pboIds);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[0]);
-    glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[1]);
-    glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-
-
-
-    glGenVertexArrays(2, VAO);
-    glGenBuffers(2, VBO);
+    glGenBuffers(copyNum, pboIds);
+    glGenVertexArrays(copyNum, VAO);
+    glGenBuffers(copyNum, VBO);
     glGenBuffers(1, &EBO);
-    glBindVertexArray(VAO[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glGenTextures(copyNum, texture);
+    for(int i =0;i<copyNum;++i)
+    {
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
+        glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+        glBindVertexArray(VAO[i]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
+        std::cout<<sizeof(verticesVec[i])<<std::endl;
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), verticesVec[i], GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+        // Position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+        glEnableVertexAttribArray(0);
+        // Color attribute
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+        // TexCoord attribute
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(2);
+        glBindVertexArray(0); // Unbind VAO
 
-    // Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(0);
-    // Color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-    // TexCoord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(2);
-    glBindVertexArray(0); // Unbind VAO
-
-
-    glBindVertexArray(VAO[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    // Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(0);
-    // Color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-    // TexCoord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(2);
-    glBindVertexArray(0); // Unbind VAO
-
-
-
-    // Load and create a texture
-    GLuint texture[2];
-    glGenTextures(2, texture);
-    glBindTexture(GL_TEXTURE_2D, texture[0]); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
-    // Set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // Set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920,1080*3/2, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
-
-    glBindTexture(GL_TEXTURE_2D, texture[1]); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
-    // Set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // Set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920,1080*3/2, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
-
+        // Load and create a texture
+        glBindTexture(GL_TEXTURE_2D, texture[i]); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
+        // Set the texture wrapping parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        // Set texture filtering parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920,1080*3/2, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
+    }
     glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
-    FILE *fp_out1;
-    fp_out1 = fopen("out1.yuv", "wb");
+//    FILE *fp_out1;
+//    fp_out1 = fopen("out1.yuv", "wb");
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -201,14 +187,14 @@ int glViewer::test()
         if(!(*pFrameQueueVecPtr_)[0].empty())
         {
 
-            AVFrame	*pFrame ;//= av_frame_alloc();
+            AVFrame	*pFrame ;
             pFrame=(*pFrameQueueVecPtr_)[0].front();
 
             std::cout<<"size:"<<(*pFrameQueueVecPtr_)[0].size()<<std::endl;;
 
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-            for(int i=0; i<2; ++i)
+            for(int i=0; i<copyNum; ++i)
             {
                 glBindTexture(GL_TEXTURE_2D, texture[i]);
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
@@ -234,8 +220,6 @@ int glViewer::test()
             glfwSwapBuffers(window);
             av_frame_free(&pFrame);
             (*pFrameQueueVecPtr_)[0].pop();
-
-            //usleep(30000);
         }
         else
         {
@@ -245,30 +229,24 @@ int glViewer::test()
             // Clear the colorbuffer
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-            // Bind Texture
-            glBindTexture(GL_TEXTURE_2D, texture[0]);
-            ourShader->Use();
-            glBindVertexArray(VAO[0]);
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-
-            glBindTexture(GL_TEXTURE_2D, texture[1]);
-            ourShader->Use();
-            glBindVertexArray(VAO[1]);
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            for(int i=0;i<copyNum;++i)
+            {
+                // Bind Texture
+                glBindTexture(GL_TEXTURE_2D, texture[i]);
+                ourShader->Use();
+                glBindVertexArray(VAO[i]);
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            }
             glBindVertexArray(0);
 //          Swap the screen buffers
             glfwSwapBuffers(window);
-            usleep(30000);
+            //usleep(30000);
         }
-
-
-
-
     }
 
     // Terminate GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();
+    glDeleteBuffers(copyNum, pboIds);
     return 0;
 }
 

@@ -12,6 +12,8 @@
 #define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080
 
+#define copyNum 4
+
 #endif // PARAMS_H_INCLUDED
 
 #define __STDC_CONSTANT_MACROS
