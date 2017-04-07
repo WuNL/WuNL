@@ -123,7 +123,7 @@ int glViewer::test()
         0.0f,  -1.0f, 0.0f,      -1.0f, -1.0f, 0.0f,     0.0f, 0.0f, // Bottom Left
         0.0f,  0.0f, 0.0f,      -1.0f, 1.0f, 0.0f,      0.0f, 1.0f  // Top Left
     };
-    GLfloat* verticesVec[]={vertices,vertices1,vertices2,vertices3};
+    GLfloat* verticesVec[]= {vertices,vertices1,vertices2,vertices3};
 //    GLfloat vertices[] =
 //    {
 //        // Positions          // Colors           // Texture Coords Y U V
@@ -145,7 +145,7 @@ int glViewer::test()
     glGenBuffers(copyNum, VBO);
     glGenBuffers(1, &EBO);
     glGenTextures(copyNum, texture);
-    for(int i =0;i<copyNum;++i)
+    for(int i =0; i<copyNum; ++i)
     {
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
         glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
@@ -229,7 +229,7 @@ int glViewer::test()
             // Clear the colorbuffer
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-            for(int i=0;i<copyNum;++i)
+            for(int i=0; i<copyNum; ++i)
             {
                 // Bind Texture
                 glBindTexture(GL_TEXTURE_2D, texture[i]);

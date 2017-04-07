@@ -57,63 +57,36 @@ boost::mutex mt;
 
 void fmDecoder::run()
 {
-    int rc, i;
-    cpu_set_t cpuset;
-    pthread_t thread;
-
-    thread = pthread_self();
-
-    //Check no. of cores on the machine
-    std::cout << "position:"<<threadSeq_<<"  "<<std::thread::hardware_concurrency() << std::endl;
-
-    /* Set affinity mask */
-    CPU_ZERO(&cpuset);
-    int mask = threadSeq_%4;
-    //for (i = 0; i < 8; i++) //I have 4 cores with 2 threads per core so running it for 8 times, modify it according to your lscpu o/p
-    CPU_SET(mask, &cpuset);
-
-    rc = pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
-    if (rc != 0)
-        std::cout << "Error calling pthread_setaffinity_np !!! ";
-
-    /* Assign affinity mask to the thread */
-    rc = pthread_getaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
-    if (rc != 0)
-        std::cout << "Error calling pthread_getaffinity_np !!!";
-
-    std::cout << "pthread_getaffinity_np() returns:\n";
-    for (i = 0; i < CPU_SETSIZE; i++)
-    {
-        if (CPU_ISSET(i, &cpuset))
-        {
-            std::cout << " CPU " << i << std::endl;
-            std::cout << "This program (main thread) is on CPU " << sched_getcpu() << std::endl;
-        }
-    }
+//    int rc, i;
+//    cpu_set_t cpuset;
+//    pthread_t thread;
+//
+//    thread = pthread_self();
+//
+//    //Check no. of cores on the machine
+//    std::cout << "position:"<<threadSeq_<<"  "<<std::thread::hardware_concurrency() << std::endl;
+//
+//    /* Set affinity mask */
+//    CPU_ZERO(&cpuset);
+//    int mask = threadSeq_%4;
+//    //for (i = 0; i < 8; i++) //I have 4 cores with 2 threads per core so running it for 8 times, modify it according to your lscpu o/p
+//    CPU_SET(mask, &cpuset);
+//
+//    /* Assign affinity mask to the thread */
+//    rc = pthread_getaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
+//    if (rc != 0)
+//        std::cout << "Error calling pthread_getaffinity_np !!!";
+//
+//    for (i = 0; i < CPU_SETSIZE; i++)
+//    {
+//        if (CPU_ISSET(i, &cpuset))
+//        {
+//            std::cout << " CPU " << i << std::endl;
+//            std::cout << "This program (main thread) is on CPU " << sched_getcpu() << std::endl;
+//        }
+//    }
     while(1)
     {
-
-//    if(mycount>200 && threadSeq_==0  && !(*pFrameQueueVecPtr_)[threadSeq_].empty())
-//    {
-//        mt.lock();
-//        std::cout<<"M2-------"<<threadSeq_<<"    "<<(*pFrameQueueVecPtr_)[threadSeq_].size()<<std::endl;
-//        AVFrame* myF = (*pFrameQueueVecPtr_)[threadSeq_].front();
-//
-//        for(int i=0;i<myF->height;i++){
-//            fwrite(myF->data[0]+myF->linesize[0]*i,1,myF->width,fp_out);
-//        }
-//        for(int i=0;i<myF->height/2;i++){
-//            fwrite(myF->data[1]+myF->linesize[1]*i,1,myF->width/2,fp_out);
-//        }
-//        for(int i=0;i<myF->height/2;i++){
-//            fwrite(myF->data[2]+myF->linesize[2]*i,1,myF->width/2,fp_out);
-//        }
-//        av_frame_free(&myF);
-//        (*pFrameQueueVecPtr_)[threadSeq_].pop();
-//        mt.unlock();
-//    }
-
-
         int cur_size = 0;
         uint8_t *cur_ptr = NULL;
 
@@ -146,25 +119,15 @@ void fmDecoder::run()
             cur_size -= len;
             if(GetPacketSize()==0)
                 continue;
-            //
-            //WuNL
-            //int ret = Decode( (*pFrameVecPtr_)[threadSeq_][(*writeIndex_)[threadSeq_] ] );
-            //av_free(pFrame);
 
             AVFrame	*pFrame = av_frame_alloc();
             int ret = Decode(pFrame);
-
-//            std::cout<<"width is :"<<(*pFrameQueueVecPtr_)[threadSeq_].front()<<std::endl;
             if (ret < 0)
             {
-                //av_free(pFrame);
                 continue;
             }
             if (ret)
             {
-                //printf("success!\n");
-//                (*pFrameQueueVecPtr_)[threadSeq_].push(pFrame);
-//                std::cout<<"size is :"<<(*pFrameQueueVecPtr_)[threadSeq_].size()<<std::endl;
                 ++(*writeIndex_)[threadSeq_];
                 if ((*writeIndex_)[threadSeq_] == FRAME_BUFFER)
                 {
@@ -195,32 +158,65 @@ void fmDecoder::setPtr(boost::shared_ptr<std::vector<channel> > cvPtr,
 int fmDecoder::Init()
 {
     avcodec_register_all();
-
     pCodec = avcodec_find_decoder(codecId);
+
     if (!pCodec)
     {
         printf("Codec not found\n");
         return -1;
     }
+
     pCodecCtx = avcodec_alloc_context3(pCodec);
+
+//    pCodecCtx->thread_type =FF_THREAD_FRAME;
+//    pCodecCtx->thread_count == 4;
+
+    pCodecCtx->skip_frame       =  AVDISCARD_NONREF;
+    pCodecCtx->skip_loop_filter =  AVDISCARD_ALL;
+    pCodecCtx->skip_idct        =  AVDISCARD_ALL;
+    pCodecCtx->idct_algo        =  1;
+
+    pCodecCtx->has_b_frames     =  0;
+
+    pCodecCtx->refs             =  1;
+
+//    av_opt_set(pCodecCtx->priv_data, "preset", "ultrafast", 0);
+//
+//    av_opt_set(pCodecCtx->priv_data, "tune", "zerolatency", 0);
+
+    if(pCodec->capabilities&CODEC_CAP_TRUNCATED)
+
+        pCodecCtx->flags|= CODEC_FLAG_TRUNCATED;
+
+    pCodec->capabilities |= CODEC_CAP_TRUNCATED;
+
+    pCodecCtx->flags     |= CODEC_FLAG_LOW_DELAY;
+//
+//    pCodecCtx->flags2    |= CODEC_FLAG2_FAST;
+
+
     if (!pCodecCtx)
     {
         printf("Could not allocate video codec context\n");
         return -1;
     }
+
     pCodecParserCtx=av_parser_init(codecId);
     if (!pCodecParserCtx)
     {
         printf("Could not allocate video parser context\n");
         return -1;
     }
+//    设置多线程 帧间并行解码
+//    无效
+//    pCodecCtx->thread_count = 2;
+//    pCodecCtx->thread_type = FF_THREAD_FRAME;
 
     if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
     {
         printf("Could not open codec\n");
         return -1;
     }
-
     av_log_set_level(AV_LOG_QUIET);
     av_init_packet(&packet);
     return 0;
@@ -265,6 +261,7 @@ int fmDecoder::Decode(AVFrame *pFrame)
         av_frame_get_buffer(copyFrame, 32);
         av_frame_copy(copyFrame, pFrame);
         av_frame_copy_props(copyFrame, pFrame);
+        //av_frame_free(&copyFrame);
         (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
         av_frame_free(&pFrame);
         //std::cout<<threadSeq_<<"--------"<<(*pFrameQueueVecPtr_)[threadSeq_].size()<<std::endl;

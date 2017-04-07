@@ -12,7 +12,7 @@
 #define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080
 
-#define copyNum 4
+#define copyNum 2
 
 #endif // PARAMS_H_INCLUDED
 
@@ -22,4 +22,5 @@ extern "C" {
 #include <libavformat/avformat.h>
 #include <libswscale/swscale.h>
 #include <libavutil/imgutils.h>
+#include <libavutil/opt.h>
 }
