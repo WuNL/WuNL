@@ -11,6 +11,8 @@
 #include <boost/thread/tss.hpp>
 #include <boost/asio.hpp>
 #include "channel.h"
+#include <sched.h>
+#include <thread>
 class glViewer
 {
 public:
@@ -19,6 +21,11 @@ public:
     int init();
     int test();
     int render();
+    bool bufferEmpty();
+    void setWindow(GLfloat** verticesVec__,int channelNum);
+    void setStyle(int style);
+    void run();
+
     void setQueuePtr(boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr)
     {
         pFrameQueueVecPtr_=pFrameQueueVecPtr;
@@ -27,9 +34,13 @@ protected:
 
 private:
     GLFWwindow* window;
-    GLuint VBO[copyNum], VAO[copyNum], EBO,pboIds[copyNum];
-    GLuint texture[copyNum];
+    GLuint VBO[16], VAO[16], EBO,pboIds[16];
+    GLuint texture[16];
     Shader* ourShader;
+    int windowStyle;
+    int windowChange;
+    GLfloat* verticesVec[16];
+    boost::thread m_Thread;
     boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr_;
 };
 

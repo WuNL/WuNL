@@ -12,6 +12,18 @@
 typedef std::vector<boost::shared_ptr<rtpReceiver> > rtpRecvPtrVec;
 typedef std::vector<boost::shared_ptr<fmDecoder> > fmDecoderPtrVec;
 typedef std::vector<boost::shared_ptr<int> > vs;
+
+void setWindowStyle(glViewer& gv)
+{
+    while(1)
+    {
+        int style = 0;
+        std::cin>>style;
+
+        //gv.setStyle(style);
+    }
+}
+
 int main()
 {
     pthread_t thread = pthread_self();
@@ -41,9 +53,9 @@ int main()
         (*pos)->setChannelVecPtr(channelVecPtr);
         (*pos)->start();
     }
-    //for(std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin(); pos!=fv.end(); ++pos)
+    for(std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin(); pos!=fv.end(); ++pos)
     {
-        std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin();
+        //std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin();
         int position = (pos)-fv.begin();
         (*pos) = boost::make_shared<fmDecoder> ();
         (*pos)->setPtr(channelVecPtr,pFrameVecPtr,readIndex,writeIndex);
@@ -52,11 +64,17 @@ int main()
         (*pos)->SetScreanNum(4);
         (*pos)->startDecode();
     }
+
     glViewer gv;
+//    boost::thread(&setWindowStyle, gv);
     gv.setQueuePtr(pFrameQueueVecPtr);
-    gv.test();
-    //gv.init();
-    getchar();
+    gv.run();
+    while(1)
+    {
+        int style = 0;
+        std::cin>>style;
+        gv.setStyle(style);
+    }
     return 0;
 }
 

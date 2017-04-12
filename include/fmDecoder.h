@@ -12,7 +12,6 @@
 #include <queue>
 #include <sched.h>
 #include <thread>
-//#include <libavcodec/pthread.c>
 
 using namespace boost::asio;
 class fmDecoder
