@@ -13,6 +13,8 @@
 #include "channel.h"
 #include <sched.h>
 #include <thread>
+#include <sys/time.h>
+#include <time.h>
 class glViewer
 {
 public:

@@ -117,6 +117,12 @@ int glViewer::test()
     ourShader = new Shader("textures.vs", "textures.frag");
 
     AVFrame	*pFrame ;
+    static int framecount = 0;
+    struct timeval t_start,t_end;
+    long cost_time=0;
+    gettimeofday(&t_start,NULL);
+    long start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
+    printf("start time:%ld ms\n",start);
     while (!glfwWindowShouldClose(window))
     {
         //std::cout<<"windowStyle! "<<windowStyle<<"\t windowChange:"<<windowChange<<std::endl;
@@ -368,9 +374,14 @@ int glViewer::test()
                 (*pFrameQueueVecPtr_)[i].pop();
                 av_frame_free(&pFrame);
             }
+            framecount++;
+            gettimeofday(&t_end,NULL);
+            long end = ((long)t_end.tv_sec)*1000+(long)t_end.tv_usec/1000;
+            cost_time = end - start;
+            if(framecount%20==0)
+                printf("fps:    %f\n",(float)framecount*1000/cost_time);
             glBindVertexArray(0);
             glfwSwapBuffers(window);
-
         }
         else
         {
@@ -385,7 +396,7 @@ int glViewer::test()
             glBindVertexArray(0);
             //Swap the screen buffers
             glfwSwapBuffers(window);
-            usleep(30000);
+            //usleep(30000);
         }
     }
 

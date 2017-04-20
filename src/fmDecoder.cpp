@@ -63,6 +63,7 @@ void fmDecoder::run()
     int mask = threadSeq_%4;
     //for (i = 0; i < 8; i++) //I have 4 cores with 2 threads per core so running it for 8 times, modify it according to your lscpu o/p
     CPU_SET(mask, &cpuset);
+
     pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset);
     /* Assign affinity mask to the thread */
     rc = pthread_getaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
@@ -258,8 +259,8 @@ int fmDecoder::Init()
 
     pCodecCtx->flags     |= CODEC_FLAG_LOW_DELAY;
 
-    //pCodecCtx->thread_count = 4;
-    //pCodecCtx->thread_type = FF_THREAD_FRAME;
+//    pCodecCtx->thread_count = 2;
+//    pCodecCtx->thread_type = FF_THREAD_FRAME;
 
     if (!pCodecCtx)
     {
