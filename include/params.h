@@ -17,6 +17,7 @@
 //1: 1分屏
 //4: 4分屏
 //9: 9分屏
+
 #define WINDOW_STYLE 9
 
 #endif // PARAMS_H_INCLUDED

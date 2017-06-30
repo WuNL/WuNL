@@ -1,5 +1,4 @@
 #include "glViewer.h"
-#include "SOIL/SOIL.h"
 glViewer::glViewer()
 {
     //ctor
@@ -343,6 +342,7 @@ int glViewer::test()
         //std::cout << "This program (gl) is on CPU " << sched_getcpu() << std::endl;
         if(!bufferEmpty())
         {
+            printf("not empty!\n");
             for(int i=0; i<windowStyle; ++i)
             {
                 if((*pFrameQueueVecPtr_)[i].empty())
