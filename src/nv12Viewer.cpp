@@ -1,12 +1,12 @@
-#include "glViewer.h"
-glViewer::glViewer()
+#include "nv12Viewer.h"
+nv12Viewer::nv12Viewer()
 {
     //ctor
     windowStyle = WINDOW_STYLE;
     windowChange = 1;
 }
 
-glViewer::~glViewer()
+nv12Viewer::~nv12Viewer()
 {
     //dtor
 
@@ -14,19 +14,19 @@ glViewer::~glViewer()
 }
 
 // Function prototypes
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void key_callback_NV12(GLFWwindow* window, int key, int scancode, int action, int mode);
 
-int WIDTH=WINDOW_WIDTH;
-int HEIGHT=WINDOW_HEIGHT;
+static int WIDTH=WINDOW_WIDTH;
+static int HEIGHT=WINDOW_HEIGHT;
 
 
-void glViewer::setStyle(int style)
+void nv12Viewer::setStyle(int style)
 {
     windowStyle = style;
     windowChange = 1;
 }
 
-void updatePixels(GLubyte* dst, int size)
+static void updatePixels(GLubyte* dst, int size)
 {
     static int color = 0;
 
@@ -48,7 +48,7 @@ void updatePixels(GLubyte* dst, int size)
     ++color;            // scroll down
 }
 
-void updateImage(GLubyte* dst,int x,int y, int w,int h,void* data)
+static void updateImage(GLubyte* dst,int x,int y, int w,int h,void* data)
 {
     int pitch = VIDEO_SOURCE_WIDTH;
     GLubyte* dst1 = dst+y*pitch+x;
@@ -61,7 +61,7 @@ void updateImage(GLubyte* dst,int x,int y, int w,int h,void* data)
     }
 }
 
-bool glViewer::bufferEmpty()
+bool nv12Viewer::bufferEmpty()
 {
     for(int i =0; i<WINDOW_STYLE; ++i)
     {
@@ -71,7 +71,7 @@ bool glViewer::bufferEmpty()
     return true;
 }
 
-void glViewer::run()
+void nv12Viewer::run()
 {
     // Init GLFW
     glfwInit();
@@ -88,15 +88,15 @@ void glViewer::run()
     window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", NULL, NULL);
 
 
-    m_Thread = boost::thread(&glViewer::test, this);
+    m_Thread = boost::thread(&nv12Viewer::test, this);
 }
 
-int glViewer::test()
+int nv12Viewer::test()
 {
 
     glfwMakeContextCurrent(window);
     // Set the required callback functions
-    glfwSetKeyCallback(window, key_callback);
+    glfwSetKeyCallback(window, key_callback_NV12);
 
     // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
     glewExperimental = GL_TRUE;
@@ -342,7 +342,7 @@ int glViewer::test()
         //std::cout << "This program (gl) is on CPU " << sched_getcpu() << std::endl;
         if(!bufferEmpty())
         {
-            printf("not empty!\n");
+            //printf("not empty!\n");
             for(int i=0; i<windowStyle; ++i)
             {
                 if((*pFrameQueueVecPtr_)[i].empty())
@@ -363,7 +363,7 @@ int glViewer::test()
                 {
                     memcpy(ptr,pFrame->data[0],VIDEO_SOURCE_WIDTH*VIDEO_SOURCE_HEIGHT);
                     updateImage(ptr,0,VIDEO_SOURCE_HEIGHT,VIDEO_SOURCE_WIDTH,VIDEO_SOURCE_HEIGHT/2,pFrame->data[1]);
-                    updateImage(ptr,VIDEO_SOURCE_WIDTH/2,VIDEO_SOURCE_HEIGHT,VIDEO_SOURCE_WIDTH/2,VIDEO_SOURCE_HEIGHT/2,pFrame->data[2]);
+                    //updateImage(ptr,VIDEO_SOURCE_WIDTH/2,VIDEO_SOURCE_HEIGHT,VIDEO_SOURCE_WIDTH/2,VIDEO_SOURCE_HEIGHT/2,pFrame->data[2]);
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
                 }
                 glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, VIDEO_SOURCE_WIDTH,VIDEO_SOURCE_HEIGHT*3/2, GL_RED, GL_UNSIGNED_BYTE, 0);
@@ -406,19 +406,19 @@ int glViewer::test()
     return 0;
 }
 
-int glViewer::init()
+int nv12Viewer::init()
 {
     return 0;
 }
 #include <stdio.h>
-int glViewer::render()
+int nv12Viewer::render()
 {
     return 0;
 }
 
 
 // Is called whenever a key is pressed/released via GLFW
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+void key_callback_NV12(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);

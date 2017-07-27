@@ -14,6 +14,10 @@ fmDecoder::fmDecoder()
 
     out_buffer=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_YUV420P,  VIDEO_WIDE, VIDEO_HEIGHT,1));
 
+//    convertCtx = sws_getContext(VIDEO_SOURCE_WIDTH, VIDEO_SOURCE_HEIGHT,
+//            AV_PIX_FMT_NV12, VIDEO_SOURCE_WIDTH/2, VIDEO_SOURCE_HEIGHT/2,
+//            AV_PIX_FMT_NV12, SWS_BILINEAR, nullptr, nullptr, nullptr);
+
     if(out_buffer == 0)
     {
         printf("out_buffer == 0\n");
@@ -37,6 +41,8 @@ fmDecoder::~fmDecoder()
         avcodec_close(pCodecCtx);
     if(NULL!=out_buffer)
         av_free(out_buffer);
+    if(NULL!=fp_out)
+        fclose(fp_out);
 }
 
 void fmDecoder::setThreadSeq(int seq)
@@ -80,6 +86,15 @@ void fmDecoder::run()
             std::cout << "This program (main thread) is on CPU " << sched_getcpu() << std::endl;
         }
     }
+
+    unsigned char *out_buffer1;
+	AVFrame *pFrameYUV=av_frame_alloc();
+	out_buffer1=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_YUV420P,  1920,1080,1));
+	av_image_fill_arrays(pFrameYUV->data, pFrameYUV->linesize,out_buffer1,
+		AV_PIX_FMT_YUV420P,1920, 1080,1);
+    convertCtx = sws_getContext(1920, 1080, AV_PIX_FMT_NV12,
+		1920, 1080, AV_PIX_FMT_YUV420P, SWS_BICUBIC, NULL, NULL, NULL);
+
     while(1)
     {
         int cur_size = 0;
@@ -128,7 +143,7 @@ void fmDecoder::run()
 
             int ret = -1;
             ret = avcodec_decode_video2(pCodecCtx, pFrame, &got_picture, &packet);
-            printf("www----%d\n\n",ret);
+            //printf("www----%d\n\n",ret);
             if(ret < 0)
             {
                 printf("DECODE ERROR---------%d\n",ret);
@@ -141,22 +156,51 @@ void fmDecoder::run()
                 continue;
                 //return ret;
             }
-            if (ret)
+            if (got_picture)
             {
-                printf("SUCCESS!\n");
-                AVFrame *copyFrame = av_frame_alloc();
-                copyFrame->format = pFrame->format;
-                copyFrame->width = pFrame->width;
-                copyFrame->height = pFrame->height;
-                copyFrame->channels = pFrame->channels;
-                copyFrame->channel_layout = pFrame->channel_layout;
-                copyFrame->nb_samples = pFrame->nb_samples;
-                av_frame_get_buffer(copyFrame, 32);
-                av_frame_copy(copyFrame, pFrame);
-                av_frame_copy_props(copyFrame, pFrame);
-                (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
+                printf("SUCCESS! seq is %d\n",threadSeq_);
+                //AVFrame *copyFrame = av_frame_alloc();
+
+
+//                copyFrame->format = pFrame->format;
+//                copyFrame->width = pFrame->width;
+//                copyFrame->height = pFrame->height;
+//                copyFrame->channels = pFrame->channels;
+//                copyFrame->channel_layout = pFrame->channel_layout;
+//                copyFrame->nb_samples = pFrame->nb_samples;
+//                av_frame_get_buffer(copyFrame, 32);
+//                av_frame_copy(copyFrame, pFrame);
+//                av_frame_copy_props(copyFrame, pFrame);
+//                (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
+
+                int rev = sws_scale(convertCtx, (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
+					pFrameYUV->data, pFrameYUV->linesize);
+                (*pFrameQueueVecPtr_)[threadSeq_].push(pFrameYUV);
+
+//                for(int i=0; i<1080; i++)
+//                {
+//                    fwrite(pFrameYUV->data[0]+pFrameYUV->linesize[0]*i,1,1920,fp_out);
+//                }
+//                for(int i=0; i<1080/2; i++)
+//                {
+//                    fwrite(pFrameYUV->data[1]+pFrameYUV->linesize[1]*i,1,1920/2,fp_out);
+//                }
+//                for(int i=0; i<1080/2; i++)
+//                {
+//                    fwrite(pFrameYUV->data[2]+pFrameYUV->linesize[2]*i,1,1920/2,fp_out);
+//                }
                 av_frame_free(&pFrame);
-                //av_frame_free(&copyFrame);
+                //av_frame_free(&pFrameYUV);
+//                for(int i=0; i<copyFrame->height; i++)
+//                {
+//                    fwrite(copyFrame->data[0]+copyFrame->linesize[0]*i,1,copyFrame->width,fp_out);
+//                }
+//                for(int i=0; i<copyFrame->height/2; i++)
+//                {
+//                    fwrite(copyFrame->data[1]+copyFrame->linesize[1]*i,1,copyFrame->width,fp_out);
+//                }
+
+                 //av_frame_free(&copyFrame);
             }
         }
     }
@@ -249,19 +293,19 @@ int fmDecoder::Init()
 
 
 //    optimize work
-    pCodecCtx->skip_frame       =  AVDISCARD_NONREF;
-    pCodecCtx->skip_idct        =  AVDISCARD_ALL;
-    pCodecCtx->idct_algo        =  1;
-    pCodecCtx->has_b_frames     =  0;
-    pCodecCtx->refs             =  1;
-
-    if(pCodec->capabilities&CODEC_CAP_TRUNCATED)
-
-        pCodecCtx->flags|= CODEC_FLAG_TRUNCATED;
-
-    pCodec->capabilities |= CODEC_CAP_TRUNCATED;
-
-    pCodecCtx->flags     |= CODEC_FLAG_LOW_DELAY;
+////    pCodecCtx->skip_frame       =  AVDISCARD_NONREF;
+////    pCodecCtx->skip_idct        =  AVDISCARD_ALL;
+////    pCodecCtx->idct_algo        =  1;
+////    pCodecCtx->has_b_frames     =  0;
+////    pCodecCtx->refs             =  1;
+////
+////    if(pCodec->capabilities&CODEC_CAP_TRUNCATED)
+////
+////        pCodecCtx->flags|= CODEC_FLAG_TRUNCATED;
+////
+////    pCodec->capabilities |= CODEC_CAP_TRUNCATED;
+////
+////    pCodecCtx->flags     |= CODEC_FLAG_LOW_DELAY;
 
 //    pCodecCtx->thread_count = 2;
 //    pCodecCtx->thread_type = FF_THREAD_FRAME;
@@ -271,8 +315,8 @@ int fmDecoder::Init()
         printf("Could not allocate video codec context\n");
         return -1;
     }
-    printf("pCodecCtx->codec->id=%d\n",pCodecCtx->codec->id);
-    pCodecParserCtx=av_parser_init(codecId);
+    printf("pCodecCtx->codec->id=%d----%d\n",pCodecCtx->codec->id,pCodec->id);
+    pCodecParserCtx=av_parser_init(pCodec->id);
 
 
     if (!pCodecParserCtx)
@@ -329,7 +373,7 @@ int fmDecoder::Decode(AVFrame *pFrame)
         av_frame_copy_props(copyFrame, pFrame);
         (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
         av_frame_free(&pFrame);
-        //av_frame_free(&copyFrame);
+        av_frame_free(&copyFrame);
     }
     mt.unlock();
     return 1;

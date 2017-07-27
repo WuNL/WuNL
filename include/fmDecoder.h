@@ -47,6 +47,8 @@ private:
     struct SwsContext *img_convert_ctx9;
     struct SwsContext *img_convert_ctx4;
     struct SwsContext *img_convert_ctx1;
+
+    struct SwsContext *convertCtx;
     AVFrame	*pFrameYUV;
     int screanNum;
     unsigned char *out_buffer;
