@@ -9,7 +9,7 @@
 #define VIDEO_WIDE 1920
 #define VIDEO_HEIGHT 1080
 
-#define WINDOW_WIDTH 1800
+#define WINDOW_WIDTH 1440
 #define WINDOW_HEIGHT 900
 
 #define copyNum 4

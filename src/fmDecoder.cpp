@@ -158,38 +158,43 @@ void fmDecoder::run()
             }
             if (got_picture)
             {
+
                 printf("SUCCESS! seq is %d\n",threadSeq_);
-                //AVFrame *copyFrame = av_frame_alloc();
-
-
-//                copyFrame->format = pFrame->format;
-//                copyFrame->width = pFrame->width;
-//                copyFrame->height = pFrame->height;
-//                copyFrame->channels = pFrame->channels;
-//                copyFrame->channel_layout = pFrame->channel_layout;
-//                copyFrame->nb_samples = pFrame->nb_samples;
-//                av_frame_get_buffer(copyFrame, 32);
-//                av_frame_copy(copyFrame, pFrame);
-//                av_frame_copy_props(copyFrame, pFrame);
-//                (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
-
+                pFrameYUV->format = AV_PIX_FMT_YUV420P;
+                pFrameYUV->width = pFrame->width;
+                pFrameYUV->height = pFrame->height;
                 int rev = sws_scale(convertCtx, (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
 					pFrameYUV->data, pFrameYUV->linesize);
-                (*pFrameQueueVecPtr_)[threadSeq_].push(pFrameYUV);
+                AVFrame *copyFrame = av_frame_alloc();
+
+                printf("%d %d %d %d\n",pFrame->pict_type,copyFrame->pict_type,pFrame->format,pFrameYUV->format);
+                copyFrame->format = pFrameYUV->format;
+                copyFrame->width = pFrameYUV->width;
+                copyFrame->height = pFrameYUV->height;
+                av_frame_get_buffer(copyFrame, 32);
+                av_frame_copy(copyFrame, pFrameYUV);
+                av_frame_copy_props(copyFrame, pFrameYUV);
+
+
+
+
 
 //                for(int i=0; i<1080; i++)
 //                {
-//                    fwrite(pFrameYUV->data[0]+pFrameYUV->linesize[0]*i,1,1920,fp_out);
+//                    fwrite(copyFrame->data[0]+copyFrame->linesize[0]*i,1,1920,fp_out);
 //                }
 //                for(int i=0; i<1080/2; i++)
 //                {
-//                    fwrite(pFrameYUV->data[1]+pFrameYUV->linesize[1]*i,1,1920/2,fp_out);
+//                    fwrite(copyFrame->data[1]+copyFrame->linesize[1]*i,1,1920/2,fp_out);
 //                }
 //                for(int i=0; i<1080/2; i++)
 //                {
-//                    fwrite(pFrameYUV->data[2]+pFrameYUV->linesize[2]*i,1,1920/2,fp_out);
+//                    fwrite(copyFrame->data[2]+copyFrame->linesize[2]*i,1,1920/2,fp_out);
 //                }
+
+                (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
                 av_frame_free(&pFrame);
+//                av_frame_free(&pFrameYUV);
                 //av_frame_free(&pFrameYUV);
 //                for(int i=0; i<copyFrame->height; i++)
 //                {
