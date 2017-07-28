@@ -67,7 +67,7 @@ void fmDecoder::run()
 
     /* Set affinity mask */
     CPU_ZERO(&cpuset);
-    int mask = threadSeq_+cnt;
+    int mask = threadSeq_;
     //for (i = 0; i < 8; i++) //I have 4 cores with 2 threads per core so running it for 8 times, modify it according to your lscpu o/p
     CPU_SET(mask, &cpuset);
     cnt++;
@@ -88,12 +88,12 @@ void fmDecoder::run()
     }
 
     unsigned char *out_buffer1;
-	AVFrame *pFrameYUV=av_frame_alloc();
-	out_buffer1=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_YUV420P,  1920,1080,1));
-	av_image_fill_arrays(pFrameYUV->data, pFrameYUV->linesize,out_buffer1,
-		AV_PIX_FMT_YUV420P,1920, 1080,1);
+    AVFrame *pFrameYUV=av_frame_alloc();
+    out_buffer1=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_YUV420P,  SWS_WIDTH,SWS_HEIGHT,1));
+    av_image_fill_arrays(pFrameYUV->data, pFrameYUV->linesize,out_buffer1,
+                         AV_PIX_FMT_YUV420P,SWS_WIDTH, SWS_HEIGHT,1);
     convertCtx = sws_getContext(1920, 1080, AV_PIX_FMT_NV12,
-		1920, 1080, AV_PIX_FMT_YUV420P, SWS_BICUBIC, NULL, NULL, NULL);
+                                SWS_WIDTH, SWS_HEIGHT, AV_PIX_FMT_YUV420P, SWS_BICUBIC, NULL, NULL, NULL);
 
     while(1)
     {
@@ -152,22 +152,22 @@ void fmDecoder::run()
             }
             if(!got_picture)
             {
-                printf("got_picture == 0\n");
+                //printf("got_picture == 0\n");
                 continue;
                 //return ret;
             }
             if (got_picture)
             {
 
-                printf("SUCCESS! seq is %d\n",threadSeq_);
+                //printf("SUCCESS! seq is %d\n",threadSeq_);
                 pFrameYUV->format = AV_PIX_FMT_YUV420P;
-                pFrameYUV->width = pFrame->width;
-                pFrameYUV->height = pFrame->height;
+                pFrameYUV->width = SWS_WIDTH;
+                pFrameYUV->height = SWS_HEIGHT;
                 int rev = sws_scale(convertCtx, (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
-					pFrameYUV->data, pFrameYUV->linesize);
+                                    pFrameYUV->data, pFrameYUV->linesize);
                 AVFrame *copyFrame = av_frame_alloc();
 
-                printf("%d %d %d %d\n",pFrame->pict_type,copyFrame->pict_type,pFrame->format,pFrameYUV->format);
+                //printf("%d %d %d %d\n",pFrame->pict_type,copyFrame->pict_type,pFrame->format,pFrameYUV->format);
                 copyFrame->format = pFrameYUV->format;
                 copyFrame->width = pFrameYUV->width;
                 copyFrame->height = pFrameYUV->height;
@@ -178,20 +178,21 @@ void fmDecoder::run()
 
 
 
-
-//                for(int i=0; i<1080; i++)
+//                if(threadSeq_==8)
 //                {
-//                    fwrite(copyFrame->data[0]+copyFrame->linesize[0]*i,1,1920,fp_out);
+//                    for(int i=0; i<1080; i++)
+//                    {
+//                        fwrite(copyFrame->data[0]+copyFrame->linesize[0]*i,1,1920,fp_out);
+//                    }
+//                    for(int i=0; i<1080/2; i++)
+//                    {
+//                        fwrite(copyFrame->data[1]+copyFrame->linesize[1]*i,1,1920/2,fp_out);
+//                    }
+//                    for(int i=0; i<1080/2; i++)
+//                    {
+//                        fwrite(copyFrame->data[2]+copyFrame->linesize[2]*i,1,1920/2,fp_out);
+//                    }
 //                }
-//                for(int i=0; i<1080/2; i++)
-//                {
-//                    fwrite(copyFrame->data[1]+copyFrame->linesize[1]*i,1,1920/2,fp_out);
-//                }
-//                for(int i=0; i<1080/2; i++)
-//                {
-//                    fwrite(copyFrame->data[2]+copyFrame->linesize[2]*i,1,1920/2,fp_out);
-//                }
-
                 (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
                 av_frame_free(&pFrame);
 //                av_frame_free(&pFrameYUV);
@@ -205,7 +206,7 @@ void fmDecoder::run()
 //                    fwrite(copyFrame->data[1]+copyFrame->linesize[1]*i,1,copyFrame->width,fp_out);
 //                }
 
-                 //av_frame_free(&copyFrame);
+                //av_frame_free(&copyFrame);
             }
         }
     }

@@ -12,6 +12,9 @@
 #define WINDOW_WIDTH 1440
 #define WINDOW_HEIGHT 900
 
+#define SWS_WIDTH  1920/3
+#define SWS_HEIGHT  1080/3
+
 #define copyNum 4
 
 //1: 1分屏

@@ -36,9 +36,9 @@ void updatePixels(GLubyte* dst, int size)
     int* ptr = (int*)dst;
 
     // copy 4 bytes at once
-    for(int i = 0; i < VIDEO_SOURCE_HEIGHT; ++i)
+    for(int i = 0; i < SWS_HEIGHT; ++i)
     {
-        for(int j = 0; j < VIDEO_SOURCE_WIDTH; ++j)
+        for(int j = 0; j < SWS_WIDTH; ++j)
         {
             *ptr = color;
             ++ptr;
@@ -50,7 +50,7 @@ void updatePixels(GLubyte* dst, int size)
 
 void updateImage(GLubyte* dst,int x,int y, int w,int h,void* data)
 {
-    int pitch = VIDEO_SOURCE_WIDTH;
+    int pitch = SWS_WIDTH;
     GLubyte* dst1 = dst+y*pitch+x;
     GLubyte* src = (GLubyte*)data;
     for(int i=0; i<h; ++i)
@@ -177,7 +177,7 @@ int glViewer::test()
                     0, 1, 3, // First Triangle
                     1, 2, 3  // Second Triangle
                 };
-                DATA_SIZE = VIDEO_SOURCE_WIDTH*VIDEO_SOURCE_HEIGHT*3/2;
+                DATA_SIZE = SWS_WIDTH*SWS_HEIGHT*3/2;
 
                 for(int i =0; i<WINDOW_STYLE; ++i)
                 {
@@ -208,7 +208,7 @@ int glViewer::test()
                     // Set texture filtering parameters
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, VIDEO_SOURCE_WIDTH,VIDEO_SOURCE_HEIGHT*3/2, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SWS_WIDTH,SWS_HEIGHT*3/2, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
                 }
             }
             else if(channelNum==9)
@@ -300,7 +300,7 @@ int glViewer::test()
                     0, 1, 3, // First Triangle
                     1, 2, 3  // Second Triangle
                 };
-                DATA_SIZE = VIDEO_SOURCE_WIDTH*VIDEO_SOURCE_HEIGHT*3/2;
+                DATA_SIZE = SWS_WIDTH*SWS_HEIGHT*3/2;
                 for(int i =0; i<channelNum; ++i)
                 {
                     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
@@ -330,7 +330,7 @@ int glViewer::test()
                     // Set texture filtering parameters
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, VIDEO_SOURCE_WIDTH,VIDEO_SOURCE_HEIGHT*3/2, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SWS_WIDTH,SWS_HEIGHT*3/2, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
                 }
             }
             glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
@@ -342,7 +342,6 @@ int glViewer::test()
         //std::cout << "This program (gl) is on CPU " << sched_getcpu() << std::endl;
         if(!bufferEmpty())
         {
-            printf("not empty!\n");
             for(int i=0; i<windowStyle; ++i)
             {
                 if((*pFrameQueueVecPtr_)[i].empty())
@@ -361,12 +360,12 @@ int glViewer::test()
                 GLubyte* ptr = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
                 if(ptr)
                 {
-                    memcpy(ptr,pFrame->data[0],VIDEO_SOURCE_WIDTH*VIDEO_SOURCE_HEIGHT);
-                    updateImage(ptr,0,VIDEO_SOURCE_HEIGHT,VIDEO_SOURCE_WIDTH,VIDEO_SOURCE_HEIGHT/2,pFrame->data[1]);
-                    updateImage(ptr,VIDEO_SOURCE_WIDTH/2,VIDEO_SOURCE_HEIGHT,VIDEO_SOURCE_WIDTH/2,VIDEO_SOURCE_HEIGHT/2,pFrame->data[2]);
+                    memcpy(ptr,pFrame->data[0],SWS_WIDTH*SWS_HEIGHT);
+                    updateImage(ptr,0,SWS_HEIGHT,SWS_WIDTH/2,SWS_HEIGHT/2,pFrame->data[1]);
+                    updateImage(ptr,SWS_WIDTH/2,SWS_HEIGHT,SWS_WIDTH/2,SWS_HEIGHT/2,pFrame->data[2]);
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
                 }
-                glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, VIDEO_SOURCE_WIDTH,VIDEO_SOURCE_HEIGHT*3/2, GL_RED, GL_UNSIGNED_BYTE, 0);
+                glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, SWS_WIDTH,SWS_HEIGHT*3/2, GL_RED, GL_UNSIGNED_BYTE, 0);
                 glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureYUV"), 0);
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
                 glBindVertexArray(VAO[i]);
