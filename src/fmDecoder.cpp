@@ -193,7 +193,18 @@ void fmDecoder::run()
 //                        fwrite(copyFrame->data[2]+copyFrame->linesize[2]*i,1,1920/2,fp_out);
 //                    }
 //                }
-                (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
+                if((*pFrameQueueVecPtr_)[threadSeq_].size()<=30)
+                {
+                    (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
+                }
+                else
+                {
+                    printf("%d %d\n",threadSeq_,(*pFrameQueueVecPtr_)[threadSeq_].size());
+                    av_frame_free(&(*pFrameQueueVecPtr_)[threadSeq_].front());
+                    (*pFrameQueueVecPtr_)[threadSeq_].pop();
+                    (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
+                }
+
                 av_frame_free(&pFrame);
 //                av_frame_free(&pFrameYUV);
                 //av_frame_free(&pFrameYUV);
@@ -350,7 +361,7 @@ int fmDecoder::Parse(int cur_size, uint8_t *cur_ptr)
 
 int fmDecoder::Decode(AVFrame *pFrame)
 {
-    static int mc = 0;
+//    static int mc = 0;
     int got_picture = 0;
 
     int ret = avcodec_decode_video2(pCodecCtx, pFrame, &got_picture, &packet);

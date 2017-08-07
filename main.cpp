@@ -66,9 +66,9 @@ int main()
         (*pos)->startDecode();
     }
 
-    glViewer gv;
-    gv.setQueuePtr(pFrameQueueVecPtr);
-    gv.run();
+//    glViewer gv;
+//    gv.setQueuePtr(pFrameQueueVecPtr);
+//    gv.run();
 
 //    nv12Viewer nv;
 //    nv.setQueuePtr(pFrameQueueVecPtr);
@@ -78,7 +78,7 @@ int main()
     {
         int style = 0;
         std::cin>>style;
-        gv.setStyle(style);
+        //gv.setStyle(style);
         //nv.setStyle(style);
     }
     return 0;
