@@ -69,6 +69,7 @@ void viewer::devFun()
         1, 2, 3  // Second Triangle
     };
     glGenBuffers(1, &pboIds);
+    glGenBuffers(1, &pboUV);
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -77,11 +78,12 @@ void viewer::devFun()
     ourShader = new Shader("nv12.vs", "nv12.frag");
 
     AVFrame	*pFrame ;
-    int DATA_SIZE = SWS_WIDTH*SWS_HEIGHT*3/2;
-    while (!glfwWindowShouldClose(window))
-    {
+    int DATA_SIZE = SWS_WIDTH*SWS_HEIGHT;
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds);
         glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV);
+        glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -104,9 +106,23 @@ void viewer::devFun()
         // Set texture filtering parameters
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SWS_WIDTH,SWS_HEIGHT*3/2, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SWS_WIDTH,SWS_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+         // Load and create a texture
+        glBindTexture(GL_TEXTURE_2D, textureUV); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
+        // Set the texture wrapping parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        // Set texture filtering parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, SWS_WIDTH/2,SWS_HEIGHT/2, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
 
         glBindTexture(GL_TEXTURE_2D, 0);
+    while (!glfwWindowShouldClose(window))
+    {
+
 
         glfwPollEvents();
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -115,20 +131,43 @@ void viewer::devFun()
         {
             pFrame=(*pFrameQueueVecPtr_)[0].front();
             ourShader->Use();
-            glBindTexture(GL_TEXTURE_2D, texture);
+
             glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds);
             glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
             GLubyte* ptr = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
             if(ptr)
             {
                 memcpy(ptr,pFrame->data[0],SWS_WIDTH*SWS_HEIGHT);
-                updateImage(ptr,0,SWS_HEIGHT,SWS_WIDTH/2,SWS_HEIGHT/2,pFrame->data[1]);
-                updateImage(ptr,SWS_WIDTH/2,SWS_HEIGHT,SWS_WIDTH/2,SWS_HEIGHT/2,pFrame->data[2]);
+                //updateImage(ptr,0,SWS_HEIGHT,SWS_WIDTH,SWS_HEIGHT/2,pFrame->data[1]);
+                //updateImage(ptr,SWS_WIDTH/2,SWS_HEIGHT,SWS_WIDTH/2,SWS_HEIGHT/2,pFrame->data[2]);
                 glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
             }
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, SWS_WIDTH,SWS_HEIGHT*3/2, GL_RED, GL_UNSIGNED_BYTE, 0);
-            glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureYUV"), 0);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, texture);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, SWS_WIDTH,SWS_HEIGHT, GL_RED, GL_UNSIGNED_BYTE, 0);
+            glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureY"), 0);
             glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+            //glBindTexture(GL_TEXTURE_2D, 0);
+
+
+
+            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV);
+            glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
+            GLubyte* ptrUV = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+            if(ptrUV)
+            {
+                memcpy(ptrUV,pFrame->data[1],SWS_WIDTH*SWS_HEIGHT/2);
+                //updateImage(ptr,0,SWS_HEIGHT,SWS_WIDTH,SWS_HEIGHT/2,pFrame->data[1]);
+                //updateImage(ptr,SWS_WIDTH/2,SWS_HEIGHT,SWS_WIDTH/2,SWS_HEIGHT/2,pFrame->data[2]);
+                glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
+            }
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, textureUV);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, SWS_WIDTH/2,SWS_HEIGHT/2, GL_RG, GL_UNSIGNED_BYTE, 0);
+            glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureUV"), 1);
+            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+            //glBindTexture(GL_TEXTURE_2D, 0);
+
             glBindVertexArray(VAO);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             (*pFrameQueueVecPtr_)[0].pop();
@@ -140,7 +179,7 @@ void viewer::devFun()
         else
         {
             // Bind Texture
-            glBindTexture(GL_TEXTURE_2D, texture);
+            //glBindTexture(GL_TEXTURE_2D, texture);
             ourShader->Use();
             glBindVertexArray(VAO);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

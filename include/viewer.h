@@ -39,9 +39,9 @@ private:
     boost::thread m_Thread;
     boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr_;
 
-    GLuint VBO, VAO, EBO,pboIds;
+    GLuint VBO, VAO, EBO,pboIds,pboUV;
     GLuint vbo;
-    GLuint texture;
+    GLuint texture,textureUV;
     Shader* ourShader;
 };
 

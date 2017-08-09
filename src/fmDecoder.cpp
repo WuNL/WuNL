@@ -163,17 +163,16 @@ void fmDecoder::run()
                 pFrameYUV->format = AV_PIX_FMT_YUV420P;
                 pFrameYUV->width = SWS_WIDTH;
                 pFrameYUV->height = SWS_HEIGHT;
-                int rev = sws_scale(convertCtx, (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
-                                    pFrameYUV->data, pFrameYUV->linesize);
+//                int rev = sws_scale(convertCtx, (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
+//                                    pFrameYUV->data, pFrameYUV->linesize);
                 AVFrame *copyFrame = av_frame_alloc();
 
-                //printf("%d %d %d %d\n",pFrame->pict_type,copyFrame->pict_type,pFrame->format,pFrameYUV->format);
-                copyFrame->format = pFrameYUV->format;
-                copyFrame->width = pFrameYUV->width;
-                copyFrame->height = pFrameYUV->height;
+                copyFrame->format = pFrame->format;
+                copyFrame->width = pFrame->width;
+                copyFrame->height = pFrame->height;
                 av_frame_get_buffer(copyFrame, 32);
-                av_frame_copy(copyFrame, pFrameYUV);
-                av_frame_copy_props(copyFrame, pFrameYUV);
+                av_frame_copy(copyFrame, pFrame);
+                av_frame_copy_props(copyFrame, pFrame);
 
 
 
