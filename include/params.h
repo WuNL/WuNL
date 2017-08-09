@@ -23,8 +23,6 @@
 
 #define WINDOW_STYLE 9
 
-#endif // PARAMS_H_INCLUDED
-
 #define __STDC_CONSTANT_MACROS
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -33,3 +31,15 @@ extern "C" {
 #include <libavutil/imgutils.h>
 #include <libavutil/opt.h>
 }
+#include <queue>
+#include <boost/thread/thread.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/tss.hpp>
+#include <boost/asio.hpp>
+
+//boost::mutex lock;
+
+
+#endif // PARAMS_H_INCLUDED
+
+

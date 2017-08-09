@@ -58,10 +58,10 @@ void viewer::devFun()
     GLfloat vertices[] =
     {
         // Positions                           // Texture Coords
-        1.0f,  1.0f,  0.0f,        1.0f, 1.0f,            // Top Right
-        1.0f,  -1.0f, 0.0f,        1.0f, 0.0f, // Bottom Right
-        -1.0f, -1.0f, 0.0f,        0.0f, 0.0f, // Bottom Left
-        -1.0f,  1.0f, 0.0f,        0.0f, 1.0f  // Top Left
+        1.0f/3.0f,  1.0f/3.0f,  0.0f,        1.0f, 1.0f,            // Top Right
+        1.0f/3.0f,  -1.0f/3.0f, 0.0f,        1.0f, 0.0f, // Bottom Right
+        -1.0f/3.0f, -1.0f/3.0f, 0.0f,        0.0f, 0.0f, // Bottom Left
+        -1.0f/3.0f,  1.0f/3.0f, 0.0f,        0.0f, 1.0f  // Top Left
     };
     GLuint indices[] =    // Note that we start from 0!
     {
@@ -122,14 +122,13 @@ void viewer::devFun()
         glBindTexture(GL_TEXTURE_2D, 0);
     while (!glfwWindowShouldClose(window))
     {
-
-
         glfwPollEvents();
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         if(!(*pFrameQueueVecPtr_)[0].empty())
         {
             pFrame=(*pFrameQueueVecPtr_)[0].front();
+            (*pFrameQueueVecPtr_)[0].pop();
             ourShader->Use();
 
             glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds);
@@ -147,7 +146,7 @@ void viewer::devFun()
             glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, SWS_WIDTH,SWS_HEIGHT, GL_RED, GL_UNSIGNED_BYTE, 0);
             glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureY"), 0);
             glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-            //glBindTexture(GL_TEXTURE_2D, 0);
+
 
 
 
@@ -166,15 +165,18 @@ void viewer::devFun()
             glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, SWS_WIDTH/2,SWS_HEIGHT/2, GL_RG, GL_UNSIGNED_BYTE, 0);
             glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureUV"), 1);
             glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-            //glBindTexture(GL_TEXTURE_2D, 0);
+
 
             glBindVertexArray(VAO);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-            (*pFrameQueueVecPtr_)[0].pop();
+//            lock.lock();
+            if(pFrame)
             av_frame_free(&pFrame);
+//            lock.unlock();
             glBindVertexArray(0);
             glfwPollEvents();
             glfwSwapBuffers(window);
+            usleep(30000);
         }
         else
         {
@@ -183,8 +185,8 @@ void viewer::devFun()
             ourShader->Use();
             glBindVertexArray(VAO);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-            glBindVertexArray(0);
+//
+//            glBindVertexArray(0);
             glfwPollEvents();
             //Swap the screen buffers
             glfwSwapBuffers(window);

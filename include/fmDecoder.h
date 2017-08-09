@@ -59,6 +59,7 @@ private:
     boost::shared_ptr<std::vector<int> > writeIndex_;
     boost::shared_ptr<std::vector<std::vector<AVFrame*> > > pFrameVecPtr_;
     boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr_;
+
 };
 
 #endif // FMDECODER_H

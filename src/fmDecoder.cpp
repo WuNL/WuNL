@@ -198,10 +198,14 @@ void fmDecoder::run()
                 }
                 else
                 {
+//                    lock.lock();
                     printf("%d %d\n",threadSeq_,(*pFrameQueueVecPtr_)[threadSeq_].size());
-                    av_frame_free(&(*pFrameQueueVecPtr_)[threadSeq_].front());
+                    AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].front();
+                    if(tmp)
+                    av_frame_free(&tmp);
                     (*pFrameQueueVecPtr_)[threadSeq_].pop();
                     (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
+//                    lock.unlock();
                 }
 
                 av_frame_free(&pFrame);

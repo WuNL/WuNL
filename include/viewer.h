@@ -6,11 +6,7 @@
 #include "GLError.h"
 #include "params.h"
 #include "Shader.h"
-#include <queue>
-#include <boost/thread/thread.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/tss.hpp>
-#include <boost/asio.hpp>
+
 #include "channel.h"
 #include <sched.h>
 #include <thread>
@@ -38,6 +34,7 @@ private:
     GLFWwindow* window;
     boost::thread m_Thread;
     boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr_;
+//    boost::mutex lock;
 
     GLuint VBO, VAO, EBO,pboIds,pboUV;
     GLuint vbo;
