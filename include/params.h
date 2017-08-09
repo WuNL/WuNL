@@ -12,8 +12,8 @@
 #define WINDOW_WIDTH 1440
 #define WINDOW_HEIGHT 900
 
-#define SWS_WIDTH  1920/3
-#define SWS_HEIGHT  1080/3
+#define SWS_WIDTH  1920
+#define SWS_HEIGHT  1080
 
 #define copyNum 4
 

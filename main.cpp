@@ -6,7 +6,7 @@
 #include <boost/smart_ptr.hpp>
 #include "fmDecoder.h"
 #include "glViewer.h"
-#include "nv12Viewer.h"
+#include "viewer.h"
 #include <queue>
 
 
@@ -54,9 +54,9 @@ int main()
         (*pos)->setChannelVecPtr(channelVecPtr);
         (*pos)->start();
     }
-    for(std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin(); pos!=fv.end(); ++pos)
+    //for(std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin(); pos!=fv.end(); ++pos)
     {
-//        std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin();
+        std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin();
         int position = (pos)-fv.begin();
         (*pos) = boost::make_shared<fmDecoder> ();
         (*pos)->setPtr(channelVecPtr,pFrameVecPtr,readIndex,writeIndex);
@@ -73,6 +73,10 @@ int main()
 //    nv12Viewer nv;
 //    nv.setQueuePtr(pFrameQueueVecPtr);
 //    nv.run();
+
+    viewer vr;
+    vr.setQueuePtr(pFrameQueueVecPtr);
+    vr.run();
 
     while(1)
     {

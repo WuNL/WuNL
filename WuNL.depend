@@ -335,7 +335,7 @@
 	"samplefmt.h"
 	"version.h"
 
-1502072319 source:/home/sdt/workspace/WuNL/main.cpp
+1502256498 source:/home/sdt/workspace/WuNL/main.cpp
 	<iostream>
 	"rtpReceiver.h"
 	"channel.h"
@@ -344,7 +344,7 @@
 	<boost/smart_ptr.hpp>
 	"fmDecoder.h"
 	"glViewer.h"
-	"nv12Viewer.h"
+	"viewer.h"
 	<queue>
 
 1498466661 /home/sdt/workspace/WuNL/include/rtpReceiver.h
@@ -360,7 +360,7 @@
 	<boost/asio.hpp>
 	"params.h"
 
-1502070179 /home/sdt/workspace/WuNL/include/params.h
+1502258696 /home/sdt/workspace/WuNL/include/params.h
 	<libavcodec/avcodec.h>
 	<libavformat/avformat.h>
 	<libswscale/swscale.h>
@@ -379,7 +379,7 @@
 	<sched.h>
 	<thread>
 
-1498466661 /home/sdt/workspace/WuNL/include/glViewer.h
+1502244637 /home/sdt/workspace/WuNL/include/glViewer.h
 	<iostream>
 	<GL/glew.h>
 	<GLFW/glfw3.h>
@@ -406,10 +406,10 @@
 1498466661 source:/home/sdt/workspace/WuNL/src/channel.cpp
 	"channel.h"
 
-1502074982 source:/home/sdt/workspace/WuNL/src/fmDecoder.cpp
+1502244637 source:/home/sdt/workspace/WuNL/src/fmDecoder.cpp
 	"fmDecoder.h"
 
-1502070179 source:/home/sdt/workspace/WuNL/src/glViewer.cpp
+1502244637 source:/home/sdt/workspace/WuNL/src/glViewer.cpp
 	"glViewer.h"
 	<stdio.h>
 
@@ -439,4 +439,27 @@
 1501136709 source:/home/sdt/workspace/WuNL/src/nv12Viewer.cpp
 	"nv12Viewer.h"
 	<stdio.h>
+
+1502258621 /home/sdt/workspace/WuNL/include/viewer.h
+	<iostream>
+	<GL/glew.h>
+	<GLFW/glfw3.h>
+	"GLError.h"
+	"params.h"
+	"Shader.h"
+	<queue>
+	<boost/thread/thread.hpp>
+	<boost/thread/mutex.hpp>
+	<boost/thread/tss.hpp>
+	<boost/asio.hpp>
+	"channel.h"
+	<sched.h>
+	<thread>
+	<sys/time.h>
+	<time.h>
+
+1502090373 /home/sdt/workspace/WuNL/include/GLError.h
+
+1502258603 source:/home/sdt/workspace/WuNL/src/viewer.cpp
+	"viewer.h"
 

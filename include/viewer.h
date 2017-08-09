@@ -1,0 +1,48 @@
+#ifndef VIEWER_H
+#define VIEWER_H
+#include <iostream>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include "GLError.h"
+#include "params.h"
+#include "Shader.h"
+#include <queue>
+#include <boost/thread/thread.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/tss.hpp>
+#include <boost/asio.hpp>
+#include "channel.h"
+#include <sched.h>
+#include <thread>
+#include <sys/time.h>
+#include <time.h>
+
+class viewer
+{
+public:
+    viewer();
+    virtual ~viewer();
+    void updateImage(GLubyte* dst,int x,int y, int w,int h,void* data);
+    int init();
+    void run();
+    void displayFun();
+    void display();
+    void devFun();
+    void setQueuePtr(boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr)
+    {
+        pFrameQueueVecPtr_=pFrameQueueVecPtr;
+    }
+protected:
+
+private:
+    GLFWwindow* window;
+    boost::thread m_Thread;
+    boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr_;
+
+    GLuint VBO, VAO, EBO,pboIds;
+    GLuint vbo;
+    GLuint texture;
+    Shader* ourShader;
+};
+
+#endif // VIEWER_H
