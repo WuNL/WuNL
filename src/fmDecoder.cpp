@@ -202,7 +202,7 @@ void fmDecoder::run()
                     printf("%d %d\n",threadSeq_,(*pFrameQueueVecPtr_)[threadSeq_].size());
                     AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].front();
                     if(tmp)
-                    av_frame_free(&tmp);
+                        av_frame_free(&tmp);
                     (*pFrameQueueVecPtr_)[threadSeq_].pop();
                     (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
 //                    lock.unlock();
@@ -256,9 +256,10 @@ int fmDecoder::Init()
     }
     //pCodec->capabilities &= AV_CODEC_CAP_FRAME_THREADS;
     pCodecCtx = avcodec_alloc_context3(pCodec);
-    if (pCodecCtx->codec_id == AV_CODEC_ID_H264){
-         av_opt_set(pCodecCtx->priv_data, "gpu", "0", 0);
-     }
+    if (pCodecCtx->codec_id == AV_CODEC_ID_H264)
+    {
+        av_opt_set(pCodecCtx->priv_data, "gpu", "0", 0);
+    }
     //pCodecCtx->extradata = new uint8_t[32];//给extradata成员参数分配内存
     //pCodecCtx->extradata_size = 32;//extradata成员参数分配内存大小
 

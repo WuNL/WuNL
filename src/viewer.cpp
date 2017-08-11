@@ -49,7 +49,7 @@ void viewer::display()
 void viewer::devFun()
 {
     glfwMakeContextCurrent(window);
-     // start GLEW extension handler
+    // start GLEW extension handler
     glewExperimental = GL_TRUE;
     glewInit();
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -79,47 +79,51 @@ void viewer::devFun()
 
     AVFrame	*pFrame ;
     int DATA_SIZE = SWS_WIDTH*SWS_HEIGHT;
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds);
-        glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV);
-        glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-        // Position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
-        glEnableVertexAttribArray(0);
-        // TexCoord attribute
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(1);
-        glBindVertexArray(0); // Unbind VAO
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds);
+    glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV);
+    glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    // Position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+    // TexCoord attribute
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+    glBindVertexArray(0); // Unbind VAO
 
-        // Load and create a texture
-        glBindTexture(GL_TEXTURE_2D, texture); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
-        // Set the texture wrapping parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        // Set texture filtering parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SWS_WIDTH,SWS_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
-        glBindTexture(GL_TEXTURE_2D, 0);
+    // Load and create a texture
+    glBindTexture(GL_TEXTURE_2D, texture); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
+    // Set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // Set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SWS_WIDTH,SWS_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
-         // Load and create a texture
-        glBindTexture(GL_TEXTURE_2D, textureUV); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
-        // Set the texture wrapping parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        // Set texture filtering parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, SWS_WIDTH/2,SWS_HEIGHT/2, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
+    // Load and create a texture
+    glBindTexture(GL_TEXTURE_2D, textureUV); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
+    // Set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // Set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, SWS_WIDTH/2,SWS_HEIGHT/2, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
 
-        glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds);
+            glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
+            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV);
+            glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -128,14 +132,17 @@ void viewer::devFun()
         if(!(*pFrameQueueVecPtr_)[0].empty())
         {
             pFrame=(*pFrameQueueVecPtr_)[0].front();
+            if(!pFrame)
+                continue;
             (*pFrameQueueVecPtr_)[0].pop();
-            ourShader->Use();
+            //ourShader->Use();
 
             glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds);
-            glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
             GLubyte* ptr = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
             if(ptr)
             {
+                if(!pFrame->data[0])
+                    continue;
                 memcpy(ptr,pFrame->data[0],SWS_WIDTH*SWS_HEIGHT);
                 //updateImage(ptr,0,SWS_HEIGHT,SWS_WIDTH,SWS_HEIGHT/2,pFrame->data[1]);
                 //updateImage(ptr,SWS_WIDTH/2,SWS_HEIGHT,SWS_WIDTH/2,SWS_HEIGHT/2,pFrame->data[2]);
@@ -151,10 +158,11 @@ void viewer::devFun()
 
 
             glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV);
-            glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
             GLubyte* ptrUV = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
             if(ptrUV)
             {
+                if(!pFrame->data[1])
+                    continue;
                 memcpy(ptrUV,pFrame->data[1],SWS_WIDTH*SWS_HEIGHT/2);
                 //updateImage(ptr,0,SWS_HEIGHT,SWS_WIDTH,SWS_HEIGHT/2,pFrame->data[1]);
                 //updateImage(ptr,SWS_WIDTH/2,SWS_HEIGHT,SWS_WIDTH/2,SWS_HEIGHT/2,pFrame->data[2]);
@@ -171,12 +179,12 @@ void viewer::devFun()
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 //            lock.lock();
             if(pFrame)
-            av_frame_free(&pFrame);
+                av_frame_free(&pFrame);
 //            lock.unlock();
             glBindVertexArray(0);
             glfwPollEvents();
             glfwSwapBuffers(window);
-            usleep(30000);
+            //usleep(30000);
         }
         else
         {

@@ -2,34 +2,54 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
+	<File name="src/Shader.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="21" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include/params.h" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="779" topLine="10" />
+		</Cursor>
+	</File>
 	<File name="src/rtpReceiver.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="112" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="main.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2353" topLine="54" />
-		</Cursor>
-	</File>
-	<File name="src/fmDecoder.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="2" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2751" topLine="80" />
-		</Cursor>
-	</File>
 	<File name="include/glViewer.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="919" topLine="5" />
+			<Cursor1 position="921" topLine="14" />
 		</Cursor>
 	</File>
-	<File name="include/Shader.h" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="include/fmDecoder.h" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1418" topLine="30" />
+		</Cursor>
+	</File>
+	<File name="src/viewer.cpp" open="1" top="1" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5956" topLine="136" />
+		</Cursor>
+	</File>
+	<File name="src/fmDecoder.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="7061" topLine="179" />
+		</Cursor>
+	</File>
+	<File name="include/rtpReceiver.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="897" topLine="15" />
+		</Cursor>
+	</File>
+	<File name="src/glViewer.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="19569" topLine="330" />
+		</Cursor>
+	</File>
+	<File name="include/Shader.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="2270" topLine="46" />
-		</Cursor>
-	</File>
-	<File name="src/Shader.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="21" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="include/channel.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -37,9 +57,9 @@
 			<Cursor1 position="0" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="src/viewer.cpp" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="include/viewer.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1136" topLine="27" />
+			<Cursor1 position="160" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="src/channel.cpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -47,24 +67,9 @@
 			<Cursor1 position="57" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="include/params.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="main.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="325" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include/fmDecoder.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1463" topLine="29" />
-		</Cursor>
-	</File>
-	<File name="src/glViewer.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="8447" topLine="86" />
-		</Cursor>
-	</File>
-	<File name="include/rtpReceiver.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="897" topLine="15" />
+			<Cursor1 position="591" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
