@@ -120,10 +120,18 @@ void viewer::devFun()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, SWS_WIDTH/2,SWS_HEIGHT/2, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
 
     glBindTexture(GL_TEXTURE_2D, 0);
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds);
-            glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV);
-            glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds);
+    glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV);
+    glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
+
+    static int framecount = 0;
+    struct timeval t_start,t_end;
+    long cost_time=0;
+    gettimeofday(&t_start,NULL);
+    long start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
+    printf("start time:%ld ms\n",start);
+
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -184,7 +192,19 @@ void viewer::devFun()
             glBindVertexArray(0);
             glfwPollEvents();
             glfwSwapBuffers(window);
-            //usleep(30000);
+
+            framecount++;
+            gettimeofday(&t_end,NULL);
+            long end = ((long)t_end.tv_sec)*1000+(long)t_end.tv_usec/1000;
+            cost_time = end - start;
+
+            if(cost_time/1000.0 > 1)
+            {
+                printf("fps:    %f\n",(float)framecount*1000/cost_time);
+                gettimeofday(&t_start,NULL);
+                start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
+                framecount = 0;
+            }
         }
         else
         {
