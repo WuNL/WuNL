@@ -36,8 +36,9 @@ private:
     boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr_;
 //    boost::mutex lock;
 
-    GLuint VBO, VAO, EBO,pboIds,pboUV;
+    GLuint VBO[16], VAO[16], EBO,pboIds[16],pboUV[16];
     GLuint vbo;
+    GLfloat* verticesVec[16];
     GLuint texture,textureUV;
     Shader* ourShader;
 };

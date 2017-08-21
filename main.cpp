@@ -54,9 +54,9 @@ int main()
         (*pos)->setChannelVecPtr(channelVecPtr);
         (*pos)->start();
     }
-    //for(std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin(); pos!=fv.end(); ++pos)
+    for(std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin(); pos!=fv.end(); ++pos)
     {
-        std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin();
+        //std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin();
         int position = (pos)-fv.begin();
         (*pos) = boost::make_shared<fmDecoder> ();
         (*pos)->setPtr(channelVecPtr,pFrameVecPtr,readIndex,writeIndex);

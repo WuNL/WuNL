@@ -9,11 +9,11 @@
 #define VIDEO_WIDE 1920
 #define VIDEO_HEIGHT 1080
 
-#define WINDOW_WIDTH 1440
-#define WINDOW_HEIGHT 900
+#define WINDOW_WIDTH 1920
+#define WINDOW_HEIGHT 1080
 
-#define SWS_WIDTH  1920
-#define SWS_HEIGHT  1080
+#define SWS_WIDTH  1920/3
+#define SWS_HEIGHT  1080/3
 
 #define copyNum 4
 

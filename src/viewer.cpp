@@ -49,6 +49,8 @@ void viewer::display()
 void viewer::devFun()
 {
     glfwMakeContextCurrent(window);
+    // set vsync. 0:off max 1000+fps 1: on max 60fps
+    glfwSwapInterval(1);
     // start GLEW extension handler
     glewExperimental = GL_TRUE;
     glewInit();
@@ -57,73 +59,160 @@ void viewer::devFun()
     // Set up vertex data (and buffer(s)) and attribute pointers
     GLfloat vertices[] =
     {
-        // Positions                           // Texture Coords
-        1.0f/3.0f,  1.0f/3.0f,  0.0f,        1.0f, 1.0f,            // Top Right
-        1.0f/3.0f,  -1.0f/3.0f, 0.0f,        1.0f, 0.0f, // Bottom Right
-        -1.0f/3.0f, -1.0f/3.0f, 0.0f,        0.0f, 0.0f, // Bottom Left
-        -1.0f/3.0f,  1.0f/3.0f, 0.0f,        0.0f, 1.0f  // Top Left
+        // Positions                       // Texture Coords
+        -1.0f/3.0f,  1.0f,      0.0f,      1.0f, 1.0f,            // Top Right
+        -1.0f/3.0f,  1.0f/3.0f, 0.0f,      1.0f, 0.0f, // Bottom Right
+        -1.0f,       1.0f/3.0f, 0.0f,      0.0f, 0.0f, // Bottom Left
+        -1.0f,       1.0f,      0.0f,      0.0f, 1.0f  // Top Left
     };
+    GLfloat vertices1[] =
+    {
+        // Positions                       / Texture Coords
+        1.0f/3.0f,  1.0f,       0.0f,      1.0f, 1.0f,            // Top Right
+        1.0f/3.0f,  1.0f/3.0f,  0.0f,      1.0f, 0.0f, // Bottom Right
+        -1.0f/3.0f,  1.0f/3.0f, 0.0f,      0.0f, 0.0f, // Bottom Left
+        -1.0f/3.0f,  1.0f,      0.0f,      0.0f, 1.0f  // Top Left
+    };
+    GLfloat vertices2[] =
+    {
+        // Positions                       // Texture Coords
+        1.0f,       1.0f,       0.0f,      1.0f, 1.0f,            // Top Right
+        1.0f,       1.0f/3.0f,  0.0f,      1.0f, 0.0f, // Bottom Right
+        1.0f/3.0f,  1.0f/3.0f,  0.0f,      0.0f, 0.0f, // Bottom Left
+        1.0f/3.0f,  1.0f,       0.0f,      0.0f, 1.0f  // Top Left
+    };
+    GLfloat vertices3[] =
+    {
+        // Positions                        // Texture Coords
+        -1.0f/3.0f,  1.0f/3.0f,  0.0f,      1.0f, 1.0f,            // Top Right
+        -1.0f/3.0f,  -1.0f/3.0f, 0.0f,      1.0f, 0.0f, // Bottom Right
+        -1.0f,       -1.0f/3.0f, 0.0f,      0.0f, 0.0f, // Bottom Left
+        -1.0f,       1.0f/3.0f,  0.0f,      0.0f, 1.0f  // Top Left
+    };
+    GLfloat vertices4[] =
+    {
+        // Positions                        // Texture Coords
+        1.0f/3.0f,  1.0f/3.0f,   0.0f,      1.0f, 1.0f,            // Top Right
+        1.0f/3.0f,  -1.0f/3.0f,  0.0f,      1.0f, 0.0f, // Bottom Right
+        -1.0f/3.0f,  -1.0f/3.0f, 0.0f,      0.0f, 0.0f, // Bottom Left
+        -1.0f/3.0f,  1.0f/3.0f,  0.0f,      0.0f, 1.0f  // Top Left
+    };
+    GLfloat vertices5[] =
+    {
+        // Positions                        // Texture Coords
+        1.0f,       1.0f/3.0f,   0.0f,      1.0f, 1.0f,            // Top Right
+        1.0f,       -1.0f/3.0f,  0.0f,      1.0f, 0.0f, // Bottom Right
+        1.0f/3.0f,  -1.0f/3.0f,  0.0f,      0.0f, 0.0f, // Bottom Left
+        1.0f/3.0f,  1.0f/3.0f,   0.0f,      0.0f, 1.0f  // Top Left
+    };
+    GLfloat vertices6[] =
+    {
+        // Positions                        // Texture Coords
+        -1.0f/3.0f,  -1.0f/3.0f, 0.0f,      1.0f, 1.0f,            // Top Right
+        -1.0f/3.0f,  -1.0f,      0.0f,      1.0f, 0.0f, // Bottom Right
+        -1.0f,       -1.0f,      0.0f,      0.0f, 0.0f, // Bottom Left
+        -1.0f,       -1.0f/3.0f, 0.0f,      0.0f, 1.0f  // Top Left
+    };
+    GLfloat vertices7[] =
+    {
+        // Positions                        // Texture Coords
+        1.0f/3.0f,  -1.0f/3.0f,  0.0f,      1.0f, 1.0f,            // Top Right
+        1.0f/3.0f,  -1.0f,       0.0f,      1.0f, 0.0f, // Bottom Right
+        -1.0f/3.0f,  -1.0f,      0.0f,      0.0f, 0.0f, // Bottom Left
+        -1.0f/3.0f,  -1.0f/3.0f, 0.0f,      0.0f, 1.0f  // Top Left
+    };
+    GLfloat vertices8[] =
+    {
+        // Positions                       // Texture Coords
+        1.0f,       -1.0f/3.0f,  0.0f,      1.0f, 1.0f,            // Top Right
+        1.0f,       -1.0f,       0.0f,      1.0f, 0.0f, // Bottom Right
+        1.0f/3.0f,  -1.0f,       0.0f,      0.0f, 0.0f, // Bottom Left
+        1.0f/3.0f,  -1.0f/3.0f,  0.0f,      0.0f, 1.0f  // Top Left
+    };
+    verticesVec[0]=vertices;
+    verticesVec[1]=vertices1;
+    verticesVec[2]=vertices2;
+    verticesVec[3]=vertices3;
+    verticesVec[4]=vertices4;
+    verticesVec[5]=vertices5;
+    verticesVec[6]=vertices6;
+    verticesVec[7]=vertices7;
+    verticesVec[8]=vertices8;
     GLuint indices[] =    // Note that we start from 0!
     {
         0, 1, 3, // First Triangle
         1, 2, 3  // Second Triangle
     };
-    glGenBuffers(1, &pboIds);
-    glGenBuffers(1, &pboUV);
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    glGenBuffers(16, pboIds);
+    glGenBuffers(16, pboUV);
+    glGenVertexArrays(16, VAO);
+    glGenBuffers(16, VBO);
     glGenBuffers(1, &EBO);
     glGenTextures(1, &texture);
+    glGenTextures(1, &textureUV);
 
     ourShader = new Shader("nv12.vs", "nv12.frag");
-
+    ourShader->Use();
     AVFrame	*pFrame ;
     int DATA_SIZE = SWS_WIDTH*SWS_HEIGHT;
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds);
-    glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV);
-    glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    // Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(0);
-    // TexCoord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-    glBindVertexArray(0); // Unbind VAO
 
     // Load and create a texture
-    glBindTexture(GL_TEXTURE_2D, texture); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
+    glBindTexture(GL_TEXTURE_2D_ARRAY, texture); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
     // Set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
     // Set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SWS_WIDTH,SWS_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    //glTexStorage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, SWS_WIDTH, SWS_HEIGHT, 9);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, SWS_WIDTH, SWS_HEIGHT, 9, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
+//    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, SWS_WIDTH, SWS_HEIGHT, 9, )
+    //glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 
     // Load and create a texture
-    glBindTexture(GL_TEXTURE_2D, textureUV); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
+    glBindTexture(GL_TEXTURE_2D_ARRAY, textureUV); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
     // Set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (usually basic wrapping method)
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
     // Set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, SWS_WIDTH/2,SWS_HEIGHT/2, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //glTexStorage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, SWS_WIDTH/2,SWS_HEIGHT/2, 9);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, SWS_WIDTH/2,SWS_HEIGHT/2, 9, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
 
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds);
-    glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV);
-    glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
+    //glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+    for(int i=0;i<9;++i)
+    {
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
+        glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV[i]);
+        glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+        glBindVertexArray(VAO[i]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), verticesVec[i], GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+        // Position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+        glEnableVertexAttribArray(0);
+        // TexCoord attribute
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+        glBindVertexArray(0); // Unbind VAO
+
+
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
+        glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV[i]);
+        glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
+    }
+
+
+
+
 
     static int framecount = 0;
     struct timeval t_start,t_end;
@@ -137,58 +226,85 @@ void viewer::devFun()
         glfwPollEvents();
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        if(!(*pFrameQueueVecPtr_)[0].empty())
+
+
+        //if(!(*pFrameQueueVecPtr_)[0].empty() || !(*pFrameQueueVecPtr_)[1].empty())
         {
-            pFrame=(*pFrameQueueVecPtr_)[0].front();
-            if(!pFrame)
-                continue;
-            (*pFrameQueueVecPtr_)[0].pop();
-            //ourShader->Use();
-
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds);
-            GLubyte* ptr = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
-            if(ptr)
+            //int i = 1;
+            for(int i = 0; i<9; ++i)
             {
-                if(!pFrame->data[0])
+                if((*pFrameQueueVecPtr_)[i].empty())
+                {
+                    glBindVertexArray(VAO[i]);
+
+                    glActiveTexture(GL_TEXTURE0);
+                    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
+
+                    glUniform1i(glGetUniformLocation(ourShader->Program, "layer"), 2);
+                    glProgramUniform1i(ourShader->Program, glGetUniformLocation(ourShader->Program, "layer"), i);
+
+
+                    glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
+                    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, SWS_WIDTH,SWS_HEIGHT, 1, GL_RED, GL_UNSIGNED_BYTE, 0);
+                    glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureY"), 0);
+                    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+
+
+                    glActiveTexture(GL_TEXTURE1);
+                    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV[i]);
+                    glBindTexture(GL_TEXTURE_2D_ARRAY, textureUV);
+                    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, SWS_WIDTH/2,SWS_HEIGHT/2, 1, GL_RG, GL_UNSIGNED_BYTE, 0);
+                    glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureUV"), 1);
+                    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+
+                    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                    glBindVertexArray(0);
                     continue;
-                memcpy(ptr,pFrame->data[0],SWS_WIDTH*SWS_HEIGHT);
-                //updateImage(ptr,0,SWS_HEIGHT,SWS_WIDTH,SWS_HEIGHT/2,pFrame->data[1]);
-                //updateImage(ptr,SWS_WIDTH/2,SWS_HEIGHT,SWS_WIDTH/2,SWS_HEIGHT/2,pFrame->data[2]);
-                glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
-            }
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture);
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, SWS_WIDTH,SWS_HEIGHT, GL_RED, GL_UNSIGNED_BYTE, 0);
-            glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureY"), 0);
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+                }
+                pFrame=(*pFrameQueueVecPtr_)[i].front();
+                (*pFrameQueueVecPtr_)[i].pop();
+
+                glBindVertexArray(VAO[i]);
+
+                glActiveTexture(GL_TEXTURE0);
+                glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
+                GLubyte* ptr = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+                if(ptr)
+                {
+                    memcpy(ptr,pFrame->data[0],SWS_WIDTH*SWS_HEIGHT);
+                    glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
+                }
+                glUniform1i(glGetUniformLocation(ourShader->Program, "layer"), 2);
+                glProgramUniform1i(ourShader->Program, glGetUniformLocation(ourShader->Program, "layer"), i);
 
 
+                glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
+                glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, SWS_WIDTH,SWS_HEIGHT, 1, GL_RED, GL_UNSIGNED_BYTE, 0);
+                glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureY"), 0);
+                glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
 
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV);
-            GLubyte* ptrUV = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
-            if(ptrUV)
-            {
-                if(!pFrame->data[1])
-                    continue;
-                memcpy(ptrUV,pFrame->data[1],SWS_WIDTH*SWS_HEIGHT/2);
-                //updateImage(ptr,0,SWS_HEIGHT,SWS_WIDTH,SWS_HEIGHT/2,pFrame->data[1]);
-                //updateImage(ptr,SWS_WIDTH/2,SWS_HEIGHT,SWS_WIDTH/2,SWS_HEIGHT/2,pFrame->data[2]);
-                glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
-            }
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, textureUV);
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, SWS_WIDTH/2,SWS_HEIGHT/2, GL_RG, GL_UNSIGNED_BYTE, 0);
-            glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureUV"), 1);
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+                glActiveTexture(GL_TEXTURE1);
+                glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV[i]);
+                GLubyte* ptrUV = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+                if(ptrUV)
+                {
+                    memcpy(ptrUV,pFrame->data[1],SWS_WIDTH*SWS_HEIGHT/2);
+                    glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
+                }
 
+                glBindTexture(GL_TEXTURE_2D_ARRAY, textureUV);
+                glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, SWS_WIDTH/2,SWS_HEIGHT/2, 1, GL_RG, GL_UNSIGNED_BYTE, 0);
+                glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureUV"), 1);
+                glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
-            glBindVertexArray(VAO);
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-//            lock.lock();
-            if(pFrame)
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+
                 av_frame_free(&pFrame);
-//            lock.unlock();
+            }
+
+
             glBindVertexArray(0);
             glfwPollEvents();
             glfwSwapBuffers(window);
@@ -205,19 +321,6 @@ void viewer::devFun()
                 start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
                 framecount = 0;
             }
-        }
-        else
-        {
-            // Bind Texture
-            //glBindTexture(GL_TEXTURE_2D, texture);
-            ourShader->Use();
-            glBindVertexArray(VAO);
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-//
-//            glBindVertexArray(0);
-            glfwPollEvents();
-            //Swap the screen buffers
-            glfwSwapBuffers(window);
         }
     }
 }
