@@ -78,13 +78,13 @@ int main()
     vr.setQueuePtr(pFrameQueueVecPtr);
     vr.run();
 
-    while(1)
-    {
+
         int style = 0;
         std::cin>>style;
+        vr.setStyle(style);
         //gv.setStyle(style);
         //nv.setStyle(style);
-    }
+
     return 0;
 }
 

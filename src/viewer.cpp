@@ -2,7 +2,7 @@
 
 void viewer::updateImage(GLubyte* dst,int x,int y, int w,int h,void* data)
 {
-    int pitch = SWS_WIDTH;
+    int pitch = frameWidth;
     GLubyte* dst1 = dst+y*pitch+x;
     GLubyte* src = (GLubyte*)data;
     for(int i=0; i<h; ++i)
@@ -16,6 +16,15 @@ void viewer::updateImage(GLubyte* dst,int x,int y, int w,int h,void* data)
 viewer::viewer()
 {
     //ctor
+    frameWidth=1920;
+    frameHeight=1080;
+    splitNum_ = WINDOW_STYLE;
+    splitNum_old = splitNum_;
+    for(int i=0;i<16;++i)
+    {
+        verticesVec[i] = new GLfloat[20];
+    }
+
 }
 
 viewer::~viewer()
@@ -46,6 +55,122 @@ void viewer::display()
     printf("display ! \n");
 }
 
+void viewer::setStyleInter()
+{
+    setVertices(splitNum_, 0);
+
+    int DATA_SIZE = frameWidth*frameHeight;
+    GLuint indices[] =    // Note that we start from 0!
+    {
+        0, 1, 3, // First Triangle
+        1, 2, 3  // Second Triangle
+    };
+    GLfloat vertices[] =
+    {
+        // Positions                       // Texture Coords
+        -1.0f/3.0f,  1.0f,      0.0f,      1.0f, 1.0f,            // Top Right
+        -1.0f/3.0f,  1.0f/3.0f, 0.0f,      1.0f, 0.0f, // Bottom Right
+        -1.0f,       1.0f/3.0f, 0.0f,      0.0f, 0.0f, // Bottom Left
+        -1.0f,       1.0f,      0.0f,      0.0f, 1.0f  // Top Left
+    };
+    for(int i=0;i<splitNum_;++i)
+    {
+        glBindVertexArray(VAO[i]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), verticesVec[i], GL_STATIC_DRAW);
+        // Position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+        glEnableVertexAttribArray(0);
+        // TexCoord attribute
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+        glBindVertexArray(0); // Unbind VAO
+    }
+}
+
+void viewer::setStyle(int splitNum)
+{
+    printf("splitNum=%d\n",splitNum);
+    splitNum_ = splitNum;
+
+}
+
+void viewer::setVertices(int splitNum, int style)
+{
+    GLfloat cor4X4[4][4][2] = {
+        { {-1.0f,1.0f},{-1.0f/3.0f,1.0f},{1.0f/3.0f,1.0f},{1.0f,1.0f} },
+        { {-1.0f,1.0f/3.0f},{-1.0f/3.0f,1.0f/3.0f},{1.0f/3.0f,1.0f/3.0f},{1.0f,1.0f/3.0f} },
+        { {-1.0f,-1.0f/3.0f},{-1.0f/3.0f,-1.0f/3.0f},{1.0f/3.0f,-1.0f/3.0f},{1.0f,-1.0f/3.0f} },
+        { {-1.0f,-1.0f},{-1.0f/3.0f,-1.0f},{1.0f/3.0f,-1.0f},{1.0f,-1.0f} },
+    };
+
+    GLfloat corFXF[5][5][2]={
+        { {-1.0f,1.0f},{-0.5f,1.0f},{0.0f,1.0f},{0.5f,1.0f},{1.0f,1.0f} },
+        { {-1.0f,0.5f},{-0.5f,0.5f},{0.0f,0.5f},{0.5f,0.5f},{1.0f,0.5f} },
+        { {-1.0f,0.0f},{-0.5f,0.0f},{0.0f,0.0f},{0.5f,0.0f},{1.0f,0.0f} },
+        { {-1.0f,-0.5f},{-0.5f,-0.5f},{0.0f,-0.5f},{0.5f,-0.5f},{1.0f,-0.5f} },
+        { {-1.0f,-1.0f},{-0.5f,-1.0f},{0.0f,-1.0f},{0.5f,-1.0f},{1.0f,-1.0f} }
+    };
+
+    switch(splitNum)
+    {
+    case 1:
+        {
+
+            break;
+        }
+    case 4:
+        {
+            break;
+        }
+    case 9:
+        {
+            for(int i=0;i<9;++i)
+            {
+
+                int y = i%3;
+                int x = i/3;
+                std::cout<<x<<"\t"<<y<<std::endl;
+                GLfloat tmpVec[20]=
+                {
+                    cor4X4[x][y+1][0],    cor4X4[x][y+1][1],     0.0f, 1.0f, 1.0f,            // Top Right
+                    cor4X4[x+1][y+1][0],  cor4X4[x+1][y+1][1],   0.0f, 1.0f, 0.0f,            // Bottom Right
+                    cor4X4[x+1][y][0],    cor4X4[x+1][y][1],     0.0f, 0.0f, 0.0f,            // Bottom Left
+                    cor4X4[x][y][0],      cor4X4[x][y][1],       0.0f, 0.0f, 1.0f            // Top Left
+                };
+                memcpy(verticesVec[i],tmpVec,20*sizeof(GLfloat));
+            }
+            memset(verticesVec[0],0x00,20*sizeof(GLfloat));
+            break;
+        }
+    case 16:
+        {
+            for(int i=0;i<16;++i)
+            {
+
+                int y = i%4;
+                int x = i/4;
+                std::cout<<x<<"\t"<<y<<std::endl;
+                GLfloat tmpVec[20]=
+                {
+                    corFXF[x][y+1][0],    corFXF[x][y+1][1],     0.0f, 1.0f, 1.0f,            // Top Right
+                    corFXF[x+1][y+1][0],  corFXF[x+1][y+1][1],   0.0f, 1.0f, 0.0f,            // Bottom Right
+                    corFXF[x+1][y][0],    corFXF[x+1][y][1],     0.0f, 0.0f, 0.0f,            // Bottom Left
+                    corFXF[x][y][0],      corFXF[x][y][1],       0.0f, 0.0f, 1.0f            // Top Left
+                };
+                memcpy(verticesVec[i],tmpVec,20*sizeof(GLfloat));
+            }
+            memset(verticesVec[0],0x00,20*sizeof(GLfloat));
+            break;
+        }
+    default:
+        {
+
+        }
+    }
+    splitNum_ = splitNum;
+}
+
 void viewer::devFun()
 {
     glfwMakeContextCurrent(window);
@@ -56,88 +181,16 @@ void viewer::devFun()
     glewInit();
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    // Set up vertex data (and buffer(s)) and attribute pointers
-    GLfloat vertices[] =
-    {
-        // Positions                       // Texture Coords
-        -1.0f/3.0f,  1.0f,      0.0f,      1.0f, 1.0f,            // Top Right
-        -1.0f/3.0f,  1.0f/3.0f, 0.0f,      1.0f, 0.0f, // Bottom Right
-        -1.0f,       1.0f/3.0f, 0.0f,      0.0f, 0.0f, // Bottom Left
-        -1.0f,       1.0f,      0.0f,      0.0f, 1.0f  // Top Left
-    };
-    GLfloat vertices1[] =
-    {
-        // Positions                       / Texture Coords
-        1.0f/3.0f,  1.0f,       0.0f,      1.0f, 1.0f,            // Top Right
-        1.0f/3.0f,  1.0f/3.0f,  0.0f,      1.0f, 0.0f, // Bottom Right
-        -1.0f/3.0f,  1.0f/3.0f, 0.0f,      0.0f, 0.0f, // Bottom Left
-        -1.0f/3.0f,  1.0f,      0.0f,      0.0f, 1.0f  // Top Left
-    };
-    GLfloat vertices2[] =
-    {
-        // Positions                       // Texture Coords
-        1.0f,       1.0f,       0.0f,      1.0f, 1.0f,            // Top Right
-        1.0f,       1.0f/3.0f,  0.0f,      1.0f, 0.0f, // Bottom Right
-        1.0f/3.0f,  1.0f/3.0f,  0.0f,      0.0f, 0.0f, // Bottom Left
-        1.0f/3.0f,  1.0f,       0.0f,      0.0f, 1.0f  // Top Left
-    };
-    GLfloat vertices3[] =
-    {
-        // Positions                        // Texture Coords
-        -1.0f/3.0f,  1.0f/3.0f,  0.0f,      1.0f, 1.0f,            // Top Right
-        -1.0f/3.0f,  -1.0f/3.0f, 0.0f,      1.0f, 0.0f, // Bottom Right
-        -1.0f,       -1.0f/3.0f, 0.0f,      0.0f, 0.0f, // Bottom Left
-        -1.0f,       1.0f/3.0f,  0.0f,      0.0f, 1.0f  // Top Left
-    };
-    GLfloat vertices4[] =
-    {
-        // Positions                        // Texture Coords
-        1.0f/3.0f,  1.0f/3.0f,   0.0f,      1.0f, 1.0f,            // Top Right
-        1.0f/3.0f,  -1.0f/3.0f,  0.0f,      1.0f, 0.0f, // Bottom Right
-        -1.0f/3.0f,  -1.0f/3.0f, 0.0f,      0.0f, 0.0f, // Bottom Left
-        -1.0f/3.0f,  1.0f/3.0f,  0.0f,      0.0f, 1.0f  // Top Left
-    };
-    GLfloat vertices5[] =
-    {
-        // Positions                        // Texture Coords
-        1.0f,       1.0f/3.0f,   0.0f,      1.0f, 1.0f,            // Top Right
-        1.0f,       -1.0f/3.0f,  0.0f,      1.0f, 0.0f, // Bottom Right
-        1.0f/3.0f,  -1.0f/3.0f,  0.0f,      0.0f, 0.0f, // Bottom Left
-        1.0f/3.0f,  1.0f/3.0f,   0.0f,      0.0f, 1.0f  // Top Left
-    };
-    GLfloat vertices6[] =
-    {
-        // Positions                        // Texture Coords
-        -1.0f/3.0f,  -1.0f/3.0f, 0.0f,      1.0f, 1.0f,            // Top Right
-        -1.0f/3.0f,  -1.0f,      0.0f,      1.0f, 0.0f, // Bottom Right
-        -1.0f,       -1.0f,      0.0f,      0.0f, 0.0f, // Bottom Left
-        -1.0f,       -1.0f/3.0f, 0.0f,      0.0f, 1.0f  // Top Left
-    };
-    GLfloat vertices7[] =
-    {
-        // Positions                        // Texture Coords
-        1.0f/3.0f,  -1.0f/3.0f,  0.0f,      1.0f, 1.0f,            // Top Right
-        1.0f/3.0f,  -1.0f,       0.0f,      1.0f, 0.0f, // Bottom Right
-        -1.0f/3.0f,  -1.0f,      0.0f,      0.0f, 0.0f, // Bottom Left
-        -1.0f/3.0f,  -1.0f/3.0f, 0.0f,      0.0f, 1.0f  // Top Left
-    };
-    GLfloat vertices8[] =
-    {
-        // Positions                       // Texture Coords
-        1.0f,       -1.0f/3.0f,  0.0f,      1.0f, 1.0f,            // Top Right
-        1.0f,       -1.0f,       0.0f,      1.0f, 0.0f, // Bottom Right
-        1.0f/3.0f,  -1.0f,       0.0f,      0.0f, 0.0f, // Bottom Left
-        1.0f/3.0f,  -1.0f/3.0f,  0.0f,      0.0f, 1.0f  // Top Left
-    };
-    verticesVec[0]=vertices;
-    verticesVec[1]=vertices1;
-    verticesVec[2]=vertices2;
-    verticesVec[3]=vertices3;
-    verticesVec[4]=vertices4;
-    verticesVec[5]=vertices5;
-    verticesVec[6]=vertices6;
-    verticesVec[7]=vertices7;
-    verticesVec[8]=vertices8;
+    setVertices(splitNum_,0);
+    std::cout<<verticesVec[0][0]<<std::endl;
+            GLfloat vertices[] =
+            {
+                // Positions                       // Texture Coords
+                -1.0f/3.0f,  1.0f,      0.0f,      1.0f, 1.0f,            // Top Right
+                -1.0f/3.0f,  1.0f/3.0f, 0.0f,      1.0f, 0.0f, // Bottom Right
+                -1.0f,       1.0f/3.0f, 0.0f,      0.0f, 0.0f, // Bottom Left
+                -1.0f,       1.0f,      0.0f,      0.0f, 1.0f  // Top Left
+            };
     GLuint indices[] =    // Note that we start from 0!
     {
         0, 1, 3, // First Triangle
@@ -154,7 +207,7 @@ void viewer::devFun()
     ourShader = new Shader("nv12.vs", "nv12.frag");
     ourShader->Use();
     AVFrame	*pFrame ;
-    int DATA_SIZE = SWS_WIDTH*SWS_HEIGHT;
+    int DATA_SIZE = frameWidth*frameHeight;
 
     // Load and create a texture
     glBindTexture(GL_TEXTURE_2D_ARRAY, texture); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
@@ -165,9 +218,9 @@ void viewer::devFun()
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    //glTexStorage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, SWS_WIDTH, SWS_HEIGHT, 9);
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, SWS_WIDTH, SWS_HEIGHT, 9, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
-//    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, SWS_WIDTH, SWS_HEIGHT, 9, )
+    //glTexStorage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, frameWidth, frameHeight, 9);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, frameWidth, frameHeight, 16, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
+//    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, frameWidth, frameHeight, 9, )
     //glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 
     // Load and create a texture
@@ -178,11 +231,11 @@ void viewer::devFun()
     // Set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    //glTexStorage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, SWS_WIDTH/2,SWS_HEIGHT/2, 9);
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, SWS_WIDTH/2,SWS_HEIGHT/2, 9, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
+    //glTexStorage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, frameWidth/2,frameHeight/2, 9);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, frameWidth/2,frameHeight/2, 16, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
 
     //glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-    for(int i=0;i<9;++i)
+    for(int i=0;i<splitNum_;++i)
     {
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
         glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
@@ -223,6 +276,11 @@ void viewer::devFun()
 
     while (!glfwWindowShouldClose(window))
     {
+        if(splitNum_!=splitNum_old)
+        {
+            setStyleInter();
+            splitNum_old = splitNum_;
+        }
         glfwPollEvents();
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -231,12 +289,18 @@ void viewer::devFun()
         //if(!(*pFrameQueueVecPtr_)[0].empty() || !(*pFrameQueueVecPtr_)[1].empty())
         {
             //int i = 1;
-            for(int i = 0; i<9; ++i)
+            for(int i = 0; i<splitNum_; ++i)
             {
                 if((*pFrameQueueVecPtr_)[i].empty())
                 {
                     glBindVertexArray(VAO[i]);
+                    glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
 
+                    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, frameWidth, frameHeight, splitNum_, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
+
+                    glBindTexture(GL_TEXTURE_2D_ARRAY, textureUV);
+
+                    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, frameWidth/2,frameHeight/2, splitNum_, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
                     glActiveTexture(GL_TEXTURE0);
                     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
 
@@ -245,7 +309,7 @@ void viewer::devFun()
 
 
                     glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
-                    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, SWS_WIDTH,SWS_HEIGHT, 1, GL_RED, GL_UNSIGNED_BYTE, 0);
+                    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, frameWidth,frameHeight, 1, GL_RED, GL_UNSIGNED_BYTE, 0);
                     glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureY"), 0);
                     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
@@ -253,7 +317,7 @@ void viewer::devFun()
                     glActiveTexture(GL_TEXTURE1);
                     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV[i]);
                     glBindTexture(GL_TEXTURE_2D_ARRAY, textureUV);
-                    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, SWS_WIDTH/2,SWS_HEIGHT/2, 1, GL_RG, GL_UNSIGNED_BYTE, 0);
+                    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, frameWidth/2,frameHeight/2, 1, GL_RG, GL_UNSIGNED_BYTE, 0);
                     glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureUV"), 1);
                     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
@@ -263,7 +327,20 @@ void viewer::devFun()
                 }
                 pFrame=(*pFrameQueueVecPtr_)[i].front();
                 (*pFrameQueueVecPtr_)[i].pop();
+                if(frameWidth!=pFrame->width || frameHeight!=pFrame->height)
+                {
+                    std::cout<<pFrame->width<<"\t"<<pFrame->height<<std::endl;
+                    frameWidth=pFrame->width;
+                    frameHeight=pFrame->height;
+                    glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
 
+                    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, frameWidth, frameHeight, splitNum_, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
+
+                    glBindTexture(GL_TEXTURE_2D_ARRAY, textureUV);
+
+                    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, frameWidth/2,frameHeight/2, splitNum_, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
+
+                }
                 glBindVertexArray(VAO[i]);
 
                 glActiveTexture(GL_TEXTURE0);
@@ -271,7 +348,9 @@ void viewer::devFun()
                 GLubyte* ptr = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
                 if(ptr)
                 {
-                    memcpy(ptr,pFrame->data[0],SWS_WIDTH*SWS_HEIGHT);
+
+                    memcpy(ptr,pFrame->data[0],frameWidth*frameHeight);
+
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
                 }
                 glUniform1i(glGetUniformLocation(ourShader->Program, "layer"), 2);
@@ -279,7 +358,7 @@ void viewer::devFun()
 
 
                 glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
-                glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, SWS_WIDTH,SWS_HEIGHT, 1, GL_RED, GL_UNSIGNED_BYTE, 0);
+                glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, frameWidth,frameHeight, 1, GL_RED, GL_UNSIGNED_BYTE, 0);
                 glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureY"), 0);
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
@@ -289,12 +368,12 @@ void viewer::devFun()
                 GLubyte* ptrUV = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
                 if(ptrUV)
                 {
-                    memcpy(ptrUV,pFrame->data[1],SWS_WIDTH*SWS_HEIGHT/2);
+                    memcpy(ptrUV,pFrame->data[1],frameWidth*frameHeight/2);
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
                 }
 
                 glBindTexture(GL_TEXTURE_2D_ARRAY, textureUV);
-                glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, SWS_WIDTH/2,SWS_HEIGHT/2, 1, GL_RG, GL_UNSIGNED_BYTE, 0);
+                glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, frameWidth/2,frameHeight/2, 1, GL_RG, GL_UNSIGNED_BYTE, 0);
                 glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureUV"), 1);
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 

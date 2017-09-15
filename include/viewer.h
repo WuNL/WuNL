@@ -24,6 +24,8 @@ public:
     void displayFun();
     void display();
     void devFun();
+    void setStyle(int splitNum);
+
     void setQueuePtr(boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr)
     {
         pFrameQueueVecPtr_=pFrameQueueVecPtr;
@@ -31,6 +33,8 @@ public:
 protected:
 
 private:
+    void setVertices(int splitNum, int style);
+    void setStyleInter();
     GLFWwindow* window;
     boost::thread m_Thread;
     boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr_;
@@ -39,8 +43,11 @@ private:
     GLuint VBO[16], VAO[16], EBO,pboIds[16],pboUV[16];
     GLuint vbo;
     GLfloat* verticesVec[16];
+    GLfloat vertics2D[16][20];
     GLuint texture,textureUV;
     Shader* ourShader;
+    int frameWidth,frameHeight;
+    int splitNum_,splitNum_old;
 };
 
 #endif // VIEWER_H

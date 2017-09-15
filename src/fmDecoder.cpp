@@ -23,7 +23,7 @@ fmDecoder::fmDecoder()
         printf("out_buffer == 0\n");
     }
     fp_out = fopen("out.yuv", "wb");
-    Init();
+
 }
 
 fmDecoder::~fmDecoder()
@@ -48,6 +48,7 @@ fmDecoder::~fmDecoder()
 void fmDecoder::setThreadSeq(int seq)
 {
     threadSeq_ = seq;
+    Init();
 }
 
 boost::mutex mt;
@@ -198,7 +199,7 @@ void fmDecoder::run()
                 }
                 else
                 {
-                    printf("%d %d\n",threadSeq_,(*pFrameQueueVecPtr_)[threadSeq_].size());
+                    //printf("%d %d\n",threadSeq_,(*pFrameQueueVecPtr_)[threadSeq_].size());
 //                    AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].front();
 //                    if(tmp)
 //                        av_frame_free(&tmp);
@@ -259,80 +260,18 @@ int fmDecoder::Init()
     pCodecCtx = avcodec_alloc_context3(pCodec);
     if (pCodecCtx->codec_id == AV_CODEC_ID_H264)
     {
-        av_opt_set(pCodecCtx->priv_data, "gpu", "0", 0);
+        if(threadSeq_<8)
+        {
+            printf("seq %d using gpu 0\n",threadSeq_);
+            av_opt_set(pCodecCtx->priv_data, "gpu", "0", 0);
+        }
+
+        if(threadSeq_>=8)
+        {
+            printf("seq %d using gpu 1\n",threadSeq_);
+            av_opt_set(pCodecCtx->priv_data, "gpu", "1", 1);
+        }
     }
-    //pCodecCtx->extradata = new uint8_t[32];//给extradata成员参数分配内存
-    //pCodecCtx->extradata_size = 32;//extradata成员参数分配内存大小
-
-
-
-//给extradata成员参数设置值
-//00 00 00 01
-// pCodecCtx->extradata[0] = 0x00;
-// pCodecCtx->extradata[1] = 0x00;
-// pCodecCtx->extradata[2] = 0x00;
-// pCodecCtx->extradata[3] = 0x01;
-//
-// //67 42 80 1e
-// pCodecCtx->extradata[4] = 0x67;
-// pCodecCtx->extradata[5] = 0x42;
-// pCodecCtx->extradata[6] = 0x80;
-// pCodecCtx->extradata[7] = 0x1e;
-//
-// //88 8b 40 50
-// pCodecCtx->extradata[8] = 0x88;
-// pCodecCtx->extradata[9] = 0x8b;
-// pCodecCtx->extradata[10] = 0x40;
-// pCodecCtx->extradata[11] = 0x50;
-//
-// //1e d0 80 00
-// pCodecCtx->extradata[12] = 0x1e;
-// pCodecCtx->extradata[13] = 0xd0;
-// pCodecCtx->extradata[14] = 0x80;
-// pCodecCtx->extradata[15] = 0x00;
-//
-// //03 84 00 00
-// pCodecCtx->extradata[16] = 0x03;
-// pCodecCtx->extradata[17] = 0x84;
-// pCodecCtx->extradata[18] = 0x00;
-// pCodecCtx->extradata[19] = 0x00;
-//
-// //af c8 02 00
-// pCodecCtx->extradata[20] = 0xaf;
-// pCodecCtx->extradata[21] = 0xc8;
-// pCodecCtx->extradata[22] = 0x02;
-// pCodecCtx->extradata[23] = 0x00;
-//
-// //00 00 00 01
-// pCodecCtx->extradata[24] = 0x00;
-// pCodecCtx->extradata[25] = 0x00;
-// pCodecCtx->extradata[26] = 0x00;
-// pCodecCtx->extradata[27] = 0x01;
-//
-// //68 ce 38 80
-// pCodecCtx->extradata[28] = 0x68;
-// pCodecCtx->extradata[29] = 0xce;
-// pCodecCtx->extradata[30] = 0x38;
-// pCodecCtx->extradata[31] = 0x80;
-
-
-//    optimize work
-////    pCodecCtx->skip_frame       =  AVDISCARD_NONREF;
-////    pCodecCtx->skip_idct        =  AVDISCARD_ALL;
-////    pCodecCtx->idct_algo        =  1;
-////    pCodecCtx->has_b_frames     =  0;
-////    pCodecCtx->refs             =  1;
-////
-////    if(pCodec->capabilities&CODEC_CAP_TRUNCATED)
-////
-////        pCodecCtx->flags|= CODEC_FLAG_TRUNCATED;
-////
-////    pCodec->capabilities |= CODEC_CAP_TRUNCATED;
-////
-////    pCodecCtx->flags     |= CODEC_FLAG_LOW_DELAY;
-
-//    pCodecCtx->thread_count = 2;
-//    pCodecCtx->thread_type = FF_THREAD_FRAME;
 
     if (!pCodecCtx)
     {

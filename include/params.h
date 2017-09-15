@@ -9,8 +9,8 @@
 #define VIDEO_WIDE 1920
 #define VIDEO_HEIGHT 1080
 
-#define WINDOW_WIDTH 1920
-#define WINDOW_HEIGHT 1080
+#define WINDOW_WIDTH 1440
+#define WINDOW_HEIGHT 900
 
 #define SWS_WIDTH  1920/3
 #define SWS_HEIGHT  1080/3
@@ -21,7 +21,7 @@
 //4: 4分屏
 //9: 9分屏
 
-#define WINDOW_STYLE 9
+#define WINDOW_STYLE 16
 
 #define __STDC_CONSTANT_MACROS
 extern "C" {
