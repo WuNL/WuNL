@@ -48,9 +48,11 @@ private:
     struct SwsContext *img_convert_ctx4;
     struct SwsContext *img_convert_ctx1;
 
-    struct SwsContext *convertCtx;
-    AVFrame	*pFrameYUV;
-    int screanNum;
+    struct SwsContext *convertCtx[3];
+    AVFrame	*pFrameYUV[3];
+    int screanNum,screanNum_old;
+    int sws_seq;
+    int sws_width_,sws_height_;
     unsigned char *out_buffer;
     int threadSeq_;
     boost::thread m_Thread;

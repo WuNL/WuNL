@@ -20,7 +20,7 @@ viewer::viewer()
     frameHeight=1080;
     splitNum_ = WINDOW_STYLE;
     splitNum_old = splitNum_;
-    for(int i=0;i<16;++i)
+    for(int i=0; i<16; ++i)
     {
         verticesVec[i] = new GLfloat[20];
     }
@@ -73,7 +73,7 @@ void viewer::setStyleInter()
         -1.0f,       1.0f/3.0f, 0.0f,      0.0f, 0.0f, // Bottom Left
         -1.0f,       1.0f,      0.0f,      0.0f, 1.0f  // Top Left
     };
-    for(int i=0;i<splitNum_;++i)
+    for(int i=0; i<splitNum_; ++i)
     {
         glBindVertexArray(VAO[i]);
         glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
@@ -90,85 +90,125 @@ void viewer::setStyleInter()
 
 void viewer::setStyle(int splitNum)
 {
-    printf("splitNum=%d\n",splitNum);
     splitNum_ = splitNum;
-
+    printf("splitNum=%d\n",splitNum);
 }
 
 void viewer::setVertices(int splitNum, int style)
 {
-    GLfloat cor4X4[4][4][2] = {
+    GLfloat cor3X3[3][3][2] =
+    {
+        { {-1.0f,1.0f},{0.0f,1.0f},{1.0f,1.0f} },
+        { {-1.0f,0.0f},{0.0f,0.0f},{1.0f,0.0f} },
+        { {-1.0f,-1.0f},{0.0f,-1.0f},{1.0f,-1.0f} },
+    };
+
+    GLfloat cor4X4[4][4][2] =
+    {
         { {-1.0f,1.0f},{-1.0f/3.0f,1.0f},{1.0f/3.0f,1.0f},{1.0f,1.0f} },
         { {-1.0f,1.0f/3.0f},{-1.0f/3.0f,1.0f/3.0f},{1.0f/3.0f,1.0f/3.0f},{1.0f,1.0f/3.0f} },
         { {-1.0f,-1.0f/3.0f},{-1.0f/3.0f,-1.0f/3.0f},{1.0f/3.0f,-1.0f/3.0f},{1.0f,-1.0f/3.0f} },
         { {-1.0f,-1.0f},{-1.0f/3.0f,-1.0f},{1.0f/3.0f,-1.0f},{1.0f,-1.0f} },
     };
 
-    GLfloat corFXF[5][5][2]={
+    GLfloat corFXF[5][5][2]=
+    {
         { {-1.0f,1.0f},{-0.5f,1.0f},{0.0f,1.0f},{0.5f,1.0f},{1.0f,1.0f} },
         { {-1.0f,0.5f},{-0.5f,0.5f},{0.0f,0.5f},{0.5f,0.5f},{1.0f,0.5f} },
         { {-1.0f,0.0f},{-0.5f,0.0f},{0.0f,0.0f},{0.5f,0.0f},{1.0f,0.0f} },
         { {-1.0f,-0.5f},{-0.5f,-0.5f},{0.0f,-0.5f},{0.5f,-0.5f},{1.0f,-0.5f} },
         { {-1.0f,-1.0f},{-0.5f,-1.0f},{0.0f,-1.0f},{0.5f,-1.0f},{1.0f,-1.0f} }
     };
-
-    switch(splitNum)
+    splitNum_ = splitNum;
+    switch(splitNum_)
     {
     case 1:
-        {
-
-            break;
-        }
-    case 4:
-        {
-            break;
-        }
-    case 9:
-        {
-            for(int i=0;i<9;++i)
+    {
+            GLfloat tmpVec[20]=
             {
-
-                int y = i%3;
-                int x = i/3;
-                std::cout<<x<<"\t"<<y<<std::endl;
-                GLfloat tmpVec[20]=
-                {
-                    cor4X4[x][y+1][0],    cor4X4[x][y+1][1],     0.0f, 1.0f, 1.0f,            // Top Right
-                    cor4X4[x+1][y+1][0],  cor4X4[x+1][y+1][1],   0.0f, 1.0f, 0.0f,            // Bottom Right
-                    cor4X4[x+1][y][0],    cor4X4[x+1][y][1],     0.0f, 0.0f, 0.0f,            // Bottom Left
-                    cor4X4[x][y][0],      cor4X4[x][y][1],       0.0f, 0.0f, 1.0f            // Top Left
-                };
-                memcpy(verticesVec[i],tmpVec,20*sizeof(GLfloat));
-            }
-            memset(verticesVec[0],0x00,20*sizeof(GLfloat));
-            break;
-        }
-    case 16:
-        {
-            for(int i=0;i<16;++i)
-            {
-
-                int y = i%4;
-                int x = i/4;
-                std::cout<<x<<"\t"<<y<<std::endl;
-                GLfloat tmpVec[20]=
-                {
-                    corFXF[x][y+1][0],    corFXF[x][y+1][1],     0.0f, 1.0f, 1.0f,            // Top Right
-                    corFXF[x+1][y+1][0],  corFXF[x+1][y+1][1],   0.0f, 1.0f, 0.0f,            // Bottom Right
-                    corFXF[x+1][y][0],    corFXF[x+1][y][1],     0.0f, 0.0f, 0.0f,            // Bottom Left
-                    corFXF[x][y][0],      corFXF[x][y][1],       0.0f, 0.0f, 1.0f            // Top Left
-                };
-                memcpy(verticesVec[i],tmpVec,20*sizeof(GLfloat));
-            }
-            memset(verticesVec[0],0x00,20*sizeof(GLfloat));
-            break;
-        }
-    default:
-        {
-
-        }
+                1.0f,    1.0f,     0.0f, 1.0f, 1.0f,            // Top Right
+                1.0f,    -1.0f,    0.0f, 1.0f, 0.0f,            // Bottom Right
+                -1.0f,   -1.0f,    0.0f, 0.0f, 0.0f,            // Bottom Left
+                -1.0f,   1.0f,     0.0f, 0.0f, 1.0f            // Top Left
+            };
+            memcpy(verticesVec[0],tmpVec,20*sizeof(GLfloat));
+        break;
     }
-    splitNum_ = splitNum;
+    case 4:
+    {
+        for(int i=0; i<4; ++i)
+        {
+
+            int y = i%2;
+            int x = i/2;
+            GLfloat tmpVec[20]=
+            {
+                cor3X3[x][y+1][0],    cor3X3[x][y+1][1],     0.0f, 1.0f, 1.0f,            // Top Right
+                cor3X3[x+1][y+1][0],  cor3X3[x+1][y+1][1],   0.0f, 1.0f, 0.0f,            // Bottom Right
+                cor3X3[x+1][y][0],    cor3X3[x+1][y][1],     0.0f, 0.0f, 0.0f,            // Bottom Left
+                cor3X3[x][y][0],      cor3X3[x][y][1],       0.0f, 0.0f, 1.0f            // Top Left
+            };
+            memcpy(verticesVec[i],tmpVec,20*sizeof(GLfloat));
+        }
+        break;
+    }
+    case 9:
+    {
+        for(int i=0; i<9; ++i)
+        {
+
+            int y = i%3;
+            int x = i/3;
+            GLfloat tmpVec[20]=
+            {
+                cor4X4[x][y+1][0],    cor4X4[x][y+1][1],     0.0f, 1.0f, 1.0f,            // Top Right
+                cor4X4[x+1][y+1][0],  cor4X4[x+1][y+1][1],   0.0f, 1.0f, 0.0f,            // Bottom Right
+                cor4X4[x+1][y][0],    cor4X4[x+1][y][1],     0.0f, 0.0f, 0.0f,            // Bottom Left
+                cor4X4[x][y][0],      cor4X4[x][y][1],       0.0f, 0.0f, 1.0f            // Top Left
+            };
+            memcpy(verticesVec[i],tmpVec,20*sizeof(GLfloat));
+        }
+        break;
+    }
+    case 16:
+    {
+        for(int i=0; i<16; ++i)
+        {
+
+            int y = i%4;
+            int x = i/4;
+            GLfloat tmpVec[20]=
+            {
+                corFXF[x][y+1][0],    corFXF[x][y+1][1],     0.0f, 1.0f, 1.0f,            // Top Right
+                corFXF[x+1][y+1][0],  corFXF[x+1][y+1][1],   0.0f, 1.0f, 0.0f,            // Bottom Right
+                corFXF[x+1][y][0],    corFXF[x+1][y][1],     0.0f, 0.0f, 0.0f,            // Bottom Left
+                corFXF[x][y][0],      corFXF[x][y][1],       0.0f, 0.0f, 1.0f            // Top Left
+            };
+            memcpy(verticesVec[i],tmpVec,20*sizeof(GLfloat));
+        }
+        break;
+    }
+    default:
+    {
+        for(int i=0; i<16; ++i)
+        {
+
+            int y = i%4;
+            int x = i/4;
+            GLfloat tmpVec[20]=
+            {
+                corFXF[x][y+1][0],    corFXF[x][y+1][1],     0.0f, 1.0f, 1.0f,            // Top Right
+                corFXF[x+1][y+1][0],  corFXF[x+1][y+1][1],   0.0f, 1.0f, 0.0f,            // Bottom Right
+                corFXF[x+1][y][0],    corFXF[x+1][y][1],     0.0f, 0.0f, 0.0f,            // Bottom Left
+                corFXF[x][y][0],      corFXF[x][y][1],       0.0f, 0.0f, 1.0f            // Top Left
+            };
+            memcpy(verticesVec[i],tmpVec,20*sizeof(GLfloat));
+        }
+        splitNum_ = 16;
+        break;
+    }
+    }
+
 }
 
 void viewer::devFun()
@@ -183,14 +223,14 @@ void viewer::devFun()
 
     setVertices(splitNum_,0);
     std::cout<<verticesVec[0][0]<<std::endl;
-            GLfloat vertices[] =
-            {
-                // Positions                       // Texture Coords
-                -1.0f/3.0f,  1.0f,      0.0f,      1.0f, 1.0f,            // Top Right
-                -1.0f/3.0f,  1.0f/3.0f, 0.0f,      1.0f, 0.0f, // Bottom Right
-                -1.0f,       1.0f/3.0f, 0.0f,      0.0f, 0.0f, // Bottom Left
-                -1.0f,       1.0f,      0.0f,      0.0f, 1.0f  // Top Left
-            };
+    GLfloat vertices[] =
+    {
+        // Positions                       // Texture Coords
+        -1.0f/3.0f,  1.0f,      0.0f,      1.0f, 1.0f,            // Top Right
+        -1.0f/3.0f,  1.0f/3.0f, 0.0f,      1.0f, 0.0f, // Bottom Right
+        -1.0f,       1.0f/3.0f, 0.0f,      0.0f, 0.0f, // Bottom Left
+        -1.0f,       1.0f,      0.0f,      0.0f, 1.0f  // Top Left
+    };
     GLuint indices[] =    // Note that we start from 0!
     {
         0, 1, 3, // First Triangle
@@ -235,7 +275,7 @@ void viewer::devFun()
     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, frameWidth/2,frameHeight/2, 16, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
 
     //glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-    for(int i=0;i<splitNum_;++i)
+    for(int i=0; i<16; ++i)
     {
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
         glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
@@ -395,7 +435,7 @@ void viewer::devFun()
 
             if(cost_time/1000.0 > 1)
             {
-                printf("fps:    %f\n",(float)framecount*1000/cost_time);
+                printf("fps:    %f    frameWidth:%d\n",(float)framecount*1000/cost_time,frameWidth);
                 gettimeofday(&t_start,NULL);
                 start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
                 framecount = 0;

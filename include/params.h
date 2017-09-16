@@ -12,8 +12,7 @@
 #define WINDOW_WIDTH 1440
 #define WINDOW_HEIGHT 900
 
-#define SWS_WIDTH  1920/3
-#define SWS_HEIGHT  1080/3
+
 
 #define copyNum 4
 
@@ -21,7 +20,7 @@
 //4: 4分屏
 //9: 9分屏
 
-#define WINDOW_STYLE 16
+#define WINDOW_STYLE 1
 
 #define __STDC_CONSTANT_MACROS
 extern "C" {

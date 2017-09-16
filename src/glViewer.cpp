@@ -1,4 +1,7 @@
 #include "glViewer.h"
+#define SWS_WIDTH  1920
+#define SWS_HEIGHT  1080
+
 glViewer::glViewer()
 {
     //ctor

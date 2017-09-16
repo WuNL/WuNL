@@ -62,7 +62,7 @@ int main()
         (*pos)->setPtr(channelVecPtr,pFrameVecPtr,readIndex,writeIndex);
         (*pos)->setQueuePtr(pFrameQueueVecPtr);
         (*pos)->setThreadSeq(position);
-        (*pos)->SetScreanNum(4);
+        (*pos)->SetScreanNum(WINDOW_STYLE);
         (*pos)->startDecode();
     }
 
@@ -77,13 +77,20 @@ int main()
     viewer vr;
     vr.setQueuePtr(pFrameQueueVecPtr);
     vr.run();
-
-
+    std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin();
+    while(1)
+    {
         int style = 0;
         std::cin>>style;
+        if(style==2)
+            style = 16;
         vr.setStyle(style);
+
+        (*pos)->SetScreanNum(style);
         //gv.setStyle(style);
         //nv.setStyle(style);
+    }
+
 
     return 0;
 }

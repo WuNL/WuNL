@@ -1,4 +1,5 @@
 #include "fmDecoder.h"
+#include <math.h>
 
 FILE *fp_out;
 int mycount = 0;
@@ -9,19 +10,13 @@ fmDecoder::fmDecoder()
     pCodec = NULL;
     pCodecCtx = NULL;
     pCodecParserCtx = NULL;
-    pFrameYUV = av_frame_alloc();
-    screanNum = 16;
 
-    out_buffer=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_YUV420P,  VIDEO_WIDE, VIDEO_HEIGHT,1));
+    screanNum = WINDOW_STYLE;
+    screanNum_old = WINDOW_STYLE;
+    sws_width_ = 1920/sqrt(WINDOW_STYLE);
+    sws_height_ = 1080/sqrt(WINDOW_STYLE);
+    sws_seq = sqrt(WINDOW_STYLE) - 2;
 
-//    convertCtx = sws_getContext(VIDEO_SOURCE_WIDTH, VIDEO_SOURCE_HEIGHT,
-//            AV_PIX_FMT_NV12, VIDEO_SOURCE_WIDTH/2, VIDEO_SOURCE_HEIGHT/2,
-//            AV_PIX_FMT_NV12, SWS_BILINEAR, nullptr, nullptr, nullptr);
-
-    if(out_buffer == 0)
-    {
-        printf("out_buffer == 0\n");
-    }
     fp_out = fopen("out.yuv", "wb");
 
 }
@@ -36,11 +31,9 @@ fmDecoder::~fmDecoder()
     if(NULL!=img_convert_ctx16)
         sws_freeContext(img_convert_ctx16);
     if(NULL!=pFrameYUV)
-        av_frame_free(&pFrameYUV);
+        av_frame_free(&pFrameYUV[0]);
     if(NULL!=pCodecCtx)
         avcodec_close(pCodecCtx);
-    if(NULL!=out_buffer)
-        av_free(out_buffer);
     if(NULL!=fp_out)
         fclose(fp_out);
 }
@@ -68,7 +61,7 @@ void fmDecoder::run()
 
     /* Set affinity mask */
     CPU_ZERO(&cpuset);
-    int mask = threadSeq_;
+    int mask = threadSeq_%4;
     //for (i = 0; i < 8; i++) //I have 4 cores with 2 threads per core so running it for 8 times, modify it according to your lscpu o/p
     CPU_SET(mask, &cpuset);
     cnt++;
@@ -87,14 +80,17 @@ void fmDecoder::run()
             std::cout << "This program (main thread) is on CPU " << sched_getcpu() << std::endl;
         }
     }
+    for(int i=2;i<5;++i)
+    {
+        unsigned char *out_buffer1;
+        pFrameYUV[i-2]=av_frame_alloc();
+        out_buffer1=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_NV12,  1920/i,1080/i,1));
+        av_image_fill_arrays(pFrameYUV[i-2]->data, pFrameYUV[i-2]->linesize,out_buffer1,
+                             AV_PIX_FMT_NV12,1920/i,1080/i,1);
+        convertCtx[i-2] = sws_getContext(1920, 1080, AV_PIX_FMT_NV12,
+                                    1920/i,1080/i, AV_PIX_FMT_NV12, SWS_BICUBIC, NULL, NULL, NULL);
+    }
 
-    unsigned char *out_buffer1;
-    AVFrame *pFrameYUV=av_frame_alloc();
-    out_buffer1=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_NV12,  SWS_WIDTH,SWS_HEIGHT,1));
-    av_image_fill_arrays(pFrameYUV->data, pFrameYUV->linesize,out_buffer1,
-                         AV_PIX_FMT_NV12,SWS_WIDTH, SWS_HEIGHT,1);
-    convertCtx = sws_getContext(1920, 1080, AV_PIX_FMT_NV12,
-                                SWS_WIDTH, SWS_HEIGHT, AV_PIX_FMT_NV12, SWS_BICUBIC, NULL, NULL, NULL);
 
     while(1)
     {
@@ -130,21 +126,20 @@ void fmDecoder::run()
             cur_size -= len;
             if(GetPacketSize()==0)
                 continue;
-            switch(pCodecParserCtx->pict_type)
-            {
-            case AV_PICTURE_TYPE_I:
-                printf("Type:I\t\n");
-                break;
-                //case AV_PICTURE_TYPE_P: printf("Type:P\t");break;
-                //case AV_PICTURE_TYPE_B: printf("Type:B\t");break;
-                //default: printf("Type:Other\t");break;
-            }
+//            switch(pCodecParserCtx->pict_type)
+//            {
+//            case AV_PICTURE_TYPE_I:
+//                printf("Type:I\t\n");
+//                break;
+//                case AV_PICTURE_TYPE_P: printf("Type:P\t");break;
+//                case AV_PICTURE_TYPE_B: printf("Type:B\t");break;
+//                default: printf("Type:Other\t");break;
+//            }
             AVFrame	*pFrame = av_frame_alloc();
             int got_picture = 0;
 
             int ret = -1;
             ret = avcodec_decode_video2(pCodecCtx, pFrame, &got_picture, &packet);
-            //printf("www----%d\n\n",ret);
             if(ret < 0)
             {
                 printf("DECODE ERROR---------%d\n",ret);
@@ -153,76 +148,64 @@ void fmDecoder::run()
             }
             if(!got_picture)
             {
-                //printf("got_picture == 0\n");
                 continue;
-                //return ret;
             }
             if (got_picture)
             {
-
-                //printf("SUCCESS! seq is %d\n",threadSeq_);
-                pFrameYUV->format = AV_PIX_FMT_NV12;
-                pFrameYUV->width = SWS_WIDTH;
-                pFrameYUV->height = SWS_HEIGHT;
-                int rev = sws_scale(convertCtx, (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
-                                    pFrameYUV->data, pFrameYUV->linesize);
-                AVFrame *copyFrame = av_frame_alloc();
-
-                copyFrame->format = pFrameYUV->format;
-                copyFrame->width = pFrameYUV->width;
-                copyFrame->height = pFrameYUV->height;
-                av_frame_get_buffer(copyFrame, 32);
-                av_frame_copy(copyFrame, pFrameYUV);
-                av_frame_copy_props(copyFrame, pFrameYUV);
-
-
-
-
-//                if(threadSeq_==8)
-//                {
-//                    for(int i=0; i<1080; i++)
-//                    {
-//                        fwrite(copyFrame->data[0]+copyFrame->linesize[0]*i,1,1920,fp_out);
-//                    }
-//                    for(int i=0; i<1080/2; i++)
-//                    {
-//                        fwrite(copyFrame->data[1]+copyFrame->linesize[1]*i,1,1920/2,fp_out);
-//                    }
-//                    for(int i=0; i<1080/2; i++)
-//                    {
-//                        fwrite(copyFrame->data[2]+copyFrame->linesize[2]*i,1,1920/2,fp_out);
-//                    }
-//                }
-                if((*pFrameQueueVecPtr_)[threadSeq_].size()<=30)
+                if(screanNum!=1)
                 {
-                    (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
+                    pFrameYUV[sws_seq]->format = AV_PIX_FMT_NV12;
+                    pFrameYUV[sws_seq]->width = sws_width_;
+                    pFrameYUV[sws_seq]->height = sws_height_;
+                    int rev = sws_scale(convertCtx[sws_seq], (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
+                                        pFrameYUV[sws_seq]->data, pFrameYUV[sws_seq]->linesize);
+                    AVFrame *copyFrame = av_frame_alloc();
+
+                    copyFrame->format = pFrameYUV[sws_seq]->format;
+                    copyFrame->width = pFrameYUV[sws_seq]->width;
+                    copyFrame->height = pFrameYUV[sws_seq]->height;
+                    av_frame_get_buffer(copyFrame, 32);
+                    av_frame_copy(copyFrame, pFrameYUV[sws_seq]);
+                    av_frame_copy_props(copyFrame, pFrameYUV[sws_seq]);
+
+                    if((*pFrameQueueVecPtr_)[threadSeq_].size()<=30)
+                    {
+                        (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
+                    }
+                    else
+                    {
+                        AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].back();
+                        av_frame_free(&tmp);
+                        (*pFrameQueueVecPtr_)[threadSeq_].back() = copyFrame;
+                    }
+
+                    av_frame_free(&pFrame);
                 }
                 else
                 {
-                    //printf("%d %d\n",threadSeq_,(*pFrameQueueVecPtr_)[threadSeq_].size());
-//                    AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].front();
-//                    if(tmp)
-//                        av_frame_free(&tmp);
-//                    (*pFrameQueueVecPtr_)[threadSeq_].pop();
-//                    (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
-                    AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].back();
-                    av_frame_free(&tmp);
-                    (*pFrameQueueVecPtr_)[threadSeq_].back() = copyFrame;
+                    AVFrame *copyFrame = av_frame_alloc();
+
+                    copyFrame->format = pFrame->format;
+                    copyFrame->width = pFrame->width;
+                    copyFrame->height = pFrame->height;
+                    av_frame_get_buffer(copyFrame, 32);
+                    av_frame_copy(copyFrame, pFrame);
+                    av_frame_copy_props(copyFrame, pFrame);
+
+                    if((*pFrameQueueVecPtr_)[threadSeq_].size()<=30)
+                    {
+                        (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
+                    }
+                    else
+                    {
+                        AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].back();
+                        av_frame_free(&tmp);
+                        (*pFrameQueueVecPtr_)[threadSeq_].back() = copyFrame;
+                    }
+
+                    av_frame_free(&pFrame);
                 }
 
-                av_frame_free(&pFrame);
-//                av_frame_free(&pFrameYUV);
-                //av_frame_free(&pFrameYUV);
-//                for(int i=0; i<copyFrame->height; i++)
-//                {
-//                    fwrite(copyFrame->data[0]+copyFrame->linesize[0]*i,1,copyFrame->width,fp_out);
-//                }
-//                for(int i=0; i<copyFrame->height/2; i++)
-//                {
-//                    fwrite(copyFrame->data[1]+copyFrame->linesize[1]*i,1,copyFrame->width,fp_out);
-//                }
-
-                //av_frame_free(&copyFrame);
             }
         }
     }
@@ -260,17 +243,17 @@ int fmDecoder::Init()
     pCodecCtx = avcodec_alloc_context3(pCodec);
     if (pCodecCtx->codec_id == AV_CODEC_ID_H264)
     {
-        if(threadSeq_<8)
+//        if(threadSeq_<8)
         {
             printf("seq %d using gpu 0\n",threadSeq_);
             av_opt_set(pCodecCtx->priv_data, "gpu", "0", 0);
         }
 
-        if(threadSeq_>=8)
-        {
-            printf("seq %d using gpu 1\n",threadSeq_);
-            av_opt_set(pCodecCtx->priv_data, "gpu", "1", 1);
-        }
+//        if(threadSeq_>=8)
+//        {
+//            printf("seq %d using gpu 1\n",threadSeq_);
+//            av_opt_set(pCodecCtx->priv_data, "gpu", "1", 1);
+//        }
     }
 
     if (!pCodecCtx)
@@ -350,4 +333,42 @@ int fmDecoder::GetPacketSize()
 void fmDecoder::SetScreanNum(int num)
 {
     screanNum = num;
+    switch(screanNum)
+    {
+    case 1:
+        {
+            sws_width_ = 1920;
+            sws_height_ = 1080;
+            sws_seq = -1;
+            break;
+        }
+    case 4:
+        {
+            sws_width_ = 1920/2;
+            sws_height_ = 1080/2;
+            sws_seq = 0;
+            break;
+        }
+    case 9:
+        {
+            sws_width_ = 1920/3;
+            sws_height_ = 1080/3;
+            sws_seq = 1;
+            break;
+        }
+    case 16:
+        {
+            sws_width_ = 1920/4;
+            sws_height_ = 1080/4;
+            sws_seq = 2;
+            break;
+        }
+    default:
+        {
+            sws_width_ = 1920/4;
+            sws_height_ = 1080/4;
+            screanNum = 16;
+            sws_seq = 2;
+        }
+    }
 }
