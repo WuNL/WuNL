@@ -1,5 +1,5 @@
 #include "viewer.h"
-
+#include <math.h>
 void viewer::updateImage(GLubyte* dst,int x,int y, int w,int h,void* data)
 {
     int pitch = frameWidth;
@@ -308,6 +308,7 @@ void viewer::devFun()
 
 
     static int framecount = 0;
+    static int realcount = 0;
     struct timeval t_start,t_end;
     long cost_time=0;
     gettimeofday(&t_start,NULL);
@@ -367,9 +368,12 @@ void viewer::devFun()
                 }
                 pFrame=(*pFrameQueueVecPtr_)[i].front();
                 (*pFrameQueueVecPtr_)[i].pop();
+                realcount++;
+                if(pFrame->width!=1920/sqrt(splitNum_) || pFrame->height!=1080/sqrt(splitNum_))
+                    continue;
                 if(frameWidth!=pFrame->width || frameHeight!=pFrame->height)
                 {
-                    std::cout<<pFrame->width<<"\t"<<pFrame->height<<std::endl;
+                    std::cout<<i<<"\t"<<frameWidth<<"\t"<<frameHeight<<pFrame->width<<"\t"<<pFrame->height<<std::endl;
                     frameWidth=pFrame->width;
                     frameHeight=pFrame->height;
                     glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
@@ -435,10 +439,11 @@ void viewer::devFun()
 
             if(cost_time/1000.0 > 1)
             {
-                printf("fps:    %f    frameWidth:%d\n",(float)framecount*1000/cost_time,frameWidth);
+                printf("fps:    %f    real fps:    %f      frameWidth:%d\n",(float)framecount*1000/cost_time,(float)realcount*1000/cost_time,frameWidth);
                 gettimeofday(&t_start,NULL);
                 start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
                 framecount = 0;
+                realcount = 0;
             }
         }
     }

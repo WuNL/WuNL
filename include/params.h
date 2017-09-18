@@ -20,7 +20,7 @@
 //4: 4分屏
 //9: 9分屏
 
-#define WINDOW_STYLE 1
+#define WINDOW_STYLE 16
 
 #define __STDC_CONSTANT_MACROS
 extern "C" {

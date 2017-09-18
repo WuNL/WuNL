@@ -77,7 +77,6 @@ int main()
     viewer vr;
     vr.setQueuePtr(pFrameQueueVecPtr);
     vr.run();
-    std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin();
     while(1)
     {
         int style = 0;
@@ -86,7 +85,13 @@ int main()
             style = 16;
         vr.setStyle(style);
 
-        (*pos)->SetScreanNum(style);
+        for(std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin(); pos!=fv.end(); ++pos)
+        {
+            //std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin();
+            int position = (pos)-fv.begin();
+            (*pos)->SetScreanNum(style);
+
+        }
         //gv.setStyle(style);
         //nv.setStyle(style);
     }
