@@ -1,0 +1,33 @@
+syntax = "proto3";
+package hvs;
+
+message Terminal{
+	 int32 id = 1;
+	 string ip = 2;
+	 string name = 3;
+	 bool tstatus = 4;
+}
+
+message TerminalArray{
+	repeated Terminal terminal = 1;
+}
+
+message ChannelPolling{
+	 int32 id = 1;
+	 int32 saperateNumber = 2;
+	 int32 style = 3;
+	 int32 pollingTime = 4;
+	 bool isPolling = 5;
+	 string terminalID = 6;
+}
+
+message WrapperMessage{
+	oneof msg{
+		ChannelPolling  cpl= 3;
+		TerminalArray ta = 4;
+		Terminal tml = 5;
+		int64 debugStatus = 6;
+		int64 packetGrepperStatus = 7;
+	}
+}
+

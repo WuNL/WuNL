@@ -36,6 +36,9 @@ fmDecoder::~fmDecoder()
         avcodec_close(pCodecCtx);
     if(NULL!=fp_out)
         fclose(fp_out);
+    avfilter_graph_free(&filter_graph[0]);
+    avfilter_graph_free(&filter_graph[1]);
+    avfilter_graph_free(&filter_graph[2]);
 }
 
 void fmDecoder::setThreadSeq(int seq)
@@ -45,6 +48,252 @@ void fmDecoder::setThreadSeq(int seq)
 }
 
 boost::mutex mt;
+
+int fmDecoder::testFun()
+{
+    int ret;
+    AVFrame *frame_in;
+    AVFrame *frame_out;
+    unsigned char *frame_buffer_in;
+    unsigned char *frame_buffer_out;
+
+    AVFilterContext *buffersink_ctx;
+    AVFilterContext *buffersrc_ctx;
+    AVFilterGraph *filter_graph;
+    static int video_stream_index = -1;
+
+    //Input YUV
+    FILE *fp_in=fopen("sintel_480x272_yuv420p.yuv","rb+");
+    if(fp_in==NULL)
+    {
+        printf("Error open input file.\n");
+        return -1;
+    }
+    int in_width=480;
+    int in_height=272;
+
+    //Output YUV
+    FILE *fp_out=fopen("output.yuv","wb+");
+    if(fp_out==NULL)
+    {
+        printf("Error open output file.\n");
+        return -1;
+    }
+
+    //const char *filter_descr = "lutyuv='u=128:v=128'";
+    //const char *filter_descr = "boxblur";
+    //const char *filter_descr = "hflip";
+    //const char *filter_descr = "hue='h=60:s=-3'";
+    //const char *filter_descr = "crop=2/3*in_w:2/3*in_h";
+    //const char *filter_descr = "drawbox=x=100:y=100:w=100:h=100:color=pink@0.5";
+    //const char *filter_descr = "drawtext=fontfile=arial.ttf:fontcolor=green:fontsize=30:text='Lei Xiaohua'";
+    const char *filter_descr = "hwupload_cuda,scale_npp=w=1316:h=1080:format=yuv420p:interp_algo=lanczos,hwdownload,format=yuv420p";
+
+    avfilter_register_all();
+
+    char args[512];
+    AVFilter *buffersrc  = avfilter_get_by_name("buffer");
+    AVFilter *buffersink = avfilter_get_by_name("buffersink");
+    AVFilterInOut *outputs = avfilter_inout_alloc();
+    AVFilterInOut *inputs  = avfilter_inout_alloc();
+    enum AVPixelFormat pix_fmts[] = { AV_PIX_FMT_YUV420P, AV_PIX_FMT_NONE };
+    AVBufferSinkParams *buffersink_params;
+
+    filter_graph = avfilter_graph_alloc();
+
+    /* buffer video source: the decoded frames from the decoder will be inserted here. */
+    snprintf(args, sizeof(args),
+             "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d",
+             in_width,in_height,AV_PIX_FMT_YUV420P,
+             1, 25,1,1);
+
+    ret = avfilter_graph_create_filter(&buffersrc_ctx, buffersrc, "in",
+                                       args, NULL, filter_graph);
+    if (ret < 0)
+    {
+        printf("Cannot create buffer source\n");
+        return ret;
+    }
+
+    /* buffer video sink: to terminate the filter chain. */
+    buffersink_params = av_buffersink_params_alloc();
+    buffersink_params->pixel_fmts = pix_fmts;
+    ret = avfilter_graph_create_filter(&buffersink_ctx, buffersink, "out",
+                                       NULL, buffersink_params, filter_graph);
+    av_free(buffersink_params);
+    if (ret < 0)
+    {
+        printf("Cannot create buffer sink\n");
+        return ret;
+    }
+
+    /* Endpoints for the filter graph. */
+    outputs->name       = av_strdup("in");
+    outputs->filter_ctx = buffersrc_ctx;
+    outputs->pad_idx    = 0;
+    outputs->next       = NULL;
+
+    inputs->name       = av_strdup("out");
+    inputs->filter_ctx = buffersink_ctx;
+    inputs->pad_idx    = 0;
+    inputs->next       = NULL;
+
+    if ((ret = avfilter_graph_parse_ptr(filter_graph, filter_descr,
+                                        &inputs, &outputs, NULL)) < 0)
+        return ret;
+
+    if ((ret = avfilter_graph_config(filter_graph, NULL)) < 0)
+        return ret;
+
+    frame_in=av_frame_alloc();
+    frame_buffer_in=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_YUV420P, in_width,in_height,1));
+    av_image_fill_arrays(frame_in->data, frame_in->linesize,frame_buffer_in,
+                         AV_PIX_FMT_YUV420P,in_width, in_height,1);
+
+    frame_out=av_frame_alloc();
+    frame_buffer_out=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_YUV420P, in_width,in_height,1));
+    av_image_fill_arrays(frame_out->data, frame_out->linesize,frame_buffer_out,
+                         AV_PIX_FMT_YUV420P,in_width, in_height,1);
+
+    frame_in->width=in_width;
+    frame_in->height=in_height;
+    frame_in->format=AV_PIX_FMT_YUV420P;
+
+    while (1)
+    {
+
+        if(fread(frame_buffer_in, 1, in_width*in_height*3/2, fp_in)!= in_width*in_height*3/2)
+        {
+            break;
+        }
+        //input Y,U,V
+        frame_in->data[0]=frame_buffer_in;
+        frame_in->data[1]=frame_buffer_in+in_width*in_height;
+        frame_in->data[2]=frame_buffer_in+in_width*in_height*5/4;
+
+        if (av_buffersrc_add_frame(buffersrc_ctx, frame_in) < 0)
+        {
+            printf( "Error while add frame.\n");
+            break;
+        }
+
+        /* pull filtered pictures from the filtergraph */
+        ret = av_buffersink_get_frame(buffersink_ctx, frame_out);
+        if (ret < 0)
+            break;
+
+        //output Y,U,V
+        if(frame_out->format==AV_PIX_FMT_YUV420P)
+        {
+            for(int i=0; i<frame_out->height; i++)
+            {
+                fwrite(frame_out->data[0]+frame_out->linesize[0]*i,1,frame_out->width,fp_out);
+            }
+            for(int i=0; i<frame_out->height/2; i++)
+            {
+                fwrite(frame_out->data[1]+frame_out->linesize[1]*i,1,frame_out->width/2,fp_out);
+            }
+            for(int i=0; i<frame_out->height/2; i++)
+            {
+                fwrite(frame_out->data[2]+frame_out->linesize[2]*i,1,frame_out->width/2,fp_out);
+            }
+        }
+        printf("Process 1 frame!\n");
+        av_frame_unref(frame_out);
+    }
+
+    fclose(fp_in);
+    fclose(fp_out);
+
+    av_frame_free(&frame_in);
+    av_frame_free(&frame_out);
+    avfilter_graph_free(&filter_graph);
+}
+
+int fmDecoder::initFilter()
+{
+    int ret;
+
+    int in_width=1920;
+    int in_height=1080;
+
+//    const char *filter_descr[3] = {"boxblur",
+//                                   "boxblur",
+//                                   "boxblur"
+//                                  };
+    const char *filter_descr[3] = {"hwupload_cuda,scale_npp=w=960:h=540:format=nv12:interp_algo=linear,hwdownload,format=nv12",
+                                   "hwupload_cuda,scale_npp=w=640:h=360:format=nv12:interp_algo=linear,hwdownload,format=nv12",
+                                   "hwupload_cuda,scale_npp=w=480:h=270:format=nv12:interp_algo=linear,hwdownload,format=nv12"
+                                  };
+    avfilter_register_all();
+
+    for(int i=0; i<3; ++i)
+    {
+        char args[512];
+        buffersrc[i]  = avfilter_get_by_name("buffer");
+        buffersink[i] = avfilter_get_by_name("buffersink");
+        outputs[i] = avfilter_inout_alloc();
+        inputs[i]  = avfilter_inout_alloc();
+        enum AVPixelFormat pix_fmts[] = { AV_PIX_FMT_NV12, AV_PIX_FMT_NONE };
+
+
+        filter_graph[i] = avfilter_graph_alloc();
+
+        /* buffer video source: the decoded frames from the decoder will be inserted here. */
+        snprintf(args, sizeof(args),
+                 "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d",
+                 in_width,in_height,AV_PIX_FMT_NV12,
+                 1, 60,1,1);
+
+        ret = avfilter_graph_create_filter(&buffersrc_ctx[i], buffersrc[i], "in",
+                                           args, NULL, filter_graph[i]);
+        if (ret < 0)
+        {
+            printf("Cannot create buffer source\n");
+            return ret;
+        }
+
+        /* buffer video sink: to terminate the filter chain. */
+        buffersink_params[i] = av_buffersink_params_alloc();
+        buffersink_params[i]->pixel_fmts = pix_fmts;
+        ret = avfilter_graph_create_filter(&buffersink_ctx[i], buffersink[i], "out",
+                                           NULL, buffersink_params[i], filter_graph[i]);
+        av_free(buffersink_params[i]);
+        if (ret < 0)
+        {
+            printf("Cannot create buffer sink\n");
+            return ret;
+        }
+
+        /* Endpoints for the filter graph. */
+        outputs[i]->name       = av_strdup("in");
+        outputs[i]->filter_ctx = buffersrc_ctx[i];
+        outputs[i]->pad_idx    = 0;
+        outputs[i]->next       = NULL;
+
+        inputs[i]->name       = av_strdup("out");
+        inputs[i]->filter_ctx = buffersink_ctx[i];
+        inputs[i]->pad_idx    = 0;
+        inputs[i]->next       = NULL;
+
+        if ((ret = avfilter_graph_parse_ptr(filter_graph[i], filter_descr[i],
+                                            &inputs[i], &outputs[i], NULL)) < 0)
+        {
+            printf("avfilter_graph_parse_ptr error!\n");
+            return ret;
+        }
+
+        if ((ret = avfilter_graph_config(filter_graph[i], NULL)) < 0)
+        {
+            printf("avfilter_graph_config error!\n");
+            return ret;
+        }
+    }
+
+
+
+    return ret;
+}
 
 void fmDecoder::run()
 {
@@ -80,7 +329,10 @@ void fmDecoder::run()
             std::cout << "This program (main thread) is on CPU " << sched_getcpu() << std::endl;
         }
     }
-    for(int i=2;i<5;++i)
+    if(useNpp)
+        initFilter();
+
+    for(int i=2; i<5; ++i)
     {
         unsigned char *out_buffer1;
         pFrameYUV[i-2]=av_frame_alloc();
@@ -88,10 +340,15 @@ void fmDecoder::run()
         av_image_fill_arrays(pFrameYUV[i-2]->data, pFrameYUV[i-2]->linesize,out_buffer1,
                              AV_PIX_FMT_NV12,1920/i,1080/i,1);
         convertCtx[i-2] = sws_getContext(1920, 1080, AV_PIX_FMT_NV12,
-                                    1920/i,1080/i, AV_PIX_FMT_NV12, SWS_BICUBIC, NULL, NULL, NULL);
+                                         1920/i,1080/i, AV_PIX_FMT_NV12, SWS_POINT, NULL, NULL, NULL);
+        pFrameYUV[i-2]->format = AV_PIX_FMT_NV12;
     }
 
 
+    int sws_seqTMP = 0;
+    int widthTMP = 0;
+    int heightTMP = 0;
+    AVFrame	*pFrame = av_frame_alloc();
     while(1)
     {
         int cur_size = 0;
@@ -135,10 +392,11 @@ void fmDecoder::run()
 //                case AV_PICTURE_TYPE_B: printf("Type:B\t");break;
 //                default: printf("Type:Other\t");break;
 //            }
-            AVFrame	*pFrame = av_frame_alloc();
+
             int got_picture = 0;
 
             int ret = -1;
+
             ret = avcodec_decode_video2(pCodecCtx, pFrame, &got_picture, &packet);
             if(ret < 0)
             {
@@ -152,21 +410,67 @@ void fmDecoder::run()
             }
             if (got_picture)
             {
+                sws_seqTMP = sws_seq;
+                widthTMP = sws_width_;
+                heightTMP = sws_height_;
                 if(screanNum!=1)
                 {
-                    pFrameYUV[sws_seq]->format = AV_PIX_FMT_NV12;
-                    pFrameYUV[sws_seq]->width = sws_width_;
-                    pFrameYUV[sws_seq]->height = sws_height_;
-                    int rev = sws_scale(convertCtx[sws_seq], (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
-                                        pFrameYUV[sws_seq]->data, pFrameYUV[sws_seq]->linesize);
-                    AVFrame *copyFrame = av_frame_alloc();
 
-                    copyFrame->format = pFrameYUV[sws_seq]->format;
-                    copyFrame->width = pFrameYUV[sws_seq]->width;
-                    copyFrame->height = pFrameYUV[sws_seq]->height;
-                    av_frame_get_buffer(copyFrame, 32);
-                    av_frame_copy(copyFrame, pFrameYUV[sws_seq]);
-                    av_frame_copy_props(copyFrame, pFrameYUV[sws_seq]);
+
+                    pFrameYUV[sws_seqTMP]->width = widthTMP;
+                    pFrameYUV[sws_seqTMP]->height = heightTMP;
+
+//                    av_buffersrc_add_frame(buffersrc_ctx, pFrame);
+//
+//                    /* pull filtered pictures from the filtergraph */
+//                    av_buffersink_get_frame(buffersink_ctx, pFrameYUV[sws_seq]);
+                    AVFrame *copyFrame = av_frame_alloc();
+                    if(useNpp)
+                    {
+                        pFrame->pts = av_frame_get_best_effort_timestamp(pFrame);
+                        /* push the decoded frame into the filtergraph */
+                        if (av_buffersrc_add_frame_flags(buffersrc_ctx[sws_seqTMP], pFrame, AV_BUFFERSRC_FLAG_KEEP_REF) < 0)
+                        {
+                            av_log(NULL, AV_LOG_ERROR, "Error while feeding the filtergraph\n");
+                            break;
+                        }
+
+                        /* pull filtered frames from the filtergraph */
+
+                        while (1)
+                        {
+                            ret = av_buffersink_get_frame(buffersink_ctx[sws_seqTMP], pFrameYUV[sws_seqTMP]);
+                            if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+                                break;
+                            if (ret < 0)
+                                break;
+                            copyFrame->format = pFrameYUV[sws_seqTMP]->format;
+                            copyFrame->width = pFrameYUV[sws_seqTMP]->width;
+                            copyFrame->height = pFrameYUV[sws_seqTMP]->height;
+                            av_frame_get_buffer(copyFrame, 32);
+                            av_frame_copy(copyFrame, pFrameYUV[sws_seqTMP]);
+                            av_frame_copy_props(copyFrame, pFrameYUV[sws_seqTMP]);
+
+                            av_frame_unref(pFrameYUV[sws_seqTMP]);
+                        }
+                        av_frame_unref(pFrame);
+
+                    }
+                    else
+                    {
+                        sws_scale(convertCtx[sws_seqTMP], (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
+                                  pFrameYUV[sws_seqTMP]->data, pFrameYUV[sws_seqTMP]->linesize);
+
+
+                        copyFrame->format = pFrameYUV[sws_seqTMP]->format;
+                        copyFrame->width = pFrameYUV[sws_seqTMP]->width;
+                        copyFrame->height = pFrameYUV[sws_seqTMP]->height;
+                        av_frame_get_buffer(copyFrame, 32);
+                        av_frame_copy(copyFrame, pFrameYUV[sws_seqTMP]);
+                        av_frame_copy_props(copyFrame, pFrameYUV[sws_seqTMP]);
+
+
+                    }
 
                     if((*pFrameQueueVecPtr_)[threadSeq_].size()<=30)
                     {
@@ -174,13 +478,12 @@ void fmDecoder::run()
                     }
                     else
                     {
-//                        printf("buffer full!\n");
                         AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].back();
                         av_frame_free(&tmp);
                         (*pFrameQueueVecPtr_)[threadSeq_].back() = copyFrame;
                     }
 
-                    av_frame_free(&pFrame);
+                    //av_frame_free(&pFrame);
                 }
                 else
                 {
@@ -193,19 +496,20 @@ void fmDecoder::run()
                     av_frame_copy(copyFrame, pFrame);
                     av_frame_copy_props(copyFrame, pFrame);
 
+                    //av_frame_free(&pFrame);
+
                     if((*pFrameQueueVecPtr_)[threadSeq_].size()<=30)
                     {
                         (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
                     }
                     else
                     {
-//                        printf("buffer full!\n");
+                        //                        printf("buffer full!\n");
                         AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].back();
                         av_frame_free(&tmp);
                         (*pFrameQueueVecPtr_)[threadSeq_].back() = copyFrame;
                     }
 
-                    av_frame_free(&pFrame);
                 }
 
             }
@@ -243,6 +547,7 @@ int fmDecoder::Init()
     }
     //pCodec->capabilities &= AV_CODEC_CAP_FRAME_THREADS;
     pCodecCtx = avcodec_alloc_context3(pCodec);
+//    pCodecCtx->hwaccel = ff_find_hwaccel();
     if (pCodecCtx->codec_id == AV_CODEC_ID_H264)
     {
         if(threadSeq_<8)
@@ -338,39 +643,39 @@ void fmDecoder::SetScreanNum(int num)
     switch(screanNum)
     {
     case 1:
-        {
-            sws_width_ = 1920;
-            sws_height_ = 1080;
-            sws_seq = -1;
-            break;
-        }
+    {
+        sws_width_ = 1920/2;
+        sws_height_ = 1080/2;
+        sws_seq = 0;
+        break;
+    }
     case 4:
-        {
-            sws_width_ = 1920/2;
-            sws_height_ = 1080/2;
-            sws_seq = 0;
-            break;
-        }
+    {
+        sws_width_ = 1920/2;
+        sws_height_ = 1080/2;
+        sws_seq = 0;
+        break;
+    }
     case 9:
-        {
-            sws_width_ = 1920/3;
-            sws_height_ = 1080/3;
-            sws_seq = 1;
-            break;
-        }
+    {
+        sws_width_ = 1920/3;
+        sws_height_ = 1080/3;
+        sws_seq = 1;
+        break;
+    }
     case 16:
-        {
-            sws_width_ = 1920/4;
-            sws_height_ = 1080/4;
-            sws_seq = 2;
-            break;
-        }
+    {
+        sws_width_ = 1920/4;
+        sws_height_ = 1080/4;
+        sws_seq = 2;
+        break;
+    }
     default:
-        {
-            sws_width_ = 1920/4;
-            sws_height_ = 1080/4;
-            screanNum = 16;
-            sws_seq = 2;
-        }
+    {
+        sws_width_ = 1920/4;
+        sws_height_ = 1080/4;
+        screanNum = 16;
+        sws_seq = 2;
+    }
     }
 }

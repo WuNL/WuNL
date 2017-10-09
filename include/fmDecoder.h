@@ -27,6 +27,7 @@ public:
     void startDecode();
     void setThreadSeq(int seq);
     void run();
+    int testFun();
     void setPtr(boost::shared_ptr<std::vector<channel> > cvPtr,
                 boost::shared_ptr<std::vector<std::vector<AVFrame*> > > pFrameVecPtr,
                 boost::shared_ptr<std::vector<int> >readIndex,
@@ -38,6 +39,8 @@ public:
 protected:
 
 private:
+
+    int initFilter();
     AVCodec *pCodec;
     AVCodecContext *pCodecCtx;
     AVCodecParserContext *pCodecParserCtx;
@@ -47,6 +50,16 @@ private:
     struct SwsContext *img_convert_ctx9;
     struct SwsContext *img_convert_ctx4;
     struct SwsContext *img_convert_ctx1;
+
+    AVFilterContext *buffersink_ctx[3];
+    AVFilterContext *buffersrc_ctx[3];
+    AVFilterGraph *filter_graph[3];
+    AVFilter *buffersrc[3];
+    AVFilter *buffersink[3];
+    AVFilterInOut *outputs[3];
+    AVFilterInOut *inputs[3];
+    AVBufferSinkParams *buffersink_params[3];
+
 
     struct SwsContext *convertCtx[3];
     AVFrame	*pFrameYUV[3];

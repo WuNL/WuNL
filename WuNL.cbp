@@ -49,6 +49,7 @@
 					<Add option="-m64" />
 					<Add directory="include" />
 					<Add directory="/home/wunl/Downloads/ffmpeg-3.2.4" />
+					<Add directory="protobuf" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -69,6 +70,7 @@
 					<Add library="libz" />
 					<Add library="libm" />
 					<Add library="libdl" />
+					<Add library="libprotobuf" />
 				</Linker>
 			</Target>
 		</Build>
@@ -81,6 +83,7 @@
 		<Unit filename="include/fmDecoder.h" />
 		<Unit filename="include/glViewer.h" />
 		<Unit filename="include/params.h" />
+		<Unit filename="include/protobufServer.h" />
 		<Unit filename="include/rtpReceiver.h" />
 		<Unit filename="include/viewer.h" />
 		<Unit filename="main.cpp" />
@@ -88,6 +91,7 @@
 		<Unit filename="src/channel.cpp" />
 		<Unit filename="src/fmDecoder.cpp" />
 		<Unit filename="src/glViewer.cpp" />
+		<Unit filename="src/protobufServer.cpp" />
 		<Unit filename="src/rtpReceiver.cpp" />
 		<Unit filename="src/viewer.cpp" />
 		<Extensions>

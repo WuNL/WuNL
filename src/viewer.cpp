@@ -24,7 +24,6 @@ viewer::viewer()
     {
         verticesVec[i] = new GLfloat[20];
     }
-
 }
 
 viewer::~viewer()
@@ -124,14 +123,14 @@ void viewer::setVertices(int splitNum, int style)
     {
     case 1:
     {
-            GLfloat tmpVec[20]=
-            {
-                1.0f,    1.0f,     0.0f, 1.0f, 1.0f,            // Top Right
-                1.0f,    -1.0f,    0.0f, 1.0f, 0.0f,            // Bottom Right
-                -1.0f,   -1.0f,    0.0f, 0.0f, 0.0f,            // Bottom Left
-                -1.0f,   1.0f,     0.0f, 0.0f, 1.0f            // Top Left
-            };
-            memcpy(verticesVec[0],tmpVec,20*sizeof(GLfloat));
+        GLfloat tmpVec[20]=
+        {
+            1.0f,    1.0f,     0.0f, 1.0f, 1.0f,            // Top Right
+            1.0f,    -1.0f,    0.0f, 1.0f, 0.0f,            // Bottom Right
+            -1.0f,   -1.0f,    0.0f, 0.0f, 0.0f,            // Bottom Left
+            -1.0f,   1.0f,     0.0f, 0.0f, 1.0f            // Top Left
+        };
+        memcpy(verticesVec[0],tmpVec,20*sizeof(GLfloat));
         break;
     }
     case 4:
@@ -214,7 +213,7 @@ void viewer::setVertices(int splitNum, int style)
 void viewer::devFun()
 {
     glfwMakeContextCurrent(window);
-    // set vsync. 0:off max 1000+fps 1: on max 60fps
+    // set vsync. 0:off max 1000+fps 1: on max 60fps 2: on max 30fps
     glfwSwapInterval(1);
     // start GLEW extension handler
     glewExperimental = GL_TRUE;
@@ -303,10 +302,6 @@ void viewer::devFun()
         glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
     }
 
-
-
-
-
     static int framecount = 0;
     static int realcount = 0;
     struct timeval t_start,t_end;
@@ -370,7 +365,11 @@ void viewer::devFun()
                 (*pFrameQueueVecPtr_)[i].pop();
                 realcount++;
                 if(pFrame->width!=1920/sqrt(splitNum_) || pFrame->height!=1080/sqrt(splitNum_))
+                {
+                    av_frame_free(&pFrame);
                     continue;
+                }
+
                 if(frameWidth!=pFrame->width || frameHeight!=pFrame->height)
                 {
                     std::cout<<i<<"\t"<<frameWidth<<"\t"<<frameHeight<<pFrame->width<<"\t"<<pFrame->height<<std::endl;
@@ -385,6 +384,7 @@ void viewer::devFun()
                     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, frameWidth/2,frameHeight/2, splitNum_, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
 
                 }
+
                 glBindVertexArray(VAO[i]);
 
                 glActiveTexture(GL_TEXTURE0);
@@ -415,7 +415,7 @@ void viewer::devFun()
                     memcpy(ptrUV,pFrame->data[1],frameWidth*frameHeight/2);
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
                 }
-
+                av_frame_free(&pFrame);
                 glBindTexture(GL_TEXTURE_2D_ARRAY, textureUV);
                 glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, frameWidth/2,frameHeight/2, 1, GL_RG, GL_UNSIGNED_BYTE, 0);
                 glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureUV"), 1);
@@ -424,7 +424,7 @@ void viewer::devFun()
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
                 glBindVertexArray(0);
 
-                av_frame_free(&pFrame);
+
             }
 
 

@@ -54,46 +54,39 @@ int main()
         (*pos)->setChannelVecPtr(channelVecPtr);
         (*pos)->start();
     }
-    for(std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin(); pos!=fv.end(); ++pos)
+    for(std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin(); pos!=fv.end()-4; ++pos)
     {
-        //std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin();
+//        std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin()+3;
         int position = (pos)-fv.begin();
         (*pos) = boost::make_shared<fmDecoder> ();
         (*pos)->setPtr(channelVecPtr,pFrameVecPtr,readIndex,writeIndex);
+//        (*pos)->testFun();
         (*pos)->setQueuePtr(pFrameQueueVecPtr);
         (*pos)->setThreadSeq(position);
         (*pos)->SetScreanNum(WINDOW_STYLE);
         (*pos)->startDecode();
     }
 
-//    glViewer gv;
-//    gv.setQueuePtr(pFrameQueueVecPtr);
-//    gv.run();
 
-//    nv12Viewer nv;
-//    nv.setQueuePtr(pFrameQueueVecPtr);
-//    nv.run();
-
-    viewer vr;
-    vr.setQueuePtr(pFrameQueueVecPtr);
-    vr.run();
+//    viewer vr;
+//    vr.setQueuePtr(pFrameQueueVecPtr);
+//    vr.run();
     while(1)
     {
         int style = 0;
         std::cin>>style;
         if(style==2)
             style = 16;
-        vr.setStyle(style);
+//        vr.setStyle(style);
 
-        for(std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin(); pos!=fv.end(); ++pos)
+        for(std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin(); pos!=fv.end()-4; ++pos)
         {
-            //std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin();
+//            std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin()+3;
             int position = (pos)-fv.begin();
             (*pos)->SetScreanNum(style);
 
         }
-        //gv.setStyle(style);
-        //nv.setStyle(style);
+
     }
 
 

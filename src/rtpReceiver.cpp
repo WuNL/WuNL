@@ -41,7 +41,35 @@ void rtpReceiver::start()
 
 void rtpReceiver::run()
 {
-    //std::cout<<cvPtr_.use_count()<<std::endl;
+    //Set pthread_getaffinity_np
+    int rc, i;
+    static int cnt =0;
+    cpu_set_t cpuset;
+    pthread_t thread;
+
+    thread = pthread_self();
+
+    //Check no. of cores on the machine
+
+    /* Set affinity mask */
+    CPU_ZERO(&cpuset);
+    int mask = 20;
+    //for (i = 0; i < 8; i++) //I have 4 cores with 2 threads per core so running it for 8 times, modify it according to your lscpu o/p
+    CPU_SET(mask, &cpuset);
+    cnt++;
+
+    pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset);
+    /* Assign affinity mask to the thread */
+    rc = pthread_getaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
+    if (rc != 0)
+        std::cout << "Error calling pthread_getaffinity_np !!!";
+    for (i = 0; i < CPU_SETSIZE; i++)
+    {
+        if (CPU_ISSET(i, &cpuset))
+        {
+            std::cout << "rtpRecver is on CPU " << sched_getcpu() << std::endl;
+        }
+    }
 
     while(true)
     {
