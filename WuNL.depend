@@ -335,8 +335,9 @@
 	"samplefmt.h"
 	"version.h"
 
-1501150838 source:/home/sdt/workspace/WuNL/main.cpp
+1507688744 source:/home/sdt/workspace/WuNL/main.cpp
 	<iostream>
+	"manager.h"
 	"rtpReceiver.h"
 	"channel.h"
 	"fmDecoder.h"
@@ -344,10 +345,11 @@
 	<boost/smart_ptr.hpp>
 	"fmDecoder.h"
 	"glViewer.h"
-	"nv12Viewer.h"
+	"viewer.h"
+	"protobufServer.h"
 	<queue>
 
-1498466661 /home/sdt/workspace/WuNL/include/rtpReceiver.h
+1505437940 /home/sdt/workspace/WuNL/include/rtpReceiver.h
 	<iostream>
 	<stdio.h>
 	<boost/thread/thread.hpp>
@@ -356,18 +358,30 @@
 	<boost/asio.hpp>
 	"channel.h"
 
-1498466661 /home/sdt/workspace/WuNL/include/channel.h
+1505437940 /home/sdt/workspace/WuNL/include/channel.h
 	<boost/asio.hpp>
 	"params.h"
 
-1501151499 /home/sdt/workspace/WuNL/include/params.h
+1507700593 /home/sdt/workspace/WuNL/include/params.h
 	<libavcodec/avcodec.h>
 	<libavformat/avformat.h>
 	<libswscale/swscale.h>
 	<libavutil/imgutils.h>
 	<libavutil/opt.h>
+	<libavfilter/avfiltergraph.h>
+	<libavfilter/buffersink.h>
+	<libavfilter/buffersrc.h>
+	<libavutil/avutil.h>
+	<libavutil/imgutils.h>
+	<queue>
+	<boost/thread/thread.hpp>
+	<boost/thread/mutex.hpp>
+	<boost/thread/tss.hpp>
+	<boost/asio.hpp>
+	<boost/bind.hpp>
+	<boost/smart_ptr.hpp>
 
-1501150759 /home/sdt/workspace/WuNL/include/fmDecoder.h
+1507688390 /home/sdt/workspace/WuNL/include/fmDecoder.h
 	"params.h"
 	<boost/thread/thread.hpp>
 	<boost/thread/mutex.hpp>
@@ -379,7 +393,7 @@
 	<sched.h>
 	<thread>
 
-1498466661 /home/sdt/workspace/WuNL/include/glViewer.h
+1505437940 /home/sdt/workspace/WuNL/include/glViewer.h
 	<iostream>
 	<GL/glew.h>
 	<GLFW/glfw3.h>
@@ -396,30 +410,31 @@
 	<sys/time.h>
 	<time.h>
 
-1498466661 /home/sdt/workspace/WuNL/include/Shader.h
+1505437940 /home/sdt/workspace/WuNL/include/Shader.h
 	<string>
 	<fstream>
 	<sstream>
 	<iostream>
 	<GL/glew.h>
 
-1498466661 source:/home/sdt/workspace/WuNL/src/channel.cpp
+1505437940 source:/home/sdt/workspace/WuNL/src/channel.cpp
 	"channel.h"
 
-1501151527 source:/home/sdt/workspace/WuNL/src/fmDecoder.cpp
+1507691169 source:/home/sdt/workspace/WuNL/src/fmDecoder.cpp
 	"fmDecoder.h"
+	<math.h>
 
-1501151482 source:/home/sdt/workspace/WuNL/src/glViewer.cpp
+1505697984 source:/home/sdt/workspace/WuNL/src/glViewer.cpp
 	"glViewer.h"
 	<stdio.h>
 
-1498466661 source:/home/sdt/workspace/WuNL/src/rtpReceiver.cpp
+1506561838 source:/home/sdt/workspace/WuNL/src/rtpReceiver.cpp
 	"rtpReceiver.h"
 
-1498466661 source:/home/sdt/workspace/WuNL/src/Shader.cpp
+1505437940 source:/home/sdt/workspace/WuNL/src/Shader.cpp
 	"Shader.h"
 
-1501150759 /home/sdt/workspace/WuNL/include/nv12Viewer.h
+1502070179 /home/sdt/workspace/WuNL/include/nv12Viewer.h
 	<iostream>
 	<GL/glew.h>
 	<GLFW/glfw3.h>
@@ -439,4 +454,200 @@
 1501136709 source:/home/sdt/workspace/WuNL/src/nv12Viewer.cpp
 	"nv12Viewer.h"
 	<stdio.h>
+
+1507700623 /home/sdt/workspace/WuNL/include/viewer.h
+	<iostream>
+	<GL/glew.h>
+	<GLFW/glfw3.h>
+	"GLError.h"
+	"params.h"
+	"Shader.h"
+	"textRender.h"
+	"channel.h"
+	<sched.h>
+	<thread>
+	<sys/time.h>
+	<time.h>
+
+1505438183 /home/sdt/workspace/WuNL/include/GLError.h
+
+1507701093 source:/home/sdt/workspace/WuNL/src/viewer.cpp
+	"viewer.h"
+	<math.h>
+
+1505569575 source:/home/wnl/workspace/WuNL/main.cpp
+	<iostream>
+	"rtpReceiver.h"
+	"channel.h"
+	"fmDecoder.h"
+	<boost/bind.hpp>
+	<boost/smart_ptr.hpp>
+	"fmDecoder.h"
+	"glViewer.h"
+	"viewer.h"
+	<queue>
+
+1505551746 /home/wnl/workspace/WuNL/include/rtpReceiver.h
+	<iostream>
+	<stdio.h>
+	<boost/thread/thread.hpp>
+	<boost/thread/mutex.hpp>
+	<boost/thread/tss.hpp>
+	<boost/asio.hpp>
+	"channel.h"
+
+1505551746 /home/wnl/workspace/WuNL/include/channel.h
+	<boost/asio.hpp>
+	"params.h"
+
+1505569900 /home/wnl/workspace/WuNL/include/params.h
+	<libavcodec/avcodec.h>
+	<libavformat/avformat.h>
+	<libswscale/swscale.h>
+	<libavutil/imgutils.h>
+	<libavutil/opt.h>
+	<queue>
+	<boost/thread/thread.hpp>
+	<boost/thread/mutex.hpp>
+	<boost/thread/tss.hpp>
+	<boost/asio.hpp>
+
+1505568200 /home/wnl/workspace/WuNL/include/fmDecoder.h
+	"params.h"
+	<boost/thread/thread.hpp>
+	<boost/thread/mutex.hpp>
+	<boost/thread/tss.hpp>
+	<boost/asio.hpp>
+	"channel.h"
+	"params.h"
+	<queue>
+	<sched.h>
+	<thread>
+
+1505551746 /home/wnl/workspace/WuNL/include/glViewer.h
+	<iostream>
+	<GL/glew.h>
+	<GLFW/glfw3.h>
+	"params.h"
+	"Shader.h"
+	<queue>
+	<boost/thread/thread.hpp>
+	<boost/thread/mutex.hpp>
+	<boost/thread/tss.hpp>
+	<boost/asio.hpp>
+	"channel.h"
+	<sched.h>
+	<thread>
+	<sys/time.h>
+	<time.h>
+
+1505551746 /home/wnl/workspace/WuNL/include/Shader.h
+	<string>
+	<fstream>
+	<sstream>
+	<iostream>
+	<GL/glew.h>
+
+1505551768 /home/wnl/workspace/WuNL/include/viewer.h
+	<iostream>
+	<GL/glew.h>
+	<GLFW/glfw3.h>
+	"GLError.h"
+	"params.h"
+	"Shader.h"
+	"channel.h"
+	<sched.h>
+	<thread>
+	<sys/time.h>
+	<time.h>
+
+1505551768 /home/wnl/workspace/WuNL/include/GLError.h
+
+1505551746 source:/home/wnl/workspace/WuNL/src/channel.cpp
+	"channel.h"
+
+1505569177 source:/home/wnl/workspace/WuNL/src/glViewer.cpp
+	"glViewer.h"
+	<stdio.h>
+
+1505551746 source:/home/wnl/workspace/WuNL/src/rtpReceiver.cpp
+	"rtpReceiver.h"
+
+1505551746 source:/home/wnl/workspace/WuNL/src/Shader.cpp
+	"Shader.h"
+
+1505570195 source:/home/wnl/workspace/WuNL/src/viewer.cpp
+	"viewer.h"
+
+1505570327 source:/home/wnl/workspace/WuNL/src/fmDecoder.cpp
+	"fmDecoder.h"
+	<math.h>
+
+1507599901 source:/home/sdt/workspace/WuNL/src/protobufServer.cpp
+	"protobufServer.h"
+
+1507604063 /home/sdt/workspace/WuNL/include/protobufServer.h
+	"hvs.pb.h"
+	"boost/asio.hpp"
+	"boost/shared_ptr.hpp"
+	"boost/thread.hpp"
+
+1507598633 /home/sdt/workspace/WuNL/protobuf/hvs.pb.h
+	<string>
+	<google/protobuf/stubs/common.h>
+	<google/protobuf/io/coded_stream.h>
+	<google/protobuf/arena.h>
+	<google/protobuf/arenastring.h>
+	<google/protobuf/generated_message_table_driven.h>
+	<google/protobuf/generated_message_util.h>
+	<google/protobuf/metadata.h>
+	<google/protobuf/message.h>
+	<google/protobuf/repeated_field.h>
+	<google/protobuf/extension_set.h>
+	<google/protobuf/unknown_field_set.h>
+
+1507598633 source:/home/sdt/workspace/WuNL/protobuf/hvs.pb.cc
+	"hvs.pb.h"
+	<algorithm>
+	<google/protobuf/stubs/common.h>
+	<google/protobuf/stubs/port.h>
+	<google/protobuf/stubs/once.h>
+	<google/protobuf/io/coded_stream.h>
+	<google/protobuf/wire_format_lite_inl.h>
+	<google/protobuf/descriptor.h>
+	<google/protobuf/generated_message_reflection.h>
+	<google/protobuf/reflection_ops.h>
+	<google/protobuf/wire_format.h>
+
+1507618573 /home/sdt/workspace/WuNL/include/textRender.h
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<glm/gtc/type_ptr.hpp>
+	<ft2build.h>
+	"Shader.h"
+	<locale>
+	<codecvt>
+	<iostream>
+	<map>
+
+1499596095 /usr/local/include/freetype2/ft2build.h
+	<freetype/config/ftheader.h>
+
+1499596095 /usr/local/include/freetype2/freetype/config/ftheader.h
+
+1507624559 source:/home/sdt/workspace/WuNL/src/textRender.cpp
+	"textRender.h"
+
+1507689015 /home/sdt/workspace/WuNL/include/manager.h
+	"rtpReceiver.h"
+	"channel.h"
+	"fmDecoder.h"
+	"fmDecoder.h"
+	"glViewer.h"
+	"viewer.h"
+	"protobufServer.h"
+	<queue>
+
+1507689060 source:/home/sdt/workspace/WuNL/src/manager.cpp
+	"manager.h"
 

@@ -1,4 +1,7 @@
 #include "glViewer.h"
+#define SWS_WIDTH  1920
+#define SWS_HEIGHT  1080
+
 glViewer::glViewer()
 {
     //ctor
@@ -114,7 +117,7 @@ int glViewer::test()
     glGenTextures(16, texture);
     // Build and compile our shader program
     ourShader = new Shader("textures.vs", "textures.frag");
-
+    ourShader->Use();
     AVFrame	*pFrame ;
     static int framecount = 0;
     struct timeval t_start,t_end;
@@ -347,13 +350,13 @@ int glViewer::test()
                 if((*pFrameQueueVecPtr_)[i].empty())
                 {
                     glBindTexture(GL_TEXTURE_2D, texture[i]);
-                    ourShader->Use();
+
                     glBindVertexArray(VAO[i]);
                     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
                     continue;
                 }
                 pFrame=(*pFrameQueueVecPtr_)[i].front();
-                ourShader->Use();
+
                 glBindTexture(GL_TEXTURE_2D, texture[i]);
                 glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
                 glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
@@ -388,7 +391,7 @@ int glViewer::test()
             {
                 // Bind Texture
                 glBindTexture(GL_TEXTURE_2D, texture[i]);
-                ourShader->Use();
+
                 glBindVertexArray(VAO[i]);
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             }
