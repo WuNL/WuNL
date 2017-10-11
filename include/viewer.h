@@ -14,6 +14,8 @@
 #include <sys/time.h>
 #include <time.h>
 
+typedef std::pair<std::queue<AVFrame*>,std::string> BUFFERPAIR;
+
 class viewer
 {
 public:
@@ -27,7 +29,7 @@ public:
     void devFun();
     void setStyle(int splitNum);
 
-    void setQueuePtr(boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr)
+    void setQueuePtr(boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr)
     {
         pFrameQueueVecPtr_=pFrameQueueVecPtr;
     }
@@ -36,9 +38,18 @@ protected:
 private:
     void setVertices(int splitNum, int style);
     void setStyleInter();
+    /** \brief 在屏幕上绘制文字
+     * 地点：左上角
+     * 字体，大小，颜色：暂时写死
+     * 要点：根据分屏数来确定绘制位置，自动调整
+     * \return void
+     *
+     */
+    void renderTexts();
+
     GLFWwindow* window;
     boost::thread m_Thread;
-    boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr_;
+    boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr_;
 //    boost::mutex lock;
 
     GLuint VBO[16], VAO[16], EBO,pboIds[16],pboUV[16];

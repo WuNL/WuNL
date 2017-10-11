@@ -331,7 +331,7 @@ void viewer::devFun()
             //int i = 1;
             for(int i = 0; i<splitNum_; ++i)
             {
-                if((*pFrameQueueVecPtr_)[i].empty())
+                if((*pFrameQueueVecPtr_)[i].first.empty())
                 {
                     glBindVertexArray(VAO[i]);
                     glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
@@ -365,8 +365,8 @@ void viewer::devFun()
                     glBindVertexArray(0);
                     continue;
                 }
-                pFrame=(*pFrameQueueVecPtr_)[i].front();
-                (*pFrameQueueVecPtr_)[i].pop();
+                pFrame=(*pFrameQueueVecPtr_)[i].first.front();
+                (*pFrameQueueVecPtr_)[i].first.pop();
                 realcount++;
                 if(pFrame->width!=1920/sqrt(splitNum_) || pFrame->height!=1080/sqrt(splitNum_))
                 {
@@ -528,4 +528,11 @@ void viewer::displayFun()
         // put the stuff we've been drawing onto the display
         glfwSwapBuffers(window);
     }
+}
+
+void viewer::renderTexts()
+{
+
+
+
 }

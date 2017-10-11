@@ -16,11 +16,8 @@ typedef std::vector<boost::shared_ptr<int> > vs;
 typedef boost::shared_ptr<std::vector<std::queue<AVFrame*> > > queuePtr;
 typedef std::pair<std::queue<AVFrame*>,std::string> BUFFERPAIR;
 
-/** \brief 管理电视墙资源的类
- *
- * \param
- * \param
- * \return
+/** \brief
+ *  管理电视墙资源的类
  *
  */
 
@@ -33,14 +30,15 @@ public:
 protected:
 
 private:
-    boost::shared_ptr<std::vector<channel> >  channelVecPtr;
+
     rtpRecvPtrVec v;
     fmDecoderPtrVec fv;
+    viewer vr;
+
+    boost::shared_ptr<std::vector<channel> >  channelVecPtr;
     boost::shared_ptr<std::vector<int> > readIndex;
     boost::shared_ptr<std::vector<int> > writeIndex;
-
     std::vector<BUFFERPAIR> pFrameQueueVec;
-
     boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr;
 
 };

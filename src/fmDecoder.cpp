@@ -472,15 +472,15 @@ void fmDecoder::run()
 
                     }
 
-                    if((*pFrameQueueVecPtr_)[threadSeq_].size()<=30)
+                    if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=30)
                     {
-                        (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
+                        (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
                     }
                     else
                     {
-                        AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].back();
+                        AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].first.back();
                         av_frame_free(&tmp);
-                        (*pFrameQueueVecPtr_)[threadSeq_].back() = copyFrame;
+                        (*pFrameQueueVecPtr_)[threadSeq_].first.back() = copyFrame;
                     }
 
                     //av_frame_free(&pFrame);
@@ -498,16 +498,16 @@ void fmDecoder::run()
 
                     //av_frame_free(&pFrame);
 
-                    if((*pFrameQueueVecPtr_)[threadSeq_].size()<=30)
+                    if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=30)
                     {
-                        (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
+                        (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
                     }
                     else
                     {
                         //                        printf("buffer full!\n");
-                        AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].back();
+                        AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].first.back();
                         av_frame_free(&tmp);
-                        (*pFrameQueueVecPtr_)[threadSeq_].back() = copyFrame;
+                        (*pFrameQueueVecPtr_)[threadSeq_].first.back() = copyFrame;
                     }
 
                 }
@@ -524,12 +524,10 @@ void fmDecoder::startDecode()
 }
 
 void fmDecoder::setPtr(boost::shared_ptr<std::vector<channel> > cvPtr,
-                       boost::shared_ptr<std::vector<std::vector<AVFrame*> > > pFrameVecPtr,
                        boost::shared_ptr<std::vector<int> >readIndex,
                        boost::shared_ptr<std::vector<int> > writeIndex)
 {
     cvPtr_ = cvPtr;
-    pFrameVecPtr_ = pFrameVecPtr;
     readIndex_=readIndex;
     writeIndex_ = writeIndex;
 }
@@ -624,7 +622,7 @@ int fmDecoder::Decode(AVFrame *pFrame)
         av_frame_get_buffer(copyFrame, 32);
         av_frame_copy(copyFrame, pFrame);
         av_frame_copy_props(copyFrame, pFrame);
-        (*pFrameQueueVecPtr_)[threadSeq_].push(copyFrame);
+        (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
         av_frame_free(&pFrame);
         av_frame_free(&copyFrame);
     }

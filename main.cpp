@@ -30,6 +30,12 @@ int main()
     int rc = pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
     if (rc != 0)
         std::cout << "Error calling pthread_setaffinity_np !!! ";
+    manager myBoss;
+    while(1)
+    {
+        int style = 0;
+        std::cin>>style;
+    }
 
     /*
     boost::shared_ptr<std::vector<channel> >  channelVecPtr = boost::make_shared<std::vector<channel> >(CHANNELNUM);

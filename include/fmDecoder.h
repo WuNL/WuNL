@@ -14,6 +14,9 @@
 #include <thread>
 
 using namespace boost::asio;
+
+typedef std::pair<std::queue<AVFrame*>,std::string> BUFFERPAIR;
+
 class fmDecoder
 {
 public:
@@ -29,10 +32,9 @@ public:
     void run();
     int testFun();
     void setPtr(boost::shared_ptr<std::vector<channel> > cvPtr,
-                boost::shared_ptr<std::vector<std::vector<AVFrame*> > > pFrameVecPtr,
                 boost::shared_ptr<std::vector<int> >readIndex,
                 boost::shared_ptr<std::vector<int> > writeIndex);
-    void setQueuePtr(boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr)
+    void setQueuePtr(boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr)
     {
         pFrameQueueVecPtr_=pFrameQueueVecPtr;
     }
@@ -72,8 +74,7 @@ private:
     boost::shared_ptr<std::vector<channel> > cvPtr_;
     boost::shared_ptr<std::vector<int> > readIndex_;
     boost::shared_ptr<std::vector<int> > writeIndex_;
-    boost::shared_ptr<std::vector<std::vector<AVFrame*> > > pFrameVecPtr_;
-    boost::shared_ptr<std::vector<std::queue<AVFrame*> > > pFrameQueueVecPtr_;
+    boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr_;
 
 };
 
