@@ -335,8 +335,9 @@
 	"samplefmt.h"
 	"version.h"
 
-1506561452 source:/home/sdt/workspace/WuNL/main.cpp
+1507686344 source:/home/sdt/workspace/WuNL/main.cpp
 	<iostream>
+	"manager.h"
 	"rtpReceiver.h"
 	"channel.h"
 	"fmDecoder.h"
@@ -345,6 +346,7 @@
 	"fmDecoder.h"
 	"glViewer.h"
 	"viewer.h"
+	"protobufServer.h"
 	<queue>
 
 1505437940 /home/sdt/workspace/WuNL/include/rtpReceiver.h
@@ -360,7 +362,7 @@
 	<boost/asio.hpp>
 	"params.h"
 
-1506496574 /home/sdt/workspace/WuNL/include/params.h
+1507687621 /home/sdt/workspace/WuNL/include/params.h
 	<libavcodec/avcodec.h>
 	<libavformat/avformat.h>
 	<libswscale/swscale.h>
@@ -376,6 +378,8 @@
 	<boost/thread/mutex.hpp>
 	<boost/thread/tss.hpp>
 	<boost/asio.hpp>
+	<boost/bind.hpp>
+	<boost/smart_ptr.hpp>
 
 1505887300 /home/sdt/workspace/WuNL/include/fmDecoder.h
 	"params.h"
@@ -451,13 +455,14 @@
 	"nv12Viewer.h"
 	<stdio.h>
 
-1505466137 /home/sdt/workspace/WuNL/include/viewer.h
+1507621571 /home/sdt/workspace/WuNL/include/viewer.h
 	<iostream>
 	<GL/glew.h>
 	<GLFW/glfw3.h>
 	"GLError.h"
 	"params.h"
 	"Shader.h"
+	"textRender.h"
 	"channel.h"
 	<sched.h>
 	<thread>
@@ -466,7 +471,7 @@
 
 1505438183 /home/sdt/workspace/WuNL/include/GLError.h
 
-1506563066 source:/home/sdt/workspace/WuNL/src/viewer.cpp
+1507624170 source:/home/sdt/workspace/WuNL/src/viewer.cpp
 	"viewer.h"
 	<math.h>
 
@@ -578,19 +583,16 @@
 	"fmDecoder.h"
 	<math.h>
 
-1507518021 source:/home/sdt/workspace/WuNL/src/protobufServer.cpp
+1507599901 source:/home/sdt/workspace/WuNL/src/protobufServer.cpp
 	"protobufServer.h"
 
-1507518629 /home/sdt/workspace/WuNL/include/protobufServer.h
+1507604063 /home/sdt/workspace/WuNL/include/protobufServer.h
 	"hvs.pb.h"
-	<iostream>
-	<stdio.h>
-	<boost/thread/thread.hpp>
-	<boost/thread/mutex.hpp>
-	<boost/thread/tss.hpp>
-	<boost/asio.hpp>
+	"boost/asio.hpp"
+	"boost/shared_ptr.hpp"
+	"boost/thread.hpp"
 
-1507515122 /home/sdt/workspace/WuNL/protobuf/hvs.pb.h
+1507598633 /home/sdt/workspace/WuNL/protobuf/hvs.pb.h
 	<string>
 	<google/protobuf/stubs/common.h>
 	<google/protobuf/io/coded_stream.h>
@@ -603,4 +605,49 @@
 	<google/protobuf/repeated_field.h>
 	<google/protobuf/extension_set.h>
 	<google/protobuf/unknown_field_set.h>
+
+1507598633 source:/home/sdt/workspace/WuNL/protobuf/hvs.pb.cc
+	"hvs.pb.h"
+	<algorithm>
+	<google/protobuf/stubs/common.h>
+	<google/protobuf/stubs/port.h>
+	<google/protobuf/stubs/once.h>
+	<google/protobuf/io/coded_stream.h>
+	<google/protobuf/wire_format_lite_inl.h>
+	<google/protobuf/descriptor.h>
+	<google/protobuf/generated_message_reflection.h>
+	<google/protobuf/reflection_ops.h>
+	<google/protobuf/wire_format.h>
+
+1507618573 /home/sdt/workspace/WuNL/include/textRender.h
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<glm/gtc/type_ptr.hpp>
+	<ft2build.h>
+	"Shader.h"
+	<locale>
+	<codecvt>
+	<iostream>
+	<map>
+
+1499596095 /usr/local/include/freetype2/ft2build.h
+	<freetype/config/ftheader.h>
+
+1499596095 /usr/local/include/freetype2/freetype/config/ftheader.h
+
+1507624559 source:/home/sdt/workspace/WuNL/src/textRender.cpp
+	"textRender.h"
+
+1507687623 /home/sdt/workspace/WuNL/include/manager.h
+	"rtpReceiver.h"
+	"channel.h"
+	"fmDecoder.h"
+	"fmDecoder.h"
+	"glViewer.h"
+	"viewer.h"
+	"protobufServer.h"
+	<queue>
+
+1507687374 source:/home/sdt/workspace/WuNL/src/manager.cpp
+	"manager.h"
 

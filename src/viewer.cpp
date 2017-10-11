@@ -16,6 +16,7 @@ void viewer::updateImage(GLubyte* dst,int x,int y, int w,int h,void* data)
 viewer::viewer()
 {
     //ctor
+
     frameWidth=1920;
     frameHeight=1080;
     splitNum_ = WINDOW_STYLE;
@@ -219,6 +220,9 @@ void viewer::devFun()
     glewExperimental = GL_TRUE;
     glewInit();
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    tr = new textRender(1440,900,"/home/sdt/workspace/textRender/SourceHanSerifCN-Bold.otf");
+
 
     setVertices(splitNum_,0);
     std::cout<<verticesVec[0][0]<<std::endl;
@@ -430,6 +434,15 @@ void viewer::devFun()
 
             glBindVertexArray(0);
             glfwPollEvents();
+
+        std::string s("corn坐标系\n踟蹰");
+        tr->RenderText(s,(GLfloat)335.0f,(GLfloat)335.0f,1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+        ourShader->Use();
+//        std::string s1("cornadawd色色是非");
+//        tr->RenderText(s1,(GLfloat)350.0f,(GLfloat)350.0f,1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+//        std::string s2("！@#");
+//        tr->RenderText(s2,(GLfloat)30.0f,(GLfloat)100.0f,1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+
             glfwSwapBuffers(window);
 
             framecount++;

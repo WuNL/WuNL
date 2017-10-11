@@ -9,12 +9,16 @@
 #define VIDEO_WIDE 1920
 #define VIDEO_HEIGHT 1080
 
-#define WINDOW_WIDTH 1920
-#define WINDOW_HEIGHT 1080
+#define WINDOW_WIDTH 1440
+#define WINDOW_HEIGHT 900
 
 #define useNpp 0
 
 #define copyNum 4
+
+#define PORT 12310
+#define IPV4
+
 
 //1: 1分屏
 //4: 4分屏
@@ -23,6 +27,10 @@
 #define WINDOW_STYLE 16
 
 #define __STDC_CONSTANT_MACROS
+
+
+
+
 extern "C" {
 #include <libavcodec/avcodec.h>
 //#include <libavcodec/
@@ -41,8 +49,10 @@ extern "C" {
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/tss.hpp>
 #include <boost/asio.hpp>
-
+#include <boost/bind.hpp>
+#include <boost/smart_ptr.hpp>
 //boost::mutex lock;
+
 
 
 #endif // PARAMS_H_INCLUDED

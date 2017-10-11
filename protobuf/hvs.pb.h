@@ -382,19 +382,27 @@ class ChannelPolling : public ::google::protobuf::Message /* @@protoc_insertion_
 
   // accessors -------------------------------------------------------
 
-  // string terminalID = 6;
+  // repeated string terminalID = 6;
+  int terminalid_size() const;
   void clear_terminalid();
   static const int kTerminalIDFieldNumber = 6;
-  const ::std::string& terminalid() const;
-  void set_terminalid(const ::std::string& value);
+  const ::std::string& terminalid(int index) const;
+  ::std::string* mutable_terminalid(int index);
+  void set_terminalid(int index, const ::std::string& value);
   #if LANG_CXX11
-  void set_terminalid(::std::string&& value);
+  void set_terminalid(int index, ::std::string&& value);
   #endif
-  void set_terminalid(const char* value);
-  void set_terminalid(const char* value, size_t size);
-  ::std::string* mutable_terminalid();
-  ::std::string* release_terminalid();
-  void set_allocated_terminalid(::std::string* terminalid);
+  void set_terminalid(int index, const char* value);
+  void set_terminalid(int index, const char* value, size_t size);
+  ::std::string* add_terminalid();
+  void add_terminalid(const ::std::string& value);
+  #if LANG_CXX11
+  void add_terminalid(::std::string&& value);
+  #endif
+  void add_terminalid(const char* value);
+  void add_terminalid(const char* value, size_t size);
+  const ::google::protobuf::RepeatedPtrField< ::std::string>& terminalid() const;
+  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_terminalid();
 
   // int32 id = 1;
   void clear_id();
@@ -430,7 +438,7 @@ class ChannelPolling : public ::google::protobuf::Message /* @@protoc_insertion_
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::ArenaStringPtr terminalid_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> terminalid_;
   ::google::protobuf::int32 id_;
   ::google::protobuf::int32 saperatenumber_;
   ::google::protobuf::int32 style_;
@@ -857,57 +865,73 @@ inline void ChannelPolling::set_ispolling(bool value) {
   // @@protoc_insertion_point(field_set:hvs.ChannelPolling.isPolling)
 }
 
-// string terminalID = 6;
+// repeated string terminalID = 6;
+inline int ChannelPolling::terminalid_size() const {
+  return terminalid_.size();
+}
 inline void ChannelPolling::clear_terminalid() {
-  terminalid_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  terminalid_.Clear();
 }
-inline const ::std::string& ChannelPolling::terminalid() const {
+inline const ::std::string& ChannelPolling::terminalid(int index) const {
   // @@protoc_insertion_point(field_get:hvs.ChannelPolling.terminalID)
-  return terminalid_.GetNoArena();
+  return terminalid_.Get(index);
 }
-inline void ChannelPolling::set_terminalid(const ::std::string& value) {
-  
-  terminalid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+inline ::std::string* ChannelPolling::mutable_terminalid(int index) {
+  // @@protoc_insertion_point(field_mutable:hvs.ChannelPolling.terminalID)
+  return terminalid_.Mutable(index);
+}
+inline void ChannelPolling::set_terminalid(int index, const ::std::string& value) {
   // @@protoc_insertion_point(field_set:hvs.ChannelPolling.terminalID)
+  terminalid_.Mutable(index)->assign(value);
 }
 #if LANG_CXX11
-inline void ChannelPolling::set_terminalid(::std::string&& value) {
-  
-  terminalid_.SetNoArena(
-    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:hvs.ChannelPolling.terminalID)
+inline void ChannelPolling::set_terminalid(int index, ::std::string&& value) {
+  // @@protoc_insertion_point(field_set:hvs.ChannelPolling.terminalID)
+  terminalid_.Mutable(index)->assign(std::move(value));
 }
 #endif
-inline void ChannelPolling::set_terminalid(const char* value) {
+inline void ChannelPolling::set_terminalid(int index, const char* value) {
   GOOGLE_DCHECK(value != NULL);
-  
-  terminalid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  terminalid_.Mutable(index)->assign(value);
   // @@protoc_insertion_point(field_set_char:hvs.ChannelPolling.terminalID)
 }
-inline void ChannelPolling::set_terminalid(const char* value, size_t size) {
-  
-  terminalid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
+inline void ChannelPolling::set_terminalid(int index, const char* value, size_t size) {
+  terminalid_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_set_pointer:hvs.ChannelPolling.terminalID)
 }
-inline ::std::string* ChannelPolling::mutable_terminalid() {
-  
-  // @@protoc_insertion_point(field_mutable:hvs.ChannelPolling.terminalID)
-  return terminalid_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline ::std::string* ChannelPolling::add_terminalid() {
+  // @@protoc_insertion_point(field_add_mutable:hvs.ChannelPolling.terminalID)
+  return terminalid_.Add();
 }
-inline ::std::string* ChannelPolling::release_terminalid() {
-  // @@protoc_insertion_point(field_release:hvs.ChannelPolling.terminalID)
-  
-  return terminalid_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline void ChannelPolling::add_terminalid(const ::std::string& value) {
+  terminalid_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:hvs.ChannelPolling.terminalID)
 }
-inline void ChannelPolling::set_allocated_terminalid(::std::string* terminalid) {
-  if (terminalid != NULL) {
-    
-  } else {
-    
-  }
-  terminalid_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), terminalid);
-  // @@protoc_insertion_point(field_set_allocated:hvs.ChannelPolling.terminalID)
+#if LANG_CXX11
+inline void ChannelPolling::add_terminalid(::std::string&& value) {
+  terminalid_.Add(std::move(value));
+  // @@protoc_insertion_point(field_add:hvs.ChannelPolling.terminalID)
+}
+#endif
+inline void ChannelPolling::add_terminalid(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  terminalid_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:hvs.ChannelPolling.terminalID)
+}
+inline void ChannelPolling::add_terminalid(const char* value, size_t size) {
+  terminalid_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:hvs.ChannelPolling.terminalID)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+ChannelPolling::terminalid() const {
+  // @@protoc_insertion_point(field_list:hvs.ChannelPolling.terminalID)
+  return terminalid_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+ChannelPolling::mutable_terminalid() {
+  // @@protoc_insertion_point(field_mutable_list:hvs.ChannelPolling.terminalID)
+  return &terminalid_;
 }
 
 // -------------------------------------------------------------------

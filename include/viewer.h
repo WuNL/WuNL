@@ -6,6 +6,7 @@
 #include "GLError.h"
 #include "params.h"
 #include "Shader.h"
+#include "textRender.h"
 
 #include "channel.h"
 #include <sched.h>
@@ -48,6 +49,8 @@ private:
     Shader* ourShader;
     int frameWidth,frameHeight;
     int splitNum_,splitNum_old;
+
+    textRender* tr;
 };
 
 #endif // VIEWER_H

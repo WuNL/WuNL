@@ -181,7 +181,7 @@ void AddDescriptorsImpl() {
       ".hvs.Terminal\"\177\n\016ChannelPolling\022\n\n\002id\030\001 "
       "\001(\005\022\026\n\016saperateNumber\030\002 \001(\005\022\r\n\005style\030\003 \001"
       "(\005\022\023\n\013pollingTime\030\004 \001(\005\022\021\n\tisPolling\030\005 \001"
-      "(\010\022\022\n\nterminalID\030\006 \001(\t\"\261\001\n\016WrapperMessag"
+      "(\010\022\022\n\nterminalID\030\006 \003(\t\"\261\001\n\016WrapperMessag"
       "e\022\"\n\003cpl\030\003 \001(\0132\023.hvs.ChannelPollingH\000\022 \n"
       "\002ta\030\004 \001(\0132\022.hvs.TerminalArrayH\000\022\034\n\003tml\030\005"
       " \001(\0132\r.hvs.TerminalH\000\022\025\n\013debugStatus\030\006 \001"
@@ -1033,12 +1033,9 @@ ChannelPolling::ChannelPolling()
 ChannelPolling::ChannelPolling(const ChannelPolling& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL),
+      terminalid_(from.terminalid_),
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  terminalid_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.terminalid().size() > 0) {
-    terminalid_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.terminalid_);
-  }
   ::memcpy(&id_, &from.id_,
     static_cast<size_t>(reinterpret_cast<char*>(&ispolling_) -
     reinterpret_cast<char*>(&id_)) + sizeof(ispolling_));
@@ -1046,7 +1043,6 @@ ChannelPolling::ChannelPolling(const ChannelPolling& from)
 }
 
 void ChannelPolling::SharedCtor() {
-  terminalid_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(&id_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&ispolling_) -
       reinterpret_cast<char*>(&id_)) + sizeof(ispolling_));
@@ -1059,7 +1055,6 @@ ChannelPolling::~ChannelPolling() {
 }
 
 void ChannelPolling::SharedDtor() {
-  terminalid_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
 void ChannelPolling::SetCachedSize(int size) const {
@@ -1091,7 +1086,7 @@ void ChannelPolling::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  terminalid_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  terminalid_.Clear();
   ::memset(&id_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&ispolling_) -
       reinterpret_cast<char*>(&id_)) + sizeof(ispolling_));
@@ -1178,14 +1173,15 @@ bool ChannelPolling::MergePartialFromCodedStream(
         break;
       }
 
-      // string terminalID = 6;
+      // repeated string terminalID = 6;
       case 6: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(50u /* 50 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_terminalid()));
+                input, this->add_terminalid()));
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->terminalid().data(), static_cast<int>(this->terminalid().length()),
+            this->terminalid(this->terminalid_size() - 1).data(),
+            static_cast<int>(this->terminalid(this->terminalid_size() - 1).length()),
             ::google::protobuf::internal::WireFormatLite::PARSE,
             "hvs.ChannelPolling.terminalID"));
         } else {
@@ -1245,14 +1241,14 @@ void ChannelPolling::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteBool(5, this->ispolling(), output);
   }
 
-  // string terminalID = 6;
-  if (this->terminalid().size() > 0) {
+  // repeated string terminalID = 6;
+  for (int i = 0, n = this->terminalid_size(); i < n; i++) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->terminalid().data(), static_cast<int>(this->terminalid().length()),
+      this->terminalid(i).data(), static_cast<int>(this->terminalid(i).length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
       "hvs.ChannelPolling.terminalID");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      6, this->terminalid(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      6, this->terminalid(i), output);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -1294,15 +1290,14 @@ void ChannelPolling::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(5, this->ispolling(), target);
   }
 
-  // string terminalID = 6;
-  if (this->terminalid().size() > 0) {
+  // repeated string terminalID = 6;
+  for (int i = 0, n = this->terminalid_size(); i < n; i++) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->terminalid().data(), static_cast<int>(this->terminalid().length()),
+      this->terminalid(i).data(), static_cast<int>(this->terminalid(i).length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
       "hvs.ChannelPolling.terminalID");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        6, this->terminalid(), target);
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteStringToArray(6, this->terminalid(i), target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -1322,11 +1317,12 @@ size_t ChannelPolling::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // string terminalID = 6;
-  if (this->terminalid().size() > 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->terminalid());
+  // repeated string terminalID = 6;
+  total_size += 1 *
+      ::google::protobuf::internal::FromIntSize(this->terminalid_size());
+  for (int i = 0, n = this->terminalid_size(); i < n; i++) {
+    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+      this->terminalid(i));
   }
 
   // int32 id = 1;
@@ -1391,10 +1387,7 @@ void ChannelPolling::MergeFrom(const ChannelPolling& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.terminalid().size() > 0) {
-
-    terminalid_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.terminalid_);
-  }
+  terminalid_.MergeFrom(from.terminalid_);
   if (from.id() != 0) {
     set_id(from.id());
   }
@@ -1436,7 +1429,7 @@ void ChannelPolling::Swap(ChannelPolling* other) {
 }
 void ChannelPolling::InternalSwap(ChannelPolling* other) {
   using std::swap;
-  terminalid_.Swap(&other->terminalid_);
+  terminalid_.InternalSwap(&other->terminalid_);
   swap(id_, other->id_);
   swap(saperatenumber_, other->saperatenumber_);
   swap(style_, other->style_);
@@ -1524,57 +1517,73 @@ void ChannelPolling::set_ispolling(bool value) {
   // @@protoc_insertion_point(field_set:hvs.ChannelPolling.isPolling)
 }
 
-// string terminalID = 6;
+// repeated string terminalID = 6;
+int ChannelPolling::terminalid_size() const {
+  return terminalid_.size();
+}
 void ChannelPolling::clear_terminalid() {
-  terminalid_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  terminalid_.Clear();
 }
-const ::std::string& ChannelPolling::terminalid() const {
+const ::std::string& ChannelPolling::terminalid(int index) const {
   // @@protoc_insertion_point(field_get:hvs.ChannelPolling.terminalID)
-  return terminalid_.GetNoArena();
+  return terminalid_.Get(index);
 }
-void ChannelPolling::set_terminalid(const ::std::string& value) {
-  
-  terminalid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+::std::string* ChannelPolling::mutable_terminalid(int index) {
+  // @@protoc_insertion_point(field_mutable:hvs.ChannelPolling.terminalID)
+  return terminalid_.Mutable(index);
+}
+void ChannelPolling::set_terminalid(int index, const ::std::string& value) {
   // @@protoc_insertion_point(field_set:hvs.ChannelPolling.terminalID)
+  terminalid_.Mutable(index)->assign(value);
 }
 #if LANG_CXX11
-void ChannelPolling::set_terminalid(::std::string&& value) {
-  
-  terminalid_.SetNoArena(
-    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:hvs.ChannelPolling.terminalID)
+void ChannelPolling::set_terminalid(int index, ::std::string&& value) {
+  // @@protoc_insertion_point(field_set:hvs.ChannelPolling.terminalID)
+  terminalid_.Mutable(index)->assign(std::move(value));
 }
 #endif
-void ChannelPolling::set_terminalid(const char* value) {
+void ChannelPolling::set_terminalid(int index, const char* value) {
   GOOGLE_DCHECK(value != NULL);
-  
-  terminalid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  terminalid_.Mutable(index)->assign(value);
   // @@protoc_insertion_point(field_set_char:hvs.ChannelPolling.terminalID)
 }
-void ChannelPolling::set_terminalid(const char* value, size_t size) {
-  
-  terminalid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
+void ChannelPolling::set_terminalid(int index, const char* value, size_t size) {
+  terminalid_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_set_pointer:hvs.ChannelPolling.terminalID)
 }
-::std::string* ChannelPolling::mutable_terminalid() {
-  
-  // @@protoc_insertion_point(field_mutable:hvs.ChannelPolling.terminalID)
-  return terminalid_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+::std::string* ChannelPolling::add_terminalid() {
+  // @@protoc_insertion_point(field_add_mutable:hvs.ChannelPolling.terminalID)
+  return terminalid_.Add();
 }
-::std::string* ChannelPolling::release_terminalid() {
-  // @@protoc_insertion_point(field_release:hvs.ChannelPolling.terminalID)
-  
-  return terminalid_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+void ChannelPolling::add_terminalid(const ::std::string& value) {
+  terminalid_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:hvs.ChannelPolling.terminalID)
 }
-void ChannelPolling::set_allocated_terminalid(::std::string* terminalid) {
-  if (terminalid != NULL) {
-    
-  } else {
-    
-  }
-  terminalid_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), terminalid);
-  // @@protoc_insertion_point(field_set_allocated:hvs.ChannelPolling.terminalID)
+#if LANG_CXX11
+void ChannelPolling::add_terminalid(::std::string&& value) {
+  terminalid_.Add(std::move(value));
+  // @@protoc_insertion_point(field_add:hvs.ChannelPolling.terminalID)
+}
+#endif
+void ChannelPolling::add_terminalid(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  terminalid_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:hvs.ChannelPolling.terminalID)
+}
+void ChannelPolling::add_terminalid(const char* value, size_t size) {
+  terminalid_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:hvs.ChannelPolling.terminalID)
+}
+const ::google::protobuf::RepeatedPtrField< ::std::string>&
+ChannelPolling::terminalid() const {
+  // @@protoc_insertion_point(field_list:hvs.ChannelPolling.terminalID)
+  return terminalid_;
+}
+::google::protobuf::RepeatedPtrField< ::std::string>*
+ChannelPolling::mutable_terminalid() {
+  // @@protoc_insertion_point(field_mutable_list:hvs.ChannelPolling.terminalID)
+  return &terminalid_;
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

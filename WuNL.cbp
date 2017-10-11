@@ -17,6 +17,8 @@
 					<Add option="-g" />
 					<Add directory="include" />
 					<Add directory="/home/wunl/Downloads/ffmpeg-3.2.4" />
+					<Add directory="protobuf" />
+					<Add directory="/usr/local/include/freetype2" />
 				</Compiler>
 				<Linker>
 					<Add option="-m64" />
@@ -33,9 +35,13 @@
 					<Add library="libavutil" />
 					<Add library="libpthread" />
 					<Add library="libswresample" />
+					<Add library="/usr/local/lib/libfreetype.a" />
+					<Add library="libpng" />
 					<Add library="libz" />
 					<Add library="libm" />
 					<Add library="libdl" />
+					<Add library="libprotobuf" />
+					<Add directory="/usr/local/lib" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -50,12 +56,13 @@
 					<Add directory="include" />
 					<Add directory="/home/wunl/Downloads/ffmpeg-3.2.4" />
 					<Add directory="protobuf" />
+					<Add directory="/usr/local/include/freetype2" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add option="-m64" />
 					<Add option="-lGL -lGLU -lglfw3 -lGLEW -lXxf86vm  -lXcursor -lpthread -lXinerama -lXi -lXrandr" />
-					<Add option="-lX11" />
+					<Add option="-lX11 -pthread" />
 					<Add library="boost_filesystem" />
 					<Add library="boost_thread" />
 					<Add library="boost_system" />
@@ -65,12 +72,14 @@
 					<Add library="libavfilter" />
 					<Add library="libavdevice" />
 					<Add library="libavutil" />
-					<Add library="libpthread" />
 					<Add library="libswresample" />
+					<Add library="/usr/local/lib/libfreetype.a" />
+					<Add library="libpng" />
 					<Add library="libz" />
 					<Add library="libm" />
 					<Add library="libdl" />
 					<Add library="libprotobuf" />
+					<Add directory="/usr/local/lib" />
 				</Linker>
 			</Target>
 		</Build>
@@ -85,14 +94,17 @@
 		<Unit filename="include/params.h" />
 		<Unit filename="include/protobufServer.h" />
 		<Unit filename="include/rtpReceiver.h" />
+		<Unit filename="include/textRender.h" />
 		<Unit filename="include/viewer.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="protobuf/hvs.pb.cc" />
 		<Unit filename="src/Shader.cpp" />
 		<Unit filename="src/channel.cpp" />
 		<Unit filename="src/fmDecoder.cpp" />
 		<Unit filename="src/glViewer.cpp" />
 		<Unit filename="src/protobufServer.cpp" />
 		<Unit filename="src/rtpReceiver.cpp" />
+		<Unit filename="src/textRender.cpp" />
 		<Unit filename="src/viewer.cpp" />
 		<Extensions>
 			<envvars />
