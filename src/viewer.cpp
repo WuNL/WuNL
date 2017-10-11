@@ -44,9 +44,19 @@ void viewer::run()
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     // Create a GLFWwindow object that we can use for GLFW's functions
+//    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL Viewer By WuNL", glfwGetPrimaryMonitor(), NULL);
     window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL Viewer By WuNL", NULL, NULL);
+    int widthMM, heightMM;
+    glfwGetMonitorPhysicalSize(glfwGetPrimaryMonitor(), &widthMM, &heightMM);
+    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
+    std::cout<<mode->width<<" -------- "<<mode->height<<std::endl;
 
+    /*
+    // 获取多个显示设备
+    int count;
+    GLFWmonitor** monitors = glfwGetMonitors(&count);
+    */
     m_Thread = boost::thread(&viewer::devFun, this);
 }
 
@@ -435,29 +445,32 @@ void viewer::devFun()
             glBindVertexArray(0);
             glfwPollEvents();
 
-        std::string s("corn坐标系\n踟蹰");
-        tr->RenderText(s,(GLfloat)335.0f,(GLfloat)335.0f,1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-        ourShader->Use();
+
 //        std::string s1("cornadawd色色是非");
 //        tr->RenderText(s1,(GLfloat)350.0f,(GLfloat)350.0f,1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 //        std::string s2("！@#");
 //        tr->RenderText(s2,(GLfloat)30.0f,(GLfloat)100.0f,1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 
-            glfwSwapBuffers(window);
 
             framecount++;
             gettimeofday(&t_end,NULL);
             long end = ((long)t_end.tv_sec)*1000+(long)t_end.tv_usec/1000;
             cost_time = end - start;
-
+            static float fps = 0.0f;
             if(cost_time/1000.0 > 1)
             {
+                fps = (float)framecount*1000/cost_time;
                 printf("fps:    %f    real fps:    %f      frameWidth:%d\n",(float)framecount*1000/cost_time,(float)realcount*1000/cost_time,frameWidth);
                 gettimeofday(&t_start,NULL);
                 start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
                 framecount = 0;
                 realcount = 0;
             }
+
+            renderTexts(splitNum_,fps);
+            glfwSwapBuffers(window);
+
+
         }
     }
 }
@@ -530,9 +543,46 @@ void viewer::displayFun()
     }
 }
 
-void viewer::renderTexts()
+void viewer::renderTexts(int splitNum,float fps)
 {
+    assert(splitNum==splitNum_);
 
+    switch(splitNum)
+    {
+    case 1:
+    {
+        break;
+    }
+    case 4:
+    {
+        break;
+    }
+    case 9:
+    {
+        break;
+    }
+    case 16:
+    {
+        break;
+    }
+    default:
+    {
+        break;
+    }
+    }
 
+    for(int i = 0; i<splitNum_; ++i)
+    {
+        std::string s = (*pFrameQueueVecPtr_)[i].second;
+        tr->RenderText(s,(GLfloat)200.0f*(i%4)+25.0f,(GLfloat)200.0f*(i%4)+25.0f,0.2f, glm::vec3(0.5, 0.8f, 0.2f));
+    }
+    if(showFPS)
+    {
+        char fpsStr[100];
+        sprintf(fpsStr,"FPS: %f ",fps);
+        tr->RenderText(fpsStr,(GLfloat)(1440-300),(GLfloat)(900-25),0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+    }
+
+    ourShader->Use();
 
 }

@@ -18,7 +18,7 @@
 
 #define PORT 12310
 #define IPV4
-
+#define showFPS 1
 
 //1: 1分屏
 //4: 4分屏

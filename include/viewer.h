@@ -45,7 +45,7 @@ private:
      * \return void
      *
      */
-    void renderTexts();
+    void renderTexts(int splintNum,float fps = 0);
 
     GLFWwindow* window;
     boost::thread m_Thread;

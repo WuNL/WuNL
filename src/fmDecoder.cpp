@@ -471,7 +471,7 @@ void fmDecoder::run()
 
 
                     }
-
+                    (*pFrameQueueVecPtr_)[threadSeq_].second = "testText";
                     if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=30)
                     {
                         (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
@@ -497,7 +497,7 @@ void fmDecoder::run()
                     av_frame_copy_props(copyFrame, pFrame);
 
                     //av_frame_free(&pFrame);
-
+                    (*pFrameQueueVecPtr_)[threadSeq_].second = "testText 1";
                     if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=30)
                     {
                         (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
