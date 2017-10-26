@@ -13,9 +13,13 @@ void viewer::updateImage(GLubyte* dst,int x,int y, int w,int h,void* data)
     }
 }
 
-viewer::viewer()
+viewer::viewer(int width,int height,int ind,bool autoS)
 {
     //ctor
+    w = width;
+    h = height;
+    index = ind;
+    autoSwitch = autoS;
 
     frameWidth=1920;
     frameHeight=1080;
@@ -37,26 +41,8 @@ void viewer::run()
     // Init GLFW
     glfwInit();
 
-    // Set all the required options for GLFW
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-    // Create a GLFWwindow object that we can use for GLFW's functions
-//    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL Viewer By WuNL", glfwGetPrimaryMonitor(), NULL);
-    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL Viewer By WuNL", NULL, NULL);
-    int widthMM, heightMM;
-    glfwGetMonitorPhysicalSize(glfwGetPrimaryMonitor(), &widthMM, &heightMM);
-    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-    std::cout<<mode->width<<" -------- "<<mode->height<<std::endl;
-
-    /*
-    // 获取多个显示设备
-    int count;
-    GLFWmonitor** monitors = glfwGetMonitors(&count);
-    */
     m_Thread = boost::thread(&viewer::devFun, this);
 }
 
@@ -101,7 +87,7 @@ void viewer::setStyleInter()
 void viewer::setStyle(int splitNum)
 {
     splitNum_ = splitNum;
-    printf("splitNum=%d\n",splitNum);
+    printf("setStyle: splitNum=%d\n",splitNum);
 }
 
 void viewer::setVertices(int splitNum, int style)
@@ -223,6 +209,41 @@ void viewer::setVertices(int splitNum, int style)
 
 void viewer::devFun()
 {
+        // Set all the required options for GLFW
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    int count;
+    GLFWmonitor** monitors = glfwGetMonitors(&count);
+
+    const GLFWvidmode* mode = glfwGetVideoMode(monitors[index]);
+    glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+    glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+    glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+    glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+    glfwWindowHint(GLFW_AUTO_ICONIFY,GL_FALSE);
+
+    std::cout<<mode->width<<"  "<<mode->height<<std::endl;
+    char* s;
+    if(index==0)
+    {
+        s = "viewer 0";
+    }
+    else
+        s = "viewer 1";
+    if(autoSwitch)
+    {
+        window = glfwCreateWindow(mode->width, mode->height, s, NULL, NULL);
+        glfwSetWindowMonitor(window, monitors[index], 0, 0, mode->width, mode->height, mode->refreshRate);
+    }
+    else
+    {
+        window = glfwCreateWindow(w, h, s, NULL, NULL);
+        glfwSetWindowMonitor(window,monitors[index],0,0,w,h,mode->refreshRate);
+    }
+
+
     glfwMakeContextCurrent(window);
     // set vsync. 0:off max 1000+fps 1: on max 60fps 2: on max 30fps
     glfwSwapInterval(1);
@@ -316,16 +337,18 @@ void viewer::devFun()
         glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
     }
 
-    static int framecount = 0;
-    static int realcount = 0;
+    int framecount = 0;
+    int realcount = 0;
+    static float fps = 0.0f;
     struct timeval t_start,t_end;
     long cost_time=0;
     gettimeofday(&t_start,NULL);
     long start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
     printf("start time:%ld ms\n",start);
-
+    glfwMakeContextCurrent(window);
     while (!glfwWindowShouldClose(window))
     {
+        glfwMakeContextCurrent(window);
         if(splitNum_!=splitNum_old)
         {
             setStyleInter();
@@ -341,7 +364,9 @@ void viewer::devFun()
             //int i = 1;
             for(int i = 0; i<splitNum_; ++i)
             {
-                if((*pFrameQueueVecPtr_)[i].first.empty())
+                int j = (*videoPositionVecPtr_)[index][i];
+//                printf("j=%d \n",j);
+                if( j==-1 || (*pFrameQueueVecPtr_)[j].first.empty())
                 {
                     glBindVertexArray(VAO[i]);
                     glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
@@ -375,8 +400,8 @@ void viewer::devFun()
                     glBindVertexArray(0);
                     continue;
                 }
-                pFrame=(*pFrameQueueVecPtr_)[i].first.front();
-                (*pFrameQueueVecPtr_)[i].first.pop();
+                pFrame=(*pFrameQueueVecPtr_)[j].first.front();
+                (*pFrameQueueVecPtr_)[j].first.pop();
                 realcount++;
                 if(pFrame->width!=1920/sqrt(splitNum_) || pFrame->height!=1080/sqrt(splitNum_))
                 {
@@ -446,21 +471,14 @@ void viewer::devFun()
             glfwPollEvents();
 
 
-//        std::string s1("cornadawd色色是非");
-//        tr->RenderText(s1,(GLfloat)350.0f,(GLfloat)350.0f,1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-//        std::string s2("！@#");
-//        tr->RenderText(s2,(GLfloat)30.0f,(GLfloat)100.0f,1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-
-
             framecount++;
             gettimeofday(&t_end,NULL);
             long end = ((long)t_end.tv_sec)*1000+(long)t_end.tv_usec/1000;
             cost_time = end - start;
-            static float fps = 0.0f;
             if(cost_time/1000.0 > 1)
             {
                 fps = (float)framecount*1000/cost_time;
-                printf("fps:    %f    real fps:    %f      frameWidth:%d\n",(float)framecount*1000/cost_time,(float)realcount*1000/cost_time,frameWidth);
+                printf("index %d  fps:    %f    real fps:    %f      frameWidth:%d\n",index,(float)framecount*1000/cost_time,(float)realcount*1000/cost_time,frameWidth);
                 gettimeofday(&t_start,NULL);
                 start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
                 framecount = 0;
@@ -546,23 +564,54 @@ void viewer::displayFun()
 void viewer::renderTexts(int splitNum,float fps)
 {
     assert(splitNum==splitNum_);
-
+    int j = 0;
     switch(splitNum)
     {
     case 1:
     {
+        j = (*videoPositionVecPtr_)[index][0];
+        if(j!=-1)
+        {
+            std::string s = (*pFrameQueueVecPtr_)[j].second;
+            tr->RenderText(s,(GLfloat)0.0f, (GLfloat)WINDOW_HEIGHT-35, 0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+        }
+
         break;
     }
     case 4:
     {
+        for(int i = 0; i<splitNum_; ++i)
+        {
+            j = (*videoPositionVecPtr_)[index][i];
+            if(j==-1)
+                break;
+            std::string s = (*pFrameQueueVecPtr_)[j].second;
+            tr->RenderText(s,(GLfloat)(WINDOW_WIDTH*(i%2)/2+25.0f),(GLfloat)(WINDOW_HEIGHT/(int(i/2)+1)-25.0f),0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+        }
         break;
     }
     case 9:
     {
+        for(int i = 0; i<splitNum_; ++i)
+        {
+            j = (*videoPositionVecPtr_)[index][i];
+            if(j==-1)
+                break;
+            std::string s = (*pFrameQueueVecPtr_)[j].second;
+            tr->RenderText(s,(GLfloat)(WINDOW_WIDTH*(i%3)/3+25.0f),(GLfloat)(WINDOW_HEIGHT*(3-int(i/3))/3-25.0f),0.4f, glm::vec3(0.5, 0.8f, 0.2f));
+        }
         break;
     }
     case 16:
     {
+        for(int i = 0; i<splitNum_; ++i)
+        {
+            j = (*videoPositionVecPtr_)[index][i];
+            if(j==-1)
+                break;
+            std::string s = (*pFrameQueueVecPtr_)[j].second;
+            tr->RenderText(s,(GLfloat)(WINDOW_WIDTH*(i%4)/4+25.0f),(GLfloat)(WINDOW_HEIGHT*(4-int(i/4))/4-25.0f),0.3f, glm::vec3(0.5, 0.8f, 0.2f));
+        }
         break;
     }
     default:
@@ -571,17 +620,24 @@ void viewer::renderTexts(int splitNum,float fps)
     }
     }
 
-    for(int i = 0; i<splitNum_; ++i)
-    {
-        std::string s = (*pFrameQueueVecPtr_)[i].second;
-        tr->RenderText(s,(GLfloat)200.0f*(i%4)+25.0f,(GLfloat)200.0f*(i%4)+25.0f,0.2f, glm::vec3(0.5, 0.8f, 0.2f));
-    }
     if(showFPS)
     {
-        char fpsStr[100];
-        sprintf(fpsStr,"FPS: %f ",fps);
+        if(index == 0)
+        {
+         char fpsStr[100];
+        sprintf(fpsStr,"v0 FPS: %f ",fps);
         tr->RenderText(fpsStr,(GLfloat)(1440-300),(GLfloat)(900-25),0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+        }
+        else
+        {
+                    char fpsStr[100];
+        sprintf(fpsStr,"v1 FPS: %f ",fps);
+        tr->RenderText(fpsStr,(GLfloat)(1440-300),(GLfloat)(900-25),0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+        }
+
     }
+
+
 
     ourShader->Use();
 

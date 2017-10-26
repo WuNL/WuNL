@@ -1,5 +1,5 @@
 #include <iostream>
-#include "manager.h"
+#include "protobufServer.h"
 /*
 #include "rtpReceiver.h"
 #include "channel.h"
@@ -25,17 +25,31 @@ int main()
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
     thread = pthread_self();
-    CPU_ZERO(&cpuset);
     CPU_SET(19, &cpuset);
     int rc = pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
     if (rc != 0)
         std::cout << "Error calling pthread_setaffinity_np !!! ";
-    manager myBoss;
-    while(1)
+
+
+    try
     {
-        int style = 0;
-        std::cin>>style;
+        //定义io_service对象
+        io_service ios;
+        //定义服务端endpoint对象(协议和监听端口)
+        ip::tcp::endpoint serverep(ip::tcp::v4(),PORT);
+
+        //启动异步服务
+        protobufServer server(ios, serverep);
+//        server.setPtr(pFrameQueueVecPtr,vr,fv);
+        //等待异步完成
+        ios.run();
     }
+    catch (std::exception& e)
+    {
+        std::cout<<e.what()<<std::endl;
+    }
+
+
 
     /*
     boost::shared_ptr<std::vector<channel> >  channelVecPtr = boost::make_shared<std::vector<channel> >(CHANNELNUM);

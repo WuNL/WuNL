@@ -1,15 +1,15 @@
 #ifndef PROTOBUFSERVER_H
 #define PROTOBUFSERVER_H
 #include "hvs.pb.h"
-
-#include "boost/asio.hpp"
-#include "boost/shared_ptr.hpp"
-#include "boost/thread.hpp"
-
+#include "params.h"
+#include "viewer.h"
+#include "fmDecoder.h"
+#include "manager.h"
+#include <sstream>
 
 using namespace boost::asio;
-
-
+typedef std::pair<std::queue<AVFrame*>,std::string> BUFFERPAIR;
+typedef std::vector<boost::shared_ptr<fmDecoder> > fmDecoderPtrVec;
 
 class protobufServer
 {
@@ -24,12 +24,23 @@ public:
         acceptor.async_accept(*sock,
                               boost::bind(&protobufServer::accept_handler,this,placeholders::error,sock));
     }
+    void setPtr(boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr, viewer* vr,fmDecoderPtrVec fv)
+    {
+        pFrameQueueVecPtr_ = pFrameQueueVecPtr;
+        vr_ = vr;
+        fv_ = fv;
+    }
 protected:
 
 private:
     io_service &ios;
     ip::tcp::acceptor acceptor;
     hvs::WrapperMessage wm;
+    viewer* vr_;
+    fmDecoderPtrVec fv_;
+    boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr_;
+
+    manager myBoss;
 
     typedef boost::shared_ptr<ip::tcp::socket> sock_ptr;
     void accept_handler(const boost::system::error_code &ec, sock_ptr sock)
@@ -40,9 +51,9 @@ private:
         std::cout <<"remote ip:"<<sock->remote_endpoint().address()<<std::endl;
         std::cout <<"remote port:"<<sock->remote_endpoint().port() << std::endl;
 
-        char * buff= new char[512];
-        memset(buff,0x00,512*sizeof(char));
-        sock->async_receive(buffer(buff, 512), boost::bind(&protobufServer::on_read,this,buff,_1,_2));
+        char * buff= new char[5120];
+        memset(buff,0x00,5120*sizeof(char));
+        sock->async_receive(buffer(buff, 5120), boost::bind(&protobufServer::on_read,this,buff,_1,_2));
 
         //异步向客户端发送数据，发送完成时调用write_handler
         sock->async_write_some(buffer("I heard you!"),
@@ -55,6 +66,12 @@ private:
     {
         std::cout<<"send msg complete!"<<std::endl;
     }
+
+template <class T>
+void convertFromString(T &value, const std::string &s) {
+ std::stringstream ss(s);
+ ss >> value;
+}
 
     void on_read(char * ptr, const boost::system::error_code & err, std::size_t read_bytes) {
         printf("recving %d\n",read_bytes);
@@ -73,15 +90,40 @@ private:
                 for(int i = 0; i<wm.cpl().terminalid_size();++i)
                 {
                     std::cout<<"terminal id: "<<wm.cpl().terminalid(i)<<std::endl;
+                    int tid = -1;
+                    convertFromString(tid,wm.cpl().terminalid(i));
+                    myBoss.setDecoderPara(tid,wm.cpl().saperatenumber());
                 }
+
+                myBoss.setViewerPara(wm.cpl().id(),wm.cpl().saperatenumber());
+//                for(std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv_.begin(); pos!=fv_.end()-4; ++pos)
+//                {
+//                    (*pos)->SetScreanNum(wm.cpl().saperatenumber());
+//
+//                }
                 break;
             }
         case 4:
-            break;
+            {
+                std::cout<<"has ta or not: "<<wm.has_ta()<<std::endl;
+                for(int i = 0;i<wm.ta().terminal_size();++i)
+                {
+                    std::cout<<"terminal ip: "<<wm.ta().terminal(i).ip()<<std::endl;
+                    std::cout<<"terminal name: "<<wm.ta().terminal(i).name()<<std::endl;
+                    if(pFrameQueueVecPtr_!=nullptr)
+                    {
+//                        (*pFrameQueueVecPtr_)[i].second = wm.ta().terminal(i).name();
+                        myBoss.setFrameQueue(i,wm.ta().terminal(i).name());
+                    }
+
+                }
+
+                break;
+            }
         default:
             break;
         }
-
+        delete[] ptr;
 
     }
 };

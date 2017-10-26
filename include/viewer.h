@@ -16,10 +16,23 @@
 
 typedef std::pair<std::queue<AVFrame*>,std::string> BUFFERPAIR;
 
-class viewer
+class baseViewer
 {
 public:
-    viewer();
+    virtual ~baseViewer() = default;
+protected:
+    int w;
+    int h;
+    int index;
+    bool autoSwitch;
+};
+
+
+
+class viewer:public baseViewer
+{
+public:
+    viewer(int width,int height,int ind,bool autoS);
     virtual ~viewer();
     void updateImage(GLubyte* dst,int x,int y, int w,int h,void* data);
     int init();
@@ -29,9 +42,10 @@ public:
     void devFun();
     void setStyle(int splitNum);
 
-    void setQueuePtr(boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr)
+    void setQueuePtr(boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr,boost::shared_ptr<std::vector<std::vector<int> > > videoPositionVecPtr)
     {
         pFrameQueueVecPtr_=pFrameQueueVecPtr;
+        videoPositionVecPtr_ = videoPositionVecPtr;
     }
 protected:
 
@@ -50,6 +64,8 @@ private:
     GLFWwindow* window;
     boost::thread m_Thread;
     boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr_;
+    boost::shared_ptr<std::vector<std::vector<int> > > videoPositionVecPtr_;
+
 //    boost::mutex lock;
 
     GLuint VBO[16], VAO[16], EBO,pboIds[16],pboUV[16];

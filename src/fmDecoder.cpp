@@ -310,7 +310,7 @@ void fmDecoder::run()
 
     /* Set affinity mask */
     CPU_ZERO(&cpuset);
-    int mask = threadSeq_;
+    int mask = threadSeq_/3;
     //for (i = 0; i < 8; i++) //I have 4 cores with 2 threads per core so running it for 8 times, modify it according to your lscpu o/p
     CPU_SET(mask, &cpuset);
     cnt++;
@@ -471,7 +471,7 @@ void fmDecoder::run()
 
 
                     }
-                    (*pFrameQueueVecPtr_)[threadSeq_].second = "testText";
+
                     if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=30)
                     {
                         (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
@@ -497,7 +497,7 @@ void fmDecoder::run()
                     av_frame_copy_props(copyFrame, pFrame);
 
                     //av_frame_free(&pFrame);
-                    (*pFrameQueueVecPtr_)[threadSeq_].second = "testText 1";
+
                     if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=30)
                     {
                         (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
@@ -548,17 +548,17 @@ int fmDecoder::Init()
 //    pCodecCtx->hwaccel = ff_find_hwaccel();
     if (pCodecCtx->codec_id == AV_CODEC_ID_H264)
     {
-        if(threadSeq_<8)
+//        if(threadSeq_<8)
         {
             printf("seq %d using gpu 0\n",threadSeq_);
             av_opt_set(pCodecCtx->priv_data, "gpu", "0", 0);
         }
 
-        if(threadSeq_>=8)
-        {
-            printf("seq %d using gpu 1\n",threadSeq_);
-            av_opt_set(pCodecCtx->priv_data, "gpu", "1", 1);
-        }
+//        if(threadSeq_>=8)
+//        {
+//            printf("seq %d using gpu 1\n",threadSeq_);
+//            av_opt_set(pCodecCtx->priv_data, "gpu", "1", 1);
+//        }
     }
 
     if (!pCodecCtx)
