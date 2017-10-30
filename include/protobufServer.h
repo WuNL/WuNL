@@ -92,6 +92,7 @@ void convertFromString(T &value, const std::string &s) {
                     std::cout<<"terminal id: "<<wm.cpl().terminalid(i)<<std::endl;
                     int tid = -1;
                     convertFromString(tid,wm.cpl().terminalid(i));
+                    myBoss.setViewerPosition(wm.cpl().id(),i,tid);
                     myBoss.setDecoderPara(tid,wm.cpl().saperatenumber());
                 }
 
@@ -110,7 +111,7 @@ void convertFromString(T &value, const std::string &s) {
                 {
                     std::cout<<"terminal ip: "<<wm.ta().terminal(i).ip()<<std::endl;
                     std::cout<<"terminal name: "<<wm.ta().terminal(i).name()<<std::endl;
-                    if(pFrameQueueVecPtr_!=nullptr)
+                    //if(pFrameQueueVecPtr_!=nullptr)
                     {
 //                        (*pFrameQueueVecPtr_)[i].second = wm.ta().terminal(i).name();
                         myBoss.setFrameQueue(i,wm.ta().terminal(i).name());

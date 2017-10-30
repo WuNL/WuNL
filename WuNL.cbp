@@ -79,6 +79,7 @@
 					<Add library="libm" />
 					<Add library="libdl" />
 					<Add library="libprotobuf" />
+					<Add library="libpcap" />
 					<Add directory="/usr/local/lib" />
 				</Linker>
 			</Target>
@@ -93,6 +94,7 @@
 		<Unit filename="include/glViewer.h" />
 		<Unit filename="include/manager.h" />
 		<Unit filename="include/params.h" />
+		<Unit filename="include/pcapGrapper.h" />
 		<Unit filename="include/protobufServer.h" />
 		<Unit filename="include/rtpReceiver.h" />
 		<Unit filename="include/textRender.h" />
@@ -104,6 +106,7 @@
 		<Unit filename="src/fmDecoder.cpp" />
 		<Unit filename="src/glViewer.cpp" />
 		<Unit filename="src/manager.cpp" />
+		<Unit filename="src/pcapGrapper.cpp" />
 		<Unit filename="src/protobufServer.cpp" />
 		<Unit filename="src/rtpReceiver.cpp" />
 		<Unit filename="src/textRender.cpp" />

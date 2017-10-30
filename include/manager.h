@@ -1,6 +1,7 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 #include "rtpReceiver.h"
+#include "pcapGrapper.h"
 #include "channel.h"
 #include "fmDecoder.h"
 
@@ -8,7 +9,8 @@
 #include "glViewer.h"
 #include "viewer.h"
 #include <queue>
-
+#include <sys/time.h>
+#include <time.h>
 typedef std::vector<boost::shared_ptr<rtpReceiver> > rtpRecvPtrVec;
 typedef std::vector<boost::shared_ptr<fmDecoder> > fmDecoderPtrVec;
 
@@ -33,6 +35,7 @@ public:
     void startViewer();
     void setDecoderPara(int index,int splitNum);
     void setViewerPara(int index,int spitNum);
+    void setViewerPosition(int monitorIndex,int index,int pos);
     void setFrameQueue(int index,std::string name)
     {
         (*pFrameQueueVecPtr)[index].second = name;
@@ -43,6 +46,7 @@ protected:
 private:
 
     rtpRecvPtrVec v;
+    pcapGrepper myPcap;
     fmDecoderPtrVec fv;
     viewer* vr[4];
 

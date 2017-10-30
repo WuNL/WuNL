@@ -366,7 +366,7 @@ void viewer::devFun()
             {
                 int j = (*videoPositionVecPtr_)[index][i];
 //                printf("j=%d \n",j);
-                if( j==-1 || (*pFrameQueueVecPtr_)[j].first.empty())
+                if( j<0 || (*pFrameQueueVecPtr_)[j].first.empty())
                 {
                     glBindVertexArray(VAO[i]);
                     glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
@@ -564,13 +564,14 @@ void viewer::displayFun()
 void viewer::renderTexts(int splitNum,float fps)
 {
     assert(splitNum==splitNum_);
+    //std::cout<<"(*videoPositionVecPtr_) = "<<(*videoPositionVecPtr_)[0][0]<<std::endl;
     int j = 0;
     switch(splitNum)
     {
     case 1:
     {
         j = (*videoPositionVecPtr_)[index][0];
-        if(j!=-1)
+        if(j>=0)
         {
             std::string s = (*pFrameQueueVecPtr_)[j].second;
             tr->RenderText(s,(GLfloat)0.0f, (GLfloat)WINDOW_HEIGHT-35, 0.5f, glm::vec3(0.5, 0.8f, 0.2f));
@@ -583,8 +584,8 @@ void viewer::renderTexts(int splitNum,float fps)
         for(int i = 0; i<splitNum_; ++i)
         {
             j = (*videoPositionVecPtr_)[index][i];
-            if(j==-1)
-                break;
+            if(j<0)
+                continue;
             std::string s = (*pFrameQueueVecPtr_)[j].second;
             tr->RenderText(s,(GLfloat)(WINDOW_WIDTH*(i%2)/2+25.0f),(GLfloat)(WINDOW_HEIGHT/(int(i/2)+1)-25.0f),0.5f, glm::vec3(0.5, 0.8f, 0.2f));
         }
@@ -595,8 +596,8 @@ void viewer::renderTexts(int splitNum,float fps)
         for(int i = 0; i<splitNum_; ++i)
         {
             j = (*videoPositionVecPtr_)[index][i];
-            if(j==-1)
-                break;
+            if(j<0)
+                continue;
             std::string s = (*pFrameQueueVecPtr_)[j].second;
             tr->RenderText(s,(GLfloat)(WINDOW_WIDTH*(i%3)/3+25.0f),(GLfloat)(WINDOW_HEIGHT*(3-int(i/3))/3-25.0f),0.4f, glm::vec3(0.5, 0.8f, 0.2f));
         }
@@ -607,8 +608,8 @@ void viewer::renderTexts(int splitNum,float fps)
         for(int i = 0; i<splitNum_; ++i)
         {
             j = (*videoPositionVecPtr_)[index][i];
-            if(j==-1)
-                break;
+            if(j<0)
+                continue;
             std::string s = (*pFrameQueueVecPtr_)[j].second;
             tr->RenderText(s,(GLfloat)(WINDOW_WIDTH*(i%4)/4+25.0f),(GLfloat)(WINDOW_HEIGHT*(4-int(i/4))/4-25.0f),0.3f, glm::vec3(0.5, 0.8f, 0.2f));
         }
