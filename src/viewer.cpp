@@ -209,7 +209,7 @@ void viewer::setVertices(int splitNum, int style)
 
 void viewer::devFun()
 {
-        // Set all the required options for GLFW
+    // Set all the required options for GLFW
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -234,13 +234,17 @@ void viewer::devFun()
         s = "viewer 1";
     if(autoSwitch)
     {
+        w = mode->width;
+        h = mode->height;
         window = glfwCreateWindow(mode->width, mode->height, s, NULL, NULL);
         glfwSetWindowMonitor(window, monitors[index], 0, 0, mode->width, mode->height, mode->refreshRate);
+
     }
     else
     {
         window = glfwCreateWindow(w, h, s, NULL, NULL);
         glfwSetWindowMonitor(window,monitors[index],0,0,w,h,mode->refreshRate);
+
     }
 
 
@@ -252,7 +256,14 @@ void viewer::devFun()
     glewInit();
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    tr = new textRender(1440,900,"/home/sdt/workspace/textRender/SourceHanSerifCN-Bold.otf");
+    if(autoSwitch)
+    {
+        tr = new textRender(mode->width, mode->height,"/home/sdt/workspace/textRender/SourceHanSerifCN-Bold.otf");
+    }
+    else
+    {
+        tr = new textRender(w,h,"/home/sdt/workspace/textRender/SourceHanSerifCN-Bold.otf");
+    }
 
 
     setVertices(splitNum_,0);
@@ -625,15 +636,15 @@ void viewer::renderTexts(int splitNum,float fps)
     {
         if(index == 0)
         {
-         char fpsStr[100];
-        sprintf(fpsStr,"v0 FPS: %f ",fps);
-        tr->RenderText(fpsStr,(GLfloat)(1440-300),(GLfloat)(900-25),0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+            char fpsStr[100];
+            sprintf(fpsStr,"v0 FPS: %f ",fps);
+            tr->RenderText(fpsStr,(GLfloat)(WINDOW_WIDTH-300),(GLfloat)(WINDOW_HEIGHT-25),0.5f, glm::vec3(0.5, 0.1f, 0.5f));
         }
         else
         {
-                    char fpsStr[100];
-        sprintf(fpsStr,"v1 FPS: %f ",fps);
-        tr->RenderText(fpsStr,(GLfloat)(1440-300),(GLfloat)(900-25),0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+            char fpsStr[100];
+            sprintf(fpsStr,"v1 FPS: %f ",fps);
+            tr->RenderText(fpsStr,(GLfloat)(WINDOW_WIDTH-300),(GLfloat)(WINDOW_HEIGHT-25),0.5f, glm::vec3(0.5, 0.1f, 0.5f));
         }
 
     }

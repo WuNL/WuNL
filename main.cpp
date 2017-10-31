@@ -76,7 +76,7 @@ int main()
     }
     for(std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin(); pos!=fv.end()-4; ++pos)
     {
-//        std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin()+3;
+    //        std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin()+3;
         int position = (pos)-fv.begin();
         (*pos) = boost::make_shared<fmDecoder> ();
         (*pos)->setPtr(channelVecPtr,pFrameVecPtr,readIndex,writeIndex);
@@ -103,7 +103,7 @@ int main()
 
         for(std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin(); pos!=fv.end()-4; ++pos)
         {
-//            std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin()+3;
+    //            std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv.begin()+3;
             (*pos)->SetScreanNum(style);
 
         }

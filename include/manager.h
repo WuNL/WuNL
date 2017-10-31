@@ -33,12 +33,15 @@ public:
 
     void runServer(int port = PORT);
     void startViewer();
+    void setChannelBuffer(int index, std::string ip);
     void setDecoderPara(int index,int splitNum);
     void setViewerPara(int index,int spitNum);
     void setViewerPosition(int monitorIndex,int index,int pos);
     void setFrameQueue(int index,std::string name)
     {
-        (*pFrameQueueVecPtr)[index].second = name;
+        if( index <1 )
+            return;
+        (*pFrameQueueVecPtr)[index-1].second = name;
     }
 
 protected:

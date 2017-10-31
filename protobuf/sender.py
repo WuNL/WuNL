@@ -18,10 +18,10 @@ taMsgToSend = hvs_pb2.WrapperMessage()
 for i in range(1,21):
 	tmpTerminal = taMsgToSend.ta.terminal.add()
 	tmpTerminal.id = i
-	tmpTerminal.ip = "192.168.1.%d" % i
-	tmpTerminal.name = ("192.168.1.%d" % i)+(u":缓冲区".encode('utf8'))
+	tmpTerminal.ip = "192.168.1.%d" % (99+i)
+	tmpTerminal.name = ("192.168.1.%d" % (99+i))+(u":缓冲区".encode('utf8'))
 	tmpTerminal.tstatus = True
-
+print taMsgToSend
 taContent = taMsgToSend.SerializeToString()
 
 
@@ -34,10 +34,11 @@ msgToSend.cpl.isPolling = False
 
 
 for i in range(1,17):
-	if i%2 == 0:
-		msgToSend.cpl.terminalID.append(str(i))
-	else:
-		msgToSend.cpl.terminalID.append(str(-1))
+	msgToSend.cpl.terminalID.append(str(i))
+	# if i%2 == 0:
+	# 	msgToSend.cpl.terminalID.append(str(i))
+	# else:
+	# 	msgToSend.cpl.terminalID.append(str(-1))
 print msgToSend
 pollingContent = msgToSend.SerializeToString()
 
@@ -49,12 +50,12 @@ msgToSend1.cpl.style = 4
 msgToSend1.cpl.isPolling = False
 
 
-for i in range(1,17):
-	if i%2 == 1:
-		msgToSend1.cpl.terminalID.append(str(i))
-	else:
-		msgToSend1.cpl.terminalID.append(str(-1))
-print msgToSend1
+# for i in range(1,17):
+# 	if i%2 == 1:
+# 		msgToSend1.cpl.terminalID.append(str(i))
+# 	else:
+# 		msgToSend1.cpl.terminalID.append(str(-1))
+# print msgToSend1
 pollingContent1 = msgToSend1.SerializeToString()
 
 

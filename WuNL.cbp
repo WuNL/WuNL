@@ -41,6 +41,7 @@
 					<Add library="libm" />
 					<Add library="libdl" />
 					<Add library="libprotobuf" />
+					<Add library="libpcap" />
 					<Add directory="/usr/local/lib" />
 				</Linker>
 			</Target>

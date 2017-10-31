@@ -16,6 +16,7 @@
 #include <boost/asio.hpp>
 
 #include "channel.h"
+#include "params.h"
 
 class basePcap
 {

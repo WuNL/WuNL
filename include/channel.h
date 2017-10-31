@@ -13,7 +13,8 @@ public:
     channel();
     virtual ~channel();
 
-    ip::udp::endpoint ep;
+    unsigned char ip[4];
+    unsigned int port;
     unsigned int lostPacketNumber;
     unsigned int recvPacketNumber;
     unsigned short packetNumber;

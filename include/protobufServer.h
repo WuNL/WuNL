@@ -67,13 +67,15 @@ private:
         std::cout<<"send msg complete!"<<std::endl;
     }
 
-template <class T>
-void convertFromString(T &value, const std::string &s) {
- std::stringstream ss(s);
- ss >> value;
-}
+    template <class T>
+    void convertFromString(T &value, const std::string &s)
+    {
+        std::stringstream ss(s);
+        ss >> value;
+    }
 
-    void on_read(char * ptr, const boost::system::error_code & err, std::size_t read_bytes) {
+    void on_read(char * ptr, const boost::system::error_code & err, std::size_t read_bytes)
+    {
         printf("recving %d\n",read_bytes);
 
         wm.ParseFromArray(ptr,read_bytes);
@@ -85,42 +87,42 @@ void convertFromString(T &value, const std::string &s) {
         case 2:
             break;
         case 3:
+        {
+            std::cout<<"has cpl or not: "<<wm.has_cpl()<<std::endl;
+            for(int i = 0; i<wm.cpl().terminalid_size(); ++i)
             {
-                std::cout<<"has cpl or not: "<<wm.has_cpl()<<std::endl;
-                for(int i = 0; i<wm.cpl().terminalid_size();++i)
-                {
-                    std::cout<<"terminal id: "<<wm.cpl().terminalid(i)<<std::endl;
-                    int tid = -1;
-                    convertFromString(tid,wm.cpl().terminalid(i));
-                    myBoss.setViewerPosition(wm.cpl().id(),i,tid);
-                    myBoss.setDecoderPara(tid,wm.cpl().saperatenumber());
-                }
+                std::cout<<"terminal id: "<<wm.cpl().terminalid(i)<<std::endl;
+                int tid = -1;
+                convertFromString(tid,wm.cpl().terminalid(i));
+                myBoss.setViewerPosition(wm.cpl().id(),i,tid);
+                myBoss.setDecoderPara(tid,wm.cpl().saperatenumber());
+            }
 
-                myBoss.setViewerPara(wm.cpl().id(),wm.cpl().saperatenumber());
+            myBoss.setViewerPara(wm.cpl().id(),wm.cpl().saperatenumber());
 //                for(std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv_.begin(); pos!=fv_.end()-4; ++pos)
 //                {
 //                    (*pos)->SetScreanNum(wm.cpl().saperatenumber());
 //
 //                }
-                break;
-            }
+            break;
+        }
         case 4:
+        {
+            std::cout<<"has ta or not: "<<wm.has_ta()<<" size = "<< wm.ta().terminal_size()<<std::endl;
+            for(int i = 0; i<wm.ta().terminal_size(); ++i)
             {
-                std::cout<<"has ta or not: "<<wm.has_ta()<<std::endl;
-                for(int i = 0;i<wm.ta().terminal_size();++i)
+                std::cout<<"terminal ip: "<<wm.ta().terminal(i).ip()<<std::endl;
+                std::cout<<"terminal name: "<<wm.ta().terminal(i).name()<<std::endl;
+                //if(pFrameQueueVecPtr_!=nullptr)
                 {
-                    std::cout<<"terminal ip: "<<wm.ta().terminal(i).ip()<<std::endl;
-                    std::cout<<"terminal name: "<<wm.ta().terminal(i).name()<<std::endl;
-                    //if(pFrameQueueVecPtr_!=nullptr)
-                    {
 //                        (*pFrameQueueVecPtr_)[i].second = wm.ta().terminal(i).name();
-                        myBoss.setFrameQueue(i,wm.ta().terminal(i).name());
-                    }
-
+                    myBoss.setChannelBuffer(wm.ta().terminal(i).id(),wm.ta().terminal(i).ip());
+                    myBoss.setFrameQueue(wm.ta().terminal(i).id(),wm.ta().terminal(i).name());
                 }
-
-                break;
             }
+
+            break;
+        }
         default:
             break;
         }
