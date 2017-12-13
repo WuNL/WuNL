@@ -64,7 +64,9 @@ private:
 
 
     struct SwsContext *convertCtx[3];
+    struct SwsContext *convertCtx720P[4];
     AVFrame	*pFrameYUV[3];
+    AVFrame *pFrameYUV1080P;
     int screanNum,screanNum_old;
     int sws_seq;
     int sws_width_,sws_height_;

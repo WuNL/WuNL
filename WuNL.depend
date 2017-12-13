@@ -335,7 +335,7 @@
 	"samplefmt.h"
 	"version.h"
 
-1509441817 source:/home/sdt/workspace/WuNL/main.cpp
+1510277042 source:/home/sdt/workspace/WuNL/main.cpp
 	<iostream>
 	"protobufServer.h"
 	"rtpReceiver.h"
@@ -362,7 +362,7 @@
 	<boost/asio.hpp>
 	"params.h"
 
-1507702877 /home/sdt/workspace/WuNL/include/params.h
+1512453290 /home/sdt/workspace/WuNL/include/params.h
 	<libavcodec/avcodec.h>
 	<libavformat/avformat.h>
 	<libswscale/swscale.h>
@@ -373,6 +373,14 @@
 	<libavfilter/buffersrc.h>
 	<libavutil/avutil.h>
 	<libavutil/imgutils.h>
+	<libavutil/avassert.h>
+	<libavutil/channel_layout.h>
+	<libavutil/opt.h>
+	<libavutil/mathematics.h>
+	<libavutil/timestamp.h>
+	<libavformat/avformat.h>
+	<libswscale/swscale.h>
+	<libswresample/swresample.h>
 	<queue>
 	<boost/thread/thread.hpp>
 	<boost/thread/mutex.hpp>
@@ -381,7 +389,7 @@
 	<boost/bind.hpp>
 	<boost/smart_ptr.hpp>
 
-1507702877 /home/sdt/workspace/WuNL/include/fmDecoder.h
+1509671126 /home/sdt/workspace/WuNL/include/fmDecoder.h
 	"params.h"
 	<boost/thread/thread.hpp>
 	<boost/thread/mutex.hpp>
@@ -420,11 +428,11 @@
 1507702877 source:/home/sdt/workspace/WuNL/src/channel.cpp
 	"channel.h"
 
-1508978760 source:/home/sdt/workspace/WuNL/src/fmDecoder.cpp
+1510123995 source:/home/sdt/workspace/WuNL/src/fmDecoder.cpp
 	"fmDecoder.h"
 	<math.h>
 
-1507702877 source:/home/sdt/workspace/WuNL/src/glViewer.cpp
+1509700695 source:/home/sdt/workspace/WuNL/src/glViewer.cpp
 	"glViewer.h"
 	<stdio.h>
 
@@ -455,9 +463,10 @@
 	"nv12Viewer.h"
 	<stdio.h>
 
-1509013880 /home/sdt/workspace/WuNL/include/viewer.h
+1510277473 /home/sdt/workspace/WuNL/include/viewer.h
 	<iostream>
 	<GL/glew.h>
+	<GL/glxew.h>
 	<GLFW/glfw3.h>
 	"GLError.h"
 	"params.h"
@@ -471,7 +480,7 @@
 
 1507702877 /home/sdt/workspace/WuNL/include/GLError.h
 
-1509440722 source:/home/sdt/workspace/WuNL/src/viewer.cpp
+1510558132 source:/home/sdt/workspace/WuNL/src/viewer.cpp
 	"viewer.h"
 	<math.h>
 
@@ -586,7 +595,7 @@
 1508983792 source:/home/sdt/workspace/WuNL/src/protobufServer.cpp
 	"protobufServer.h"
 
-1509438597 /home/sdt/workspace/WuNL/include/protobufServer.h
+1510118170 /home/sdt/workspace/WuNL/include/protobufServer.h
 	"hvs.pb.h"
 	"params.h"
 	"viewer.h"
@@ -594,7 +603,7 @@
 	"manager.h"
 	<sstream>
 
-1507702877 /home/sdt/workspace/WuNL/protobuf/hvs.pb.h
+1510111735 /home/sdt/workspace/WuNL/protobuf/hvs.pb.h
 	<string>
 	<google/protobuf/stubs/common.h>
 	<google/protobuf/io/coded_stream.h>
@@ -608,7 +617,7 @@
 	<google/protobuf/extension_set.h>
 	<google/protobuf/unknown_field_set.h>
 
-1509438597 source:/home/sdt/workspace/WuNL/protobuf/hvs.pb.cc
+1510111735 source:/home/sdt/workspace/WuNL/protobuf/hvs.pb.cc
 	"hvs.pb.h"
 	<algorithm>
 	<google/protobuf/stubs/common.h>
@@ -640,7 +649,7 @@
 1507702877 source:/home/sdt/workspace/WuNL/src/textRender.cpp
 	"textRender.h"
 
-1509437879 /home/sdt/workspace/WuNL/include/manager.h
+1509959921 /home/sdt/workspace/WuNL/include/manager.h
 	"rtpReceiver.h"
 	"pcapGrapper.h"
 	"channel.h"
@@ -652,7 +661,7 @@
 	<sys/time.h>
 	<time.h>
 
-1509447957 source:/home/sdt/workspace/WuNL/src/manager.cpp
+1512116263 source:/home/sdt/workspace/WuNL/src/manager.cpp
 	"manager.h"
 
 1509410864 /home/sdt/workspace/WuNL/include/pcapGrapper.h
@@ -671,6 +680,6 @@
 	"channel.h"
 	"params.h"
 
-1509444215 source:/home/sdt/workspace/WuNL/src/pcapGrapper.cpp
+1512116387 source:/home/sdt/workspace/WuNL/src/pcapGrapper.cpp
 	"pcapGrapper.h"
 

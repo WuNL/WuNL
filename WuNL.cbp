@@ -55,7 +55,6 @@
 					<Add option="-std=c++11" />
 					<Add option="-m64" />
 					<Add directory="include" />
-					<Add directory="/home/wunl/Downloads/ffmpeg-3.2.4" />
 					<Add directory="protobuf" />
 					<Add directory="/usr/local/include/freetype2" />
 				</Compiler>

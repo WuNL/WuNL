@@ -88,7 +88,15 @@ private:
             break;
         case 3:
         {
+            int windowIndex = wm.cpl().id();
             std::cout<<"has cpl or not: "<<wm.has_cpl()<<std::endl;
+            if(!wm.cpl().active() && !wm.cpl().inuse())
+            {
+                printf("window %d deactive!\n",windowIndex);
+                myBoss.shutdownViewer(windowIndex);
+                break;
+            }
+            myBoss.startViewer(windowIndex);
             for(int i = 0; i<wm.cpl().terminalid_size(); ++i)
             {
                 std::cout<<"terminal id: "<<wm.cpl().terminalid(i)<<std::endl;

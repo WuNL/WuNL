@@ -382,10 +382,10 @@ class ChannelPolling : public ::google::protobuf::Message /* @@protoc_insertion_
 
   // accessors -------------------------------------------------------
 
-  // repeated string terminalID = 6;
+  // repeated string terminalID = 8;
   int terminalid_size() const;
   void clear_terminalid();
-  static const int kTerminalIDFieldNumber = 6;
+  static const int kTerminalIDFieldNumber = 8;
   const ::std::string& terminalid(int index) const;
   ::std::string* mutable_terminalid(int index);
   void set_terminalid(int index, const ::std::string& value);
@@ -428,9 +428,21 @@ class ChannelPolling : public ::google::protobuf::Message /* @@protoc_insertion_
   ::google::protobuf::int32 pollingtime() const;
   void set_pollingtime(::google::protobuf::int32 value);
 
-  // bool isPolling = 5;
+  // bool active = 5;
+  void clear_active();
+  static const int kActiveFieldNumber = 5;
+  bool active() const;
+  void set_active(bool value);
+
+  // bool inuse = 6;
+  void clear_inuse();
+  static const int kInuseFieldNumber = 6;
+  bool inuse() const;
+  void set_inuse(bool value);
+
+  // bool isPolling = 7;
   void clear_ispolling();
-  static const int kIsPollingFieldNumber = 5;
+  static const int kIsPollingFieldNumber = 7;
   bool ispolling() const;
   void set_ispolling(bool value);
 
@@ -443,6 +455,8 @@ class ChannelPolling : public ::google::protobuf::Message /* @@protoc_insertion_
   ::google::protobuf::int32 saperatenumber_;
   ::google::protobuf::int32 style_;
   ::google::protobuf::int32 pollingtime_;
+  bool active_;
+  bool inuse_;
   bool ispolling_;
   mutable int _cached_size_;
   friend struct protobuf_hvs_2eproto::TableStruct;
@@ -851,7 +865,35 @@ inline void ChannelPolling::set_pollingtime(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:hvs.ChannelPolling.pollingTime)
 }
 
-// bool isPolling = 5;
+// bool active = 5;
+inline void ChannelPolling::clear_active() {
+  active_ = false;
+}
+inline bool ChannelPolling::active() const {
+  // @@protoc_insertion_point(field_get:hvs.ChannelPolling.active)
+  return active_;
+}
+inline void ChannelPolling::set_active(bool value) {
+  
+  active_ = value;
+  // @@protoc_insertion_point(field_set:hvs.ChannelPolling.active)
+}
+
+// bool inuse = 6;
+inline void ChannelPolling::clear_inuse() {
+  inuse_ = false;
+}
+inline bool ChannelPolling::inuse() const {
+  // @@protoc_insertion_point(field_get:hvs.ChannelPolling.inuse)
+  return inuse_;
+}
+inline void ChannelPolling::set_inuse(bool value) {
+  
+  inuse_ = value;
+  // @@protoc_insertion_point(field_set:hvs.ChannelPolling.inuse)
+}
+
+// bool isPolling = 7;
 inline void ChannelPolling::clear_ispolling() {
   ispolling_ = false;
 }
@@ -865,7 +907,7 @@ inline void ChannelPolling::set_ispolling(bool value) {
   // @@protoc_insertion_point(field_set:hvs.ChannelPolling.isPolling)
 }
 
-// repeated string terminalID = 6;
+// repeated string terminalID = 8;
 inline int ChannelPolling::terminalid_size() const {
   return terminalid_.size();
 }

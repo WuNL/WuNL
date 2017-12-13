@@ -28,7 +28,7 @@ taContent = taMsgToSend.SerializeToString()
 
 msgToSend = hvs_pb2.WrapperMessage()
 msgToSend.cpl.id = 1
-msgToSend.cpl.active = True
+msgToSend.cpl.active = False
 msgToSend.cpl.saperateNumber = num
 msgToSend.cpl.style = 4
 msgToSend.cpl.isPolling = False
@@ -46,7 +46,7 @@ pollingContent = msgToSend.SerializeToString()
 
 msgToSend1 = hvs_pb2.WrapperMessage()
 msgToSend1.cpl.id = 2
-msgToSend1.cpl.active = True
+msgToSend1.cpl.active = False
 msgToSend1.cpl.saperateNumber = num1
 msgToSend1.cpl.style = 4
 msgToSend1.cpl.isPolling = False
@@ -72,7 +72,7 @@ tcpCliSock = socket(AF_INET,SOCK_STREAM)
 tcpCliSock.connect(ADDR)
 print tcpCliSock.send(pollingContent)
 tcpCliSock.close()
-time.sleep(3)
+
 tcpCliSock = socket(AF_INET,SOCK_STREAM)
 tcpCliSock.connect(ADDR)
 print tcpCliSock.send(pollingContent1)

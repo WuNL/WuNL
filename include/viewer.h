@@ -2,6 +2,7 @@
 #define VIEWER_H
 #include <iostream>
 #include <GL/glew.h>
+#include <GL/glxew.h>
 #include <GLFW/glfw3.h>
 #include "GLError.h"
 #include "params.h"
@@ -25,6 +26,7 @@ protected:
     int h;
     int index;
     bool autoSwitch;
+    bool active;
 };
 
 
@@ -34,6 +36,18 @@ class viewer:public baseViewer
 public:
     viewer(int width,int height,int ind,bool autoS);
     virtual ~viewer();
+    void destoryWindow()
+    {
+//        if(window)
+        {
+            printf("destroying window\n");
+            active = false;
+            m_Thread.interrupt();
+            m_Thread.join();
+            glfwDestroyWindow(window);
+            //glfwHideWindow(window);
+        }
+    }
     void updateImage(GLubyte* dst,int x,int y, int w,int h,void* data);
     int init();
     void run();
@@ -41,6 +55,18 @@ public:
     void display();
     void devFun();
     void setStyle(int splitNum);
+    void setWindow(GLFWwindow* wd)
+    {
+        window=wd;
+    }
+    GLFWwindow* getContext()
+    {
+        return window;
+    }
+    void setContext(GLFWwindow* context_)
+    {
+        context = context_;
+    }
 
     void setQueuePtr(boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr,boost::shared_ptr<std::vector<std::vector<int> > > videoPositionVecPtr)
     {
@@ -62,6 +88,7 @@ private:
     void renderTexts(int splintNum,float fps = 0);
 
     GLFWwindow* window;
+    GLFWwindow* context;
     boost::thread m_Thread;
     boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr_;
     boost::shared_ptr<std::vector<std::vector<int> > > videoPositionVecPtr_;

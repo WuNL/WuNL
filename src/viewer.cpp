@@ -20,6 +20,7 @@ viewer::viewer(int width,int height,int ind,bool autoS)
     h = height;
     index = ind;
     autoSwitch = autoS;
+    active = true;
 
     frameWidth=1920;
     frameHeight=1080;
@@ -38,11 +39,6 @@ viewer::~viewer()
 
 void viewer::run()
 {
-    // Init GLFW
-    glfwInit();
-
-
-
     m_Thread = boost::thread(&viewer::devFun, this);
 }
 
@@ -222,8 +218,10 @@ void viewer::devFun()
     glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
     glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
     glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+    glfwWindowHint(GLFW_ICONIFIED,GL_FALSE);
+    glfwWindowHint(GLFW_FOCUSED,GL_FALSE);
     glfwWindowHint(GLFW_AUTO_ICONIFY,GL_FALSE);
-
+//glfwWindowHint(GLFW_,GL_FALSE);
     std::cout<<mode->width<<"  "<<mode->height<<std::endl;
     char* s;
     if(index==0)
@@ -236,8 +234,13 @@ void viewer::devFun()
     {
         w = mode->width;
         h = mode->height;
-        window = glfwCreateWindow(mode->width, mode->height, s, NULL, NULL);
+        window = glfwCreateWindow(1440, 900, s,NULL, NULL);
+        //glfwSetWindowPos(window,1440*index,0);
         glfwSetWindowMonitor(window, monitors[index], 0, 0, mode->width, mode->height, mode->refreshRate);
+        glfwMakeContextCurrent(window);
+//    // set vsync. 0:off max 1000+fps 1: on max 60fps 2: on max 30fps
+        glfwSwapInterval(-1);
+        //glfwSetWindowMonitor(window, monitors[index], 0, 0, mode->width, mode->height, mode->refreshRate);
 
     }
     else
@@ -247,15 +250,23 @@ void viewer::devFun()
 
     }
 
-
-    glfwMakeContextCurrent(window);
-    // set vsync. 0:off max 1000+fps 1: on max 60fps 2: on max 30fps
-    glfwSwapInterval(1);
     // start GLEW extension handler
     glewExperimental = GL_TRUE;
     glewInit();
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
+//    Display *dpy = glXGetCurrentDisplay();
+//    GLXDrawable drawable = glXGetCurrentDrawable();
+//    const int interval = 1;
+//
+//    glXSwapIntervalEXT(dpy, drawable, interval);
+
+
+    if (GLX_NV_swap_group)
+{
+  /* Looks like ARB_fragment_program is supported. */
+  printf("GLX_NV_swap_group is supported!\n");
+}
     if(autoSwitch)
     {
         tr = new textRender(mode->width, mode->height,"/home/sdt/workspace/textRender/SourceHanSerifCN-Bold.otf");
@@ -350,16 +361,16 @@ void viewer::devFun()
 
     int framecount = 0;
     int realcount = 0;
-    static float fps = 0.0f;
+    float fps = 0.0f;
     struct timeval t_start,t_end;
     long cost_time=0;
     gettimeofday(&t_start,NULL);
     long start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
     printf("start time:%ld ms\n",start);
-    glfwMakeContextCurrent(window);
-    while (!glfwWindowShouldClose(window))
+    while (active)
     {
-        glfwMakeContextCurrent(window);
+
+
         if(splitNum_!=splitNum_old)
         {
             setStyleInter();
@@ -473,13 +484,11 @@ void viewer::devFun()
 
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
                 glBindVertexArray(0);
-
-
             }
 
 
             glBindVertexArray(0);
-            glfwPollEvents();
+
 
 
             framecount++;
@@ -495,10 +504,16 @@ void viewer::devFun()
                 framecount = 0;
                 realcount = 0;
             }
-
+//    Display *dpy = glXGetCurrentDisplay();
+//    GLXDrawable drawable = glXGetCurrentDrawable();
+//    const int interval = 1;
             renderTexts(splitNum_,fps);
+            //glXSwapBuffers(glXGetCurrentDisplay(),glXGetCurrentDrawable());
+            //glfwMakeContextCurrent(window);
             glfwSwapBuffers(window);
-
+            if(index!=0)
+                usleep(20000);
+            //glfwPollEvents();
 
         }
     }
@@ -506,7 +521,7 @@ void viewer::devFun()
 
 void viewer::displayFun()
 {
-    glfwMakeContextCurrent(window);
+    //glfwMakeContextCurrent(window);
     // start GLEW extension handler
     glewExperimental = GL_TRUE;
     glewInit();

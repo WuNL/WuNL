@@ -29,8 +29,7 @@ int main()
     int rc = pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
     if (rc != 0)
         std::cout << "Error calling pthread_setaffinity_np !!! ";
-
-
+    assert(glfwInit() == GL_TRUE);
     try
     {
         //定义io_service对象

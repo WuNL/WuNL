@@ -33,6 +33,8 @@ public:
 
     void runServer(int port = PORT);
     void startViewer();
+    void startViewer(int index);
+    void shutdownViewer(int index);
     void setChannelBuffer(int index, std::string ip);
     void setDecoderPara(int index,int splitNum);
     void setViewerPara(int index,int spitNum);
@@ -60,6 +62,8 @@ private:
     std::vector<std::vector<int> >videoPositionVec;
     boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr;
     boost::shared_ptr<std::vector<std::vector<int> > > videoPositionVecPtr;
+
+    void clearQueue(int index);
 
 };
 

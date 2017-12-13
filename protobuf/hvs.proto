@@ -17,8 +17,10 @@ message ChannelPolling{
 	 int32 saperateNumber = 2;
 	 int32 style = 3;
 	 int32 pollingTime = 4;
-	 bool isPolling = 5;
-	 repeated string terminalID = 6;
+	 bool active = 5;
+	 bool inuse = 6;
+	 bool isPolling = 7;
+	 repeated string terminalID = 8;
 }
 
 message WrapperMessage{
