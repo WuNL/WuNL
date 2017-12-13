@@ -342,27 +342,27 @@ void fmDecoder::run()
         convertCtx[i-2] = sws_getContext(1920, 1080, AV_PIX_FMT_NV12,
                                          1920/i,1080/i, AV_PIX_FMT_NV12, SWS_POINT, NULL, NULL, NULL);
         convertCtx720P[i-1] = sws_getContext(1280, 720, AV_PIX_FMT_NV12,
-                                         1920/i,1080/i, AV_PIX_FMT_NV12, SWS_POINT, NULL, NULL, NULL);
+                                             1920/i,1080/i, AV_PIX_FMT_NV12, SWS_POINT, NULL, NULL, NULL);
         pFrameYUV[i-2]->format = AV_PIX_FMT_NV12;
     }
-    unsigned char *out_buffer1080P;
-    out_buffer1080P=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_NV12,  1920,1080,1));
+//    unsigned char *out_buffer1080P;
+//    out_buffer1080P=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_NV12,  1920,1080,1));
     pFrameYUV1080P = av_frame_alloc();
-    av_image_fill_arrays(pFrameYUV1080P->data, pFrameYUV1080P->linesize,out_buffer1080P,
-                             AV_PIX_FMT_NV12,1920,1080,1);
-    pFrameYUV1080P->format = AV_PIX_FMT_NV12;
-    convertCtx720P[0] = sws_getContext(1280, 720, AV_PIX_FMT_NV12,
-                                       1920,1080, AV_PIX_FMT_NV12, SWS_POINT, NULL, NULL, NULL);
+//    av_image_fill_arrays(pFrameYUV1080P->data, pFrameYUV1080P->linesize,out_buffer1080P,
+//                         AV_PIX_FMT_NV12,1920,1080,1);
+//    pFrameYUV1080P->format = AV_PIX_FMT_NV12;
+//    convertCtx720P[0] = sws_getContext(1280, 720, AV_PIX_FMT_NV12,
+//                                       1920,1080, AV_PIX_FMT_NV12, SWS_POINT, NULL, NULL, NULL);
 
     int sws_seqTMP = 0;
     int widthTMP = 0;
     int heightTMP = 0;
     AVFrame	*pFrame = av_frame_alloc();
-    unsigned char *out_buffer1080P_;
-    out_buffer1080P_=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_NV12,  1920,1080,1));
-    av_image_fill_arrays(pFrame->data, pFrame->linesize,out_buffer1080P_,
-                             AV_PIX_FMT_NV12,1920,1080,1);
-    pFrame->format = AV_PIX_FMT_NV12;
+//    unsigned char *out_buffer1080P_;
+//    out_buffer1080P_=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_NV12,  1920,1080,1));
+//    av_image_fill_arrays(pFrame->data, pFrame->linesize,out_buffer1080P_,
+//                         AV_PIX_FMT_NV12,1920,1080,1);
+//    pFrame->format = AV_PIX_FMT_NV12;
     while(1)
     {
         int cur_size = 0;
@@ -385,6 +385,7 @@ void fmDecoder::run()
         }
         if (cur_size == 0)
             break;
+        int ret = 0;
         while (cur_size>0)
         {
             int len = av_parser_parse2(
@@ -395,83 +396,90 @@ void fmDecoder::run()
 
             cur_ptr += len;
             cur_size -= len;
-            if(GetPacketSize()==0)
-                continue;
-//            switch(pCodecParserCtx->pict_type)
-//            {
-//            case AV_PICTURE_TYPE_I:
-//                printf("Type:I\t\n");
-//                break;
-//                case AV_PICTURE_TYPE_P: printf("Type:P\t");break;
-//                case AV_PICTURE_TYPE_B: printf("Type:B\t");break;
-//                default: printf("Type:Other\t");break;
-//            }
 
-            int got_picture = 0;
-
-            int ret = -1;
-
-
-            ret = avcodec_decode_video2(pCodecCtx, pFrame, &got_picture, &packet);
-            if(ret < 0)
+            if(packet.size)
             {
-                fprintf(stderr, "Error encoding audio frame: %d\n", ret);
 
-                char buf[128]={0};
-                av_make_error_string(buf,128,ret);
-                fprintf(stderr, "Error encoding audio frame: %s\n", buf);
-//                av_frame_free(&pFrame);
-//
-//                pFrame = av_frame_alloc();
-//                unsigned char *out_buffer1080P_;
-//                out_buffer1080P_=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_NV12,  1920,1080,1));
-//                av_image_fill_arrays(pFrame->data, pFrame->linesize,out_buffer1080P_,
-//                                         AV_PIX_FMT_NV12,1920,1080,1);
-//                pFrame->format = AV_PIX_FMT_NV12;
-
-                continue;
-                //return ret;
-            }
-            if(!got_picture)
-            {
-                continue;
-            }
-            if (got_picture)
-            {
-                sws_seqTMP = sws_seq;
-                widthTMP = sws_width_;
-                heightTMP = sws_height_;
-                if(screanNum!=1)
+                ret = avcodec_send_packet(pCodecCtx, &packet);
+                if (ret < 0)
                 {
-
-
-                    pFrameYUV[sws_seqTMP]->width = widthTMP;
-                    pFrameYUV[sws_seqTMP]->height = heightTMP;
-
-//                    av_buffersrc_add_frame(buffersrc_ctx, pFrame);
-//
-//                    /* pull filtered pictures from the filtergraph */
-//                    av_buffersink_get_frame(buffersink_ctx, pFrameYUV[sws_seq]);
-                    AVFrame *copyFrame = av_frame_alloc();
-                    if(useNpp)
+                    fprintf(stderr, "Error sending a packet for decoding\n");
+                    continue;
+                }
+                while (ret >= 0)
+                {
+                    ret = avcodec_receive_frame(pCodecCtx, pFrame);
+                    if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+                        continue;
+                    else if (ret < 0)
                     {
-                        pFrame->pts = av_frame_get_best_effort_timestamp(pFrame);
-                        /* push the decoded frame into the filtergraph */
-                        if (av_buffersrc_add_frame_flags(buffersrc_ctx[sws_seqTMP], pFrame, AV_BUFFERSRC_FLAG_KEEP_REF) < 0)
+                        char buf[128]= {0};
+                        av_make_error_string(buf,128,ret);
+                        fprintf(stderr, "Error during decoding: %s\n", buf);
+                        continue;
+                    }
+                    sws_seqTMP = sws_seq;
+                    widthTMP = sws_width_;
+                    heightTMP = sws_height_;
+                    if(screanNum!=1)
+                    {
+
+
+                        pFrameYUV[sws_seqTMP]->width = widthTMP;
+                        pFrameYUV[sws_seqTMP]->height = heightTMP;
+
+
+                        AVFrame *copyFrame = av_frame_alloc();
+                        if(useNpp)
                         {
-                            av_log(NULL, AV_LOG_ERROR, "Error while feeding the filtergraph\n");
-                            break;
+                            pFrame->pts = av_frame_get_best_effort_timestamp(pFrame);
+                            /* push the decoded frame into the filtergraph */
+                            if (av_buffersrc_add_frame_flags(buffersrc_ctx[sws_seqTMP], pFrame, AV_BUFFERSRC_FLAG_KEEP_REF) < 0)
+                            {
+                                av_log(NULL, AV_LOG_ERROR, "Error while feeding the filtergraph\n");
+                                break;
+                            }
+
+                            /* pull filtered frames from the filtergraph */
+
+                            while (1)
+                            {
+                                ret = av_buffersink_get_frame(buffersink_ctx[sws_seqTMP], pFrameYUV[sws_seqTMP]);
+                                if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+                                    break;
+                                if (ret < 0)
+                                    break;
+                                copyFrame->format = pFrameYUV[sws_seqTMP]->format;
+                                copyFrame->width = pFrameYUV[sws_seqTMP]->width;
+                                copyFrame->height = pFrameYUV[sws_seqTMP]->height;
+                                av_frame_get_buffer(copyFrame, 32);
+                                av_frame_copy(copyFrame, pFrameYUV[sws_seqTMP]);
+                                av_frame_copy_props(copyFrame, pFrameYUV[sws_seqTMP]);
+
+                                av_frame_unref(pFrameYUV[sws_seqTMP]);
+                            }
+                            av_frame_unref(pFrame);
+
                         }
-
-                        /* pull filtered frames from the filtergraph */
-
-                        while (1)
+                        else
                         {
-                            ret = av_buffersink_get_frame(buffersink_ctx[sws_seqTMP], pFrameYUV[sws_seqTMP]);
-                            if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
-                                break;
-                            if (ret < 0)
-                                break;
+                            if(pFrame->width==1920 && pFrame->height==1080)
+                            {
+                                sws_scale(convertCtx[sws_seqTMP], (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
+                                          pFrameYUV[sws_seqTMP]->data, pFrameYUV[sws_seqTMP]->linesize);
+                            }
+                            else if(pFrame->width==1280 && pFrame->height==720)
+                            {
+                                sws_scale(convertCtx720P[sws_seqTMP+1], (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
+                                          pFrameYUV[sws_seqTMP]->data, pFrameYUV[sws_seqTMP]->linesize);
+                            }
+                            else
+                            {
+                                continue;
+                            }
+
+
+
                             copyFrame->format = pFrameYUV[sws_seqTMP]->format;
                             copyFrame->width = pFrameYUV[sws_seqTMP]->width;
                             copyFrame->height = pFrameYUV[sws_seqTMP]->height;
@@ -479,113 +487,90 @@ void fmDecoder::run()
                             av_frame_copy(copyFrame, pFrameYUV[sws_seqTMP]);
                             av_frame_copy_props(copyFrame, pFrameYUV[sws_seqTMP]);
 
-                            av_frame_unref(pFrameYUV[sws_seqTMP]);
-                        }
-                        av_frame_unref(pFrame);
 
-                    }
-                    else
-                    {
-                        if(pFrame->width==1920 && pFrame->height==1080)
-                        {
-                        sws_scale(convertCtx[sws_seqTMP], (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
-                                  pFrameYUV[sws_seqTMP]->data, pFrameYUV[sws_seqTMP]->linesize);
                         }
-                        else if(pFrame->width==1280 && pFrame->height==720)
+
+                        if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=FRAME_BUFFER)
                         {
-                         sws_scale(convertCtx720P[sws_seqTMP+1], (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
-                                  pFrameYUV[sws_seqTMP]->data, pFrameYUV[sws_seqTMP]->linesize);
+                            (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
                         }
                         else
                         {
-                            continue;
-                        }
-
-
-
-                        copyFrame->format = pFrameYUV[sws_seqTMP]->format;
-                        copyFrame->width = pFrameYUV[sws_seqTMP]->width;
-                        copyFrame->height = pFrameYUV[sws_seqTMP]->height;
-                        av_frame_get_buffer(copyFrame, 32);
-                        av_frame_copy(copyFrame, pFrameYUV[sws_seqTMP]);
-                        av_frame_copy_props(copyFrame, pFrameYUV[sws_seqTMP]);
-
-
-                    }
-
-                    if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=FRAME_BUFFER)
-                    {
-                        (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
-                    }
-                    else
-                    {
 //                        printf("%d decoder buffer is full!\n",threadSeq_);
-                        AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].first.back();
-                        av_frame_free(&tmp);
-                        (*pFrameQueueVecPtr_)[threadSeq_].first.back() = copyFrame;
-                    }
-
-                    //av_frame_free(&pFrame);
-                }
-                else
-                {
-                    if(pFrame->width==1280 && pFrame->height==720)
-                    {
-                        pFrameYUV1080P->width = 1920;
-                        pFrameYUV1080P->height = 1080;
-                        sws_scale(convertCtx720P[0], (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
-                                  pFrameYUV1080P->data, pFrameYUV1080P->linesize);
-                        AVFrame *copyFrame = av_frame_alloc();
-
-                        copyFrame->format = pFrameYUV1080P->format;
-                        copyFrame->width = pFrameYUV1080P->width;
-                        copyFrame->height = pFrameYUV1080P->height;
-                        av_frame_get_buffer(copyFrame, 32);
-                        av_frame_copy(copyFrame, pFrameYUV1080P);
-                        av_frame_copy_props(copyFrame, pFrameYUV1080P);
-
-                        //av_frame_free(&pFrame);
-
-                        if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=FRAME_BUFFER)
-                        {
-                            (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
-                        }
-                        else
-                        {
-                            //                        printf("buffer full!\n");
                             AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].first.back();
                             av_frame_free(&tmp);
                             (*pFrameQueueVecPtr_)[threadSeq_].first.back() = copyFrame;
                         }
-                    }
-                    else if(pFrame->width==1920 && pFrame->height==1080)
-                    {
-                        AVFrame *copyFrame = av_frame_alloc();
-
-                        copyFrame->format = pFrame->format;
-                        copyFrame->width = pFrame->width;
-                        copyFrame->height = pFrame->height;
-                        av_frame_get_buffer(copyFrame, 32);
-                        av_frame_copy(copyFrame, pFrame);
-                        av_frame_copy_props(copyFrame, pFrame);
 
                         //av_frame_free(&pFrame);
+                    }
+                    else
+                    {
+                        if(pFrame->width==1280 && pFrame->height==720)
+                        {
+                            pFrameYUV1080P->width = 1920;
+                            pFrameYUV1080P->height = 1080;
+                            sws_scale(convertCtx720P[0], (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
+                                      pFrameYUV1080P->data, pFrameYUV1080P->linesize);
+                            AVFrame *copyFrame = av_frame_alloc();
 
-                        if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=FRAME_BUFFER)
-                        {
-                            (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
+                            copyFrame->format = pFrameYUV1080P->format;
+                            copyFrame->width = pFrameYUV1080P->width;
+                            copyFrame->height = pFrameYUV1080P->height;
+                            av_frame_get_buffer(copyFrame, 32);
+                            av_frame_copy(copyFrame, pFrameYUV1080P);
+                            av_frame_copy_props(copyFrame, pFrameYUV1080P);
+
+                            //av_frame_free(&pFrame);
+
+                            if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=FRAME_BUFFER)
+                            {
+                                (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
+                            }
+                            else
+                            {
+                                //                        printf("buffer full!\n");
+                                AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].first.back();
+                                av_frame_free(&tmp);
+                                (*pFrameQueueVecPtr_)[threadSeq_].first.back() = copyFrame;
+                            }
                         }
-                        else
+                        else if(pFrame->width==1920 && pFrame->height==1080)
                         {
-                            //                        printf("buffer full!\n");
-                            AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].first.back();
-                            av_frame_free(&tmp);
-                            (*pFrameQueueVecPtr_)[threadSeq_].first.back() = copyFrame;
+                            AVFrame *copyFrame = av_frame_alloc();
+
+                            copyFrame->format = pFrame->format;
+                            copyFrame->width = pFrame->width;
+                            copyFrame->height = pFrame->height;
+                            av_frame_get_buffer(copyFrame, 32);
+                            av_frame_copy(copyFrame, pFrame);
+                            av_frame_copy_props(copyFrame, pFrame);
+
+                            //av_frame_free(&pFrame);
+
+                            if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=FRAME_BUFFER)
+                            {
+                                (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
+                            }
+                            else
+                            {
+                                //                        printf("buffer full!\n");
+                                AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].first.back();
+                                av_frame_free(&tmp);
+                                (*pFrameQueueVecPtr_)[threadSeq_].first.back() = copyFrame;
+                            }
                         }
                     }
-                }
 
+                }
             }
+            else
+                continue;
+
+
+
+
+
         }
     }
     return;

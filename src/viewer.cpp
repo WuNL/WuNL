@@ -498,7 +498,7 @@ void viewer::devFun()
             if(cost_time/1000.0 > 1)
             {
                 fps = (float)framecount*1000/cost_time;
-                printf("index %d  fps:    %f    real fps:    %f      frameWidth:%d\n",index,(float)framecount*1000/cost_time,(float)realcount*1000/cost_time,frameWidth);
+//                printf("index %d  fps:    %f    real fps:    %f      frameWidth:%d\n",index,(float)framecount*1000/cost_time,(float)realcount*1000/cost_time,frameWidth);
                 gettimeofday(&t_start,NULL);
                 start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
                 framecount = 0;
