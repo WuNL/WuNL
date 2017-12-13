@@ -126,7 +126,7 @@ void manager::setChannelBuffer(int index, std::string ip_)
     (*channelVecPtr)[index - 1].ip[1] = m2;
     (*channelVecPtr)[index - 1].ip[2] = m3;
     (*channelVecPtr)[index - 1].ip[3] = m4;
-    (*channelVecPtr)[index - 1].port = 8080+index;
+    (*channelVecPtr)[index - 1].port = 8080+index-1;
     //std::cout<<(*channelVecPtr)[index - 1].ip<<std::endl;
 }
 
