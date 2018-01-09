@@ -25,7 +25,7 @@ int main()
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
     thread = pthread_self();
-    CPU_SET(19, &cpuset);
+    CPU_SET(15, &cpuset);
     int rc = pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
     if (rc != 0)
         std::cout << "Error calling pthread_setaffinity_np !!! ";

@@ -104,6 +104,8 @@ private:
     int frameWidth,frameHeight;
     int splitNum_,splitNum_old;
 
+    int w_width,w_height;
+
     textRender* tr;
 };
 

@@ -214,13 +214,18 @@ void viewer::devFun()
     GLFWmonitor** monitors = glfwGetMonitors(&count);
 
     const GLFWvidmode* mode = glfwGetVideoMode(monitors[index]);
-    glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-    glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-    glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-    glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-    glfwWindowHint(GLFW_ICONIFIED,GL_FALSE);
-    glfwWindowHint(GLFW_FOCUSED,GL_FALSE);
-    glfwWindowHint(GLFW_AUTO_ICONIFY,GL_FALSE);
+    w_width = mode->width;
+    w_height = mode->height;
+//    glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+//    glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+//    glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+//    glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+//    glfwWindowHint(GLFW_ICONIFIED,GL_FALSE);
+//    glfwWindowHint(GLFW_FOCUSED,GL_FALSE);
+//    glfwWindowHint(GLFW_AUTO_ICONIFY,GL_FALSE);
+    glfwWindowHint(GLFW_DECORATED, GL_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+//    glfwWindowHint(GLFW_MAXIMIZED, GL_FALSE);
 //glfwWindowHint(GLFW_,GL_FALSE);
     std::cout<<mode->width<<"  "<<mode->height<<std::endl;
     char* s;
@@ -234,26 +239,28 @@ void viewer::devFun()
     {
         w = mode->width;
         h = mode->height;
-        window = glfwCreateWindow(1440, 900, s,NULL, NULL);
+        window = glfwCreateWindow(mode->width, mode->height, s,NULL, NULL);
+        glfwSetWindowPos(window, index*1920, 0);
         //glfwSetWindowPos(window,1440*index,0);
-        glfwSetWindowMonitor(window, monitors[index], 0, 0, mode->width, mode->height, mode->refreshRate);
+//        glfwSetWindowMonitor(window, NULL, 1920*index, 0, mode->width, mode->height, 0);
         glfwMakeContextCurrent(window);
 //    // set vsync. 0:off max 1000+fps 1: on max 60fps 2: on max 30fps
-        glfwSwapInterval(-1);
+//        if(index==0)
+    glfwSwapInterval(-1);
         //glfwSetWindowMonitor(window, monitors[index], 0, 0, mode->width, mode->height, mode->refreshRate);
 
     }
     else
     {
-        window = glfwCreateWindow(w, h, s, NULL, NULL);
-        glfwSetWindowMonitor(window,monitors[index],0,0,w,h,mode->refreshRate);
+//        window = glfwCreateWindow(w, h, s, NULL, NULL);
+//        glfwSetWindowMonitor(window,monitors[index],0,0,w,h,mode->refreshRate);
 
     }
 
     // start GLEW extension handler
     glewExperimental = GL_TRUE;
     glewInit();
-    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+    glViewport(0, 0, 1920, 1080);
 
 //    Display *dpy = glXGetCurrentDisplay();
 //    GLXDrawable drawable = glXGetCurrentDrawable();
@@ -262,18 +269,13 @@ void viewer::devFun()
 //    glXSwapIntervalEXT(dpy, drawable, interval);
 
 
-    if (GLX_NV_swap_group)
-{
-  /* Looks like ARB_fragment_program is supported. */
-  printf("GLX_NV_swap_group is supported!\n");
-}
     if(autoSwitch)
     {
-        tr = new textRender(mode->width, mode->height,"/home/sdt/workspace/textRender/SourceHanSerifCN-Bold.otf");
+        tr = new textRender(mode->width, mode->height,"/home/sdt/workspace/WuNL/SourceHanSerifCN-Bold.otf");
     }
     else
     {
-        tr = new textRender(w,h,"/home/sdt/workspace/textRender/SourceHanSerifCN-Bold.otf");
+        tr = new textRender(w,h,"/home/sdt/workspace/WuNL/SourceHanSerifCN-Bold.otf");
     }
 
 
@@ -302,7 +304,7 @@ void viewer::devFun()
 
     ourShader = new Shader("nv12.vs", "nv12.frag");
     ourShader->Use();
-    AVFrame	*pFrame ;
+
     int DATA_SIZE = frameWidth*frameHeight;
 
     // Load and create a texture
@@ -331,13 +333,32 @@ void viewer::devFun()
     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, frameWidth/2,frameHeight/2, 16, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
 
     //glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+
+
+
+// Initialize the AVFrame
+    AVFrame* frame = av_frame_alloc();
+    frame->width = 1920;
+    frame->height = 1080;
+    frame->format = AV_PIX_FMT_NV12;
+
+
+
+//    AVFrame* pFrameYUV1080P = av_frame_alloc();
+    unsigned char *out_buffer1080P;
+    out_buffer1080P=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_NV12,  1920,1080,1));
+    memset(out_buffer1080P,0x01,avpicture_get_size(AV_PIX_FMT_NV12, 1920, 1080)*2/3);
+    memset(out_buffer1080P+avpicture_get_size(AV_PIX_FMT_NV12, 1920, 1080)*2/3,0x80,avpicture_get_size(AV_PIX_FMT_NV12, 1920, 1080)/3);
+    av_image_fill_arrays(frame->data, frame->linesize,out_buffer1080P,
+                         AV_PIX_FMT_NV12,1920,1080,1);
+
     for(int i=0; i<16; ++i)
     {
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
-        glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
+        glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, frame->data[0], GL_STREAM_DRAW);
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV[i]);
-        glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
+        glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, frame->data[1], GL_STREAM_DRAW);
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
         glBindVertexArray(VAO[i]);
         glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
@@ -353,10 +374,10 @@ void viewer::devFun()
         glBindVertexArray(0); // Unbind VAO
 
 
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
-        glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV[i]);
-        glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
+//        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
+//        glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, 0, GL_STREAM_DRAW);
+//        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV[i]);
+//        glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE/2, 0, GL_STREAM_DRAW);
     }
 
     int framecount = 0;
@@ -366,6 +387,7 @@ void viewer::devFun()
     long cost_time=0;
     gettimeofday(&t_start,NULL);
     long start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
+    long startTime = start;
     printf("start time:%ld ms\n",start);
     while (active)
     {
@@ -398,6 +420,7 @@ void viewer::devFun()
                     glBindTexture(GL_TEXTURE_2D_ARRAY, textureUV);
 
                     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, frameWidth/2,frameHeight/2, splitNum_, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
+
                     glActiveTexture(GL_TEXTURE0);
                     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
 
@@ -422,20 +445,34 @@ void viewer::devFun()
                     glBindVertexArray(0);
                     continue;
                 }
-                pFrame=(*pFrameQueueVecPtr_)[j].first.front();
+
+                //test fun
+                AVFrame* pFrame=(*pFrameQueueVecPtr_)[j].first.front();
+
+                AVFrame *copyFrame = av_frame_alloc();
+                copyFrame->format = pFrame->format;
+                copyFrame->width = pFrame->width;
+                copyFrame->height = pFrame->height;
+                av_frame_get_buffer(copyFrame, 32);
+                av_frame_copy(copyFrame, pFrame);
+                av_frame_copy_props(copyFrame, pFrame);
+
+
+                av_frame_free(&pFrame);
                 (*pFrameQueueVecPtr_)[j].first.pop();
+
                 realcount++;
-                if(pFrame->width!=1920/sqrt(splitNum_) || pFrame->height!=1080/sqrt(splitNum_))
+                if(copyFrame->width!=1920/sqrt(splitNum_) || copyFrame->height!=1080/sqrt(splitNum_))
                 {
-                    av_frame_free(&pFrame);
+                    av_frame_free(&copyFrame);
                     continue;
                 }
 
-                if(frameWidth!=pFrame->width || frameHeight!=pFrame->height)
+                if(frameWidth!=copyFrame->width || frameHeight!=copyFrame->height)
                 {
-                    std::cout<<i<<"\t"<<frameWidth<<"\t"<<frameHeight<<pFrame->width<<"\t"<<pFrame->height<<std::endl;
-                    frameWidth=pFrame->width;
-                    frameHeight=pFrame->height;
+                    std::cout<<i<<"\t"<<frameWidth<<"\t"<<frameHeight<<copyFrame->width<<"\t"<<copyFrame->height<<std::endl;
+                    frameWidth=copyFrame->width;
+                    frameHeight=copyFrame->height;
                     glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
 
                     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, frameWidth, frameHeight, splitNum_, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
@@ -453,8 +490,9 @@ void viewer::devFun()
                 GLubyte* ptr = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
                 if(ptr)
                 {
-
-                    memcpy(ptr,pFrame->data[0],frameWidth*frameHeight);
+                    if(frameWidth==0 || frameHeight==0)
+                        continue;
+                    memcpy(ptr,copyFrame->data[0],frameWidth*frameHeight);
 
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
                 }
@@ -473,10 +511,12 @@ void viewer::devFun()
                 GLubyte* ptrUV = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
                 if(ptrUV)
                 {
-                    memcpy(ptrUV,pFrame->data[1],frameWidth*frameHeight/2);
+                    if(frameWidth==0 || frameHeight==0)
+                        continue;
+                    memcpy(ptrUV,copyFrame->data[1],frameWidth*frameHeight/2);
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
                 }
-                av_frame_free(&pFrame);
+                av_frame_free(&copyFrame);
                 glBindTexture(GL_TEXTURE_2D_ARRAY, textureUV);
                 glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, frameWidth/2,frameHeight/2, 1, GL_RG, GL_UNSIGNED_BYTE, 0);
                 glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureUV"), 1);
@@ -498,7 +538,7 @@ void viewer::devFun()
             if(cost_time/1000.0 > 1)
             {
                 fps = (float)framecount*1000/cost_time;
-//                printf("index %d  fps:    %f    real fps:    %f      frameWidth:%d\n",index,(float)framecount*1000/cost_time,(float)realcount*1000/cost_time,frameWidth);
+                printf("index %d  fps:    %f    real fps:    %f      frameWidth:%d     cost:%ld\n",index,(float)framecount*1000/cost_time,(float)realcount*1000/cost_time,frameWidth,(end-startTime)/1000);
                 gettimeofday(&t_start,NULL);
                 start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
                 framecount = 0;
@@ -511,8 +551,7 @@ void viewer::devFun()
             //glXSwapBuffers(glXGetCurrentDisplay(),glXGetCurrentDrawable());
             //glfwMakeContextCurrent(window);
             glfwSwapBuffers(window);
-            if(index!=0)
-                usleep(20000);
+
             //glfwPollEvents();
 
         }
@@ -525,7 +564,7 @@ void viewer::displayFun()
     // start GLEW extension handler
     glewExperimental = GL_TRUE;
     glewInit();
-    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+    glViewport(0, 0, w_width, w_height);
 
     // Set up vertex data (and buffer(s)) and attribute pointers
     GLfloat points[] =
@@ -600,7 +639,7 @@ void viewer::renderTexts(int splitNum,float fps)
         if(j>=0)
         {
             std::string s = (*pFrameQueueVecPtr_)[j].second;
-            tr->RenderText(s,(GLfloat)0.0f, (GLfloat)WINDOW_HEIGHT-35, 0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+            tr->RenderText(s,(GLfloat)0.0f, (GLfloat)w_height-35, 0.5f, glm::vec3(0.5, 0.8f, 0.2f));
         }
 
         break;
@@ -613,7 +652,7 @@ void viewer::renderTexts(int splitNum,float fps)
             if(j<0)
                 continue;
             std::string s = (*pFrameQueueVecPtr_)[j].second;
-            tr->RenderText(s,(GLfloat)(WINDOW_WIDTH*(i%2)/2+25.0f),(GLfloat)(WINDOW_HEIGHT/(int(i/2)+1)-25.0f),0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+            tr->RenderText(s,(GLfloat)(w_width*(i%2)/2+25.0f),(GLfloat)(w_height/(int(i/2)+1)-25.0f),0.5f, glm::vec3(0.5, 0.8f, 0.2f));
         }
         break;
     }
@@ -625,7 +664,7 @@ void viewer::renderTexts(int splitNum,float fps)
             if(j<0)
                 continue;
             std::string s = (*pFrameQueueVecPtr_)[j].second;
-            tr->RenderText(s,(GLfloat)(WINDOW_WIDTH*(i%3)/3+25.0f),(GLfloat)(WINDOW_HEIGHT*(3-int(i/3))/3-25.0f),0.4f, glm::vec3(0.5, 0.8f, 0.2f));
+            tr->RenderText(s,(GLfloat)(w_width*(i%3)/3+25.0f),(GLfloat)(w_height*(3-int(i/3))/3-25.0f),0.4f, glm::vec3(0.5, 0.8f, 0.2f));
         }
         break;
     }
@@ -637,7 +676,7 @@ void viewer::renderTexts(int splitNum,float fps)
             if(j<0)
                 continue;
             std::string s = (*pFrameQueueVecPtr_)[j].second;
-            tr->RenderText(s,(GLfloat)(WINDOW_WIDTH*(i%4)/4+25.0f),(GLfloat)(WINDOW_HEIGHT*(4-int(i/4))/4-25.0f),0.3f, glm::vec3(0.5, 0.8f, 0.2f));
+            tr->RenderText(s,(GLfloat)(w_width*(i%4)/4+25.0f),(GLfloat)(w_height*(4-int(i/4))/4-25.0f),0.3f, glm::vec3(0.5, 0.8f, 0.2f));
         }
         break;
     }
@@ -653,13 +692,13 @@ void viewer::renderTexts(int splitNum,float fps)
         {
             char fpsStr[100];
             sprintf(fpsStr,"v0 FPS: %f ",fps);
-            tr->RenderText(fpsStr,(GLfloat)(WINDOW_WIDTH-300),(GLfloat)(WINDOW_HEIGHT-25),0.5f, glm::vec3(0.5, 0.1f, 0.5f));
+            tr->RenderText(fpsStr,(GLfloat)(w_width-300),(GLfloat)(w_height-25),0.5f, glm::vec3(0.5, 0.1f, 0.5f));
         }
         else
         {
             char fpsStr[100];
             sprintf(fpsStr,"v1 FPS: %f ",fps);
-            tr->RenderText(fpsStr,(GLfloat)(WINDOW_WIDTH-300),(GLfloat)(WINDOW_HEIGHT-25),0.5f, glm::vec3(0.5, 0.1f, 0.5f));
+            tr->RenderText(fpsStr,(GLfloat)(w_width-300),(GLfloat)(w_height-25),0.5f, glm::vec3(0.5, 0.1f, 0.5f));
         }
 
     }

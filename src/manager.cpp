@@ -12,7 +12,7 @@ manager::manager():channelVecPtr(boost::make_shared<std::vector<channel> >(CHANN
     videoPositionVecPtr(boost::make_shared<std::vector<std::vector<int> > >(videoPositionVec))
 {
     //ctor
-    for(int i = 0; i<4 ;++i)
+    for(int i = 0; i<4 ; ++i)
     {
         vr[i] = NULL;
     }
@@ -71,14 +71,15 @@ void manager::startViewer()
 //    glfwSwapInterval(2);
 
 
-     glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
 //    // set vsync. 0:off max 1000+fps 1: on max 60fps 2: on max 30fps
     //glfwSwapInterval(1);
     for(int index= 0; index<count; ++index)
     {
+        const GLFWvidmode* mode = glfwGetVideoMode(monitors[index]);
         //glfwSetWindowMonitor(window, NULL, 1440*index, 0, mode->width, mode->height, mode->refreshRate);
 
-        vr[index] = new viewer(1440,900,index,true);
+        vr[index] = new viewer(mode->width,mode->height,index,true);
         vr[index]->setQueuePtr(pFrameQueueVecPtr,videoPositionVecPtr);
         //vr[index]->setContext(offscreen_context[index]);
         vr[index]->run();
@@ -163,7 +164,7 @@ void manager::startViewer(int index)
     int trueIndex = index-1;
     if(vr[trueIndex])
         return;
-    vr[trueIndex] = new viewer(1440,900,trueIndex,true);
+    vr[trueIndex] = new viewer(1920,1080,trueIndex,true);
     //clearQueue(trueIndex);
     vr[trueIndex]->setQueuePtr(pFrameQueueVecPtr,videoPositionVecPtr);
     vr[trueIndex]->run();

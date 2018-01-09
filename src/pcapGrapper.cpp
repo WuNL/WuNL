@@ -64,7 +64,7 @@ void pcapGrepper::capture_callback(u_char *useless,const struct pcap_pkthdr* hea
 {
     std::vector<channel>* myPtr = (std::vector<channel> *)useless;
 
-    if (!((pkt_data[42] == 0x80) && ((pkt_data[43] == 0x60) || (pkt_data[43] == 0xe0))))
+    if (!((pkt_data[42] == 0x80) && ((pkt_data[43] == 0x6a) || (pkt_data[43] == 0xea))))
     {
         return;
     }

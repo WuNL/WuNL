@@ -345,7 +345,7 @@ void fmDecoder::run()
                                              1920/i,1080/i, AV_PIX_FMT_NV12, SWS_POINT, NULL, NULL, NULL);
         pFrameYUV[i-2]->format = AV_PIX_FMT_NV12;
     }
-//    unsigned char *out_buffer1080P;
+    //    unsigned char *out_buffer1080P;
 //    out_buffer1080P=(unsigned char *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_NV12,  1920,1080,1));
     pFrameYUV1080P = av_frame_alloc();
 //    av_image_fill_arrays(pFrameYUV1080P->data, pFrameYUV1080P->linesize,out_buffer1080P,
@@ -388,19 +388,32 @@ void fmDecoder::run()
         int ret = 0;
         while (cur_size>0)
         {
-            int len = av_parser_parse2(
-                          pCodecParserCtx, pCodecCtx,
-                          &packet.data, &packet.size,
-                          cur_ptr, cur_size,
-                          AV_NOPTS_VALUE, AV_NOPTS_VALUE, AV_NOPTS_VALUE);
-
+            int len = 0;
+            try
+            {
+                len = av_parser_parse2(
+                              pCodecParserCtx, pCodecCtx,
+                              &packet.data, &packet.size,
+                              cur_ptr, cur_size,
+                              AV_NOPTS_VALUE, AV_NOPTS_VALUE, AV_NOPTS_VALUE);
+            }
+            catch(...)
+            {
+                printf(" av_parser_parse2 error occus! \n");
+            }
             cur_ptr += len;
             cur_size -= len;
 
             if(packet.size)
             {
-
-                ret = avcodec_send_packet(pCodecCtx, &packet);
+                try
+                {
+                    ret = avcodec_send_packet(pCodecCtx, &packet);
+                }
+                catch(...)
+                {
+                    printf(" avcodec_send_packet error occus! \n");
+                }
                 if (ret < 0)
                 {
                     fprintf(stderr, "Error sending a packet for decoding\n");
@@ -408,14 +421,27 @@ void fmDecoder::run()
                 }
                 while (ret >= 0)
                 {
-                    ret = avcodec_receive_frame(pCodecCtx, pFrame);
+                    try
+                    {
+                        ret = avcodec_receive_frame(pCodecCtx, pFrame);
+                    }
+                    catch(...)
+                    {
+                        printf(" avcodec_receive_frame error occus! \n");
+                    }
                     if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+                    {
+//                        char buf[128]= {0};
+//                        av_make_error_string(buf,128,ret);
+//                        fprintf(stderr, "Error during decoding 0: %s\n", buf);
                         continue;
+                    }
+
                     else if (ret < 0)
                     {
                         char buf[128]= {0};
                         av_make_error_string(buf,128,ret);
-                        fprintf(stderr, "Error during decoding: %s\n", buf);
+                        fprintf(stderr, "Error during decoding 1: %s\n", buf);
                         continue;
                     }
                     sws_seqTMP = sws_seq;
@@ -496,7 +522,7 @@ void fmDecoder::run()
                         }
                         else
                         {
-//                        printf("%d decoder buffer is full!\n",threadSeq_);
+                            printf("%d decoder buffer is full!\n",threadSeq_);
                             AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].first.back();
                             av_frame_free(&tmp);
                             (*pFrameQueueVecPtr_)[threadSeq_].first.back() = copyFrame;
