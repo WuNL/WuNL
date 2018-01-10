@@ -10,6 +10,7 @@
 #include "channel.h"
 #include "params.h"
 #include <queue>
+#include <mutex>
 #include <sched.h>
 #include <thread>
 
@@ -37,6 +38,10 @@ public:
     void setQueuePtr(boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr)
     {
         pFrameQueueVecPtr_=pFrameQueueVecPtr;
+    }
+    void setMutexPtr(std::mutex* mutexPtr)
+    {
+        mutexPtr_ = mutexPtr;
     }
 protected:
 
@@ -77,6 +82,8 @@ private:
     boost::shared_ptr<std::vector<int> > readIndex_;
     boost::shared_ptr<std::vector<int> > writeIndex_;
     boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr_;
+
+    std::mutex* mutexPtr_;
 
 };
 

@@ -246,7 +246,7 @@ void viewer::devFun()
         glfwMakeContextCurrent(window);
 //    // set vsync. 0:off max 1000+fps 1: on max 60fps 2: on max 30fps
 //        if(index==0)
-    glfwSwapInterval(-1);
+    glfwSwapInterval(2);
         //glfwSetWindowMonitor(window, monitors[index], 0, 0, mode->width, mode->height, mode->refreshRate);
 
     }
@@ -260,7 +260,7 @@ void viewer::devFun()
     // start GLEW extension handler
     glewExperimental = GL_TRUE;
     glewInit();
-    glViewport(0, 0, 1920, 1080);
+    glViewport(0, 0, mode->width, mode->height);
 
 //    Display *dpy = glXGetCurrentDisplay();
 //    GLXDrawable drawable = glXGetCurrentDrawable();
@@ -446,33 +446,34 @@ void viewer::devFun()
                     continue;
                 }
 
-                //test fun
+                mutexPtr_->lock();
                 AVFrame* pFrame=(*pFrameQueueVecPtr_)[j].first.front();
 
-                AVFrame *copyFrame = av_frame_alloc();
-                copyFrame->format = pFrame->format;
-                copyFrame->width = pFrame->width;
-                copyFrame->height = pFrame->height;
-                av_frame_get_buffer(copyFrame, 32);
-                av_frame_copy(copyFrame, pFrame);
-                av_frame_copy_props(copyFrame, pFrame);
+//                AVFrame *pFrame = av_frame_alloc();
+//                pFrame->format = pFrame->format;
+//                pFrame->width = pFrame->width;
+//                pFrame->height = pFrame->height;
+//                av_frame_get_buffer(pFrame, 32);
+//                av_frame_copy(pFrame, pFrame);
+//                av_frame_copy_props(pFrame, pFrame);
+//
+//
+//                av_frame_free(&pFrame);
 
-
-                av_frame_free(&pFrame);
                 (*pFrameQueueVecPtr_)[j].first.pop();
-
+                mutexPtr_->unlock();
                 realcount++;
-                if(copyFrame->width!=1920/sqrt(splitNum_) || copyFrame->height!=1080/sqrt(splitNum_))
+                if(pFrame->width!=1920/sqrt(splitNum_) || pFrame->height!=1080/sqrt(splitNum_))
                 {
-                    av_frame_free(&copyFrame);
+                    av_frame_free(&pFrame);
                     continue;
                 }
 
-                if(frameWidth!=copyFrame->width || frameHeight!=copyFrame->height)
+                if(frameWidth!=pFrame->width || frameHeight!=pFrame->height)
                 {
-                    std::cout<<i<<"\t"<<frameWidth<<"\t"<<frameHeight<<copyFrame->width<<"\t"<<copyFrame->height<<std::endl;
-                    frameWidth=copyFrame->width;
-                    frameHeight=copyFrame->height;
+                    std::cout<<i<<"\t"<<frameWidth<<"\t"<<frameHeight<<pFrame->width<<"\t"<<pFrame->height<<std::endl;
+                    frameWidth=pFrame->width;
+                    frameHeight=pFrame->height;
                     glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
 
                     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, frameWidth, frameHeight, splitNum_, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
@@ -492,7 +493,7 @@ void viewer::devFun()
                 {
                     if(frameWidth==0 || frameHeight==0)
                         continue;
-                    memcpy(ptr,copyFrame->data[0],frameWidth*frameHeight);
+                    memcpy(ptr,pFrame->data[0],frameWidth*frameHeight);
 
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
                 }
@@ -513,10 +514,10 @@ void viewer::devFun()
                 {
                     if(frameWidth==0 || frameHeight==0)
                         continue;
-                    memcpy(ptrUV,copyFrame->data[1],frameWidth*frameHeight/2);
+                    memcpy(ptrUV,pFrame->data[1],frameWidth*frameHeight/2);
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
                 }
-                av_frame_free(&copyFrame);
+                av_frame_free(&pFrame);
                 glBindTexture(GL_TEXTURE_2D_ARRAY, textureUV);
                 glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, frameWidth/2,frameHeight/2, 1, GL_RG, GL_UNSIGNED_BYTE, 0);
                 glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureUV"), 1);

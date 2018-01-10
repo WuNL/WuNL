@@ -10,9 +10,12 @@ manager::manager():channelVecPtr(boost::make_shared<std::vector<channel> >(CHANN
     videoPositionVec(4, std::vector<int>(CHANNELNUM,-1)),
     pFrameQueueVecPtr(boost::make_shared<std::vector<BUFFERPAIR> >(pFrameQueueVec)),
     videoPositionVecPtr(boost::make_shared<std::vector<std::vector<int> > >(videoPositionVec)),
-    metexPtr(boost::make_shared<std::mutex>(mutex))
+    mutexPtr(new std::mutex)
 {
     //ctor
+
+//    mutexPtr = boost::make_shared<std::mutex> (mutexInstance);
+
     for(int i = 0; i<4 ; ++i)
     {
         vr[i] = NULL;
@@ -36,6 +39,7 @@ manager::manager():channelVecPtr(boost::make_shared<std::vector<channel> >(CHANN
         (*pos) = boost::make_shared<fmDecoder> ();
         (*pos)->setPtr(channelVecPtr,readIndex,writeIndex);
         (*pos)->setQueuePtr(pFrameQueueVecPtr);
+        (*pos)->setMutexPtr(mutexPtr);
         (*pos)->setThreadSeq(position);
         (*pos)->SetScreanNum(WINDOW_STYLE);
         (*pos)->startDecode();
@@ -82,6 +86,7 @@ void manager::startViewer()
 
         vr[index] = new viewer(mode->width,mode->height,index,true);
         vr[index]->setQueuePtr(pFrameQueueVecPtr,videoPositionVecPtr);
+        vr[index]->setMutexPtr(mutexPtr);
         //vr[index]->setContext(offscreen_context[index]);
         vr[index]->run();
         printf("start viewer %d\n",index);
@@ -168,6 +173,7 @@ void manager::startViewer(int index)
     vr[trueIndex] = new viewer(1920,1080,trueIndex,true);
     //clearQueue(trueIndex);
     vr[trueIndex]->setQueuePtr(pFrameQueueVecPtr,videoPositionVecPtr);
+    vr[trueIndex]->setMutexPtr(mutexPtr);
     vr[trueIndex]->run();
     printf("start viewer %d\n",trueIndex);
 }

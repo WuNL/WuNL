@@ -8,7 +8,7 @@
 #include "params.h"
 #include "Shader.h"
 #include "textRender.h"
-
+#include <mutex>
 #include "channel.h"
 #include <sched.h>
 #include <thread>
@@ -73,6 +73,10 @@ public:
         pFrameQueueVecPtr_=pFrameQueueVecPtr;
         videoPositionVecPtr_ = videoPositionVecPtr;
     }
+    void setMutexPtr(std::mutex* mutexPtr)
+    {
+        mutexPtr_ = mutexPtr;
+    }
 protected:
 
 private:
@@ -92,6 +96,7 @@ private:
     boost::thread m_Thread;
     boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr_;
     boost::shared_ptr<std::vector<std::vector<int> > > videoPositionVecPtr_;
+    std::mutex* mutexPtr_;
 
 //    boost::mutex lock;
 

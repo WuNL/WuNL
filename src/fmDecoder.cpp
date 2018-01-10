@@ -518,14 +518,18 @@ void fmDecoder::run()
 
                         if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=FRAME_BUFFER)
                         {
+                            mutexPtr_->lock();
                             (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
+                            mutexPtr_->unlock();
                         }
                         else
                         {
-                            printf("%d decoder buffer is full!\n",threadSeq_);
+//                            printf("%d decoder buffer is full!\n",threadSeq_);
                             AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].first.back();
+                            mutexPtr_->lock();
                             av_frame_free(&tmp);
                             (*pFrameQueueVecPtr_)[threadSeq_].first.back() = copyFrame;
+                            mutexPtr_->unlock();
                         }
 
                         //av_frame_free(&pFrame);
@@ -551,14 +555,18 @@ void fmDecoder::run()
 
                             if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=FRAME_BUFFER)
                             {
+                                mutexPtr_->lock();
                                 (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
+                                mutexPtr_->unlock();
                             }
                             else
                             {
                                 //                        printf("buffer full!\n");
                                 AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].first.back();
+                                mutexPtr_->lock();
                                 av_frame_free(&tmp);
                                 (*pFrameQueueVecPtr_)[threadSeq_].first.back() = copyFrame;
+                                mutexPtr_->unlock();
                             }
                         }
                         else if(pFrame->width==1920 && pFrame->height==1080)
@@ -576,14 +584,18 @@ void fmDecoder::run()
 
                             if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=FRAME_BUFFER)
                             {
+                                mutexPtr_->lock();
                                 (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
+                                mutexPtr_->unlock();
                             }
                             else
                             {
                                 //                        printf("buffer full!\n");
                                 AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].first.back();
+                                mutexPtr_->lock();
                                 av_frame_free(&tmp);
                                 (*pFrameQueueVecPtr_)[threadSeq_].first.back() = copyFrame;
+                                mutexPtr_->unlock();
                             }
                         }
                     }

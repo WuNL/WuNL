@@ -63,8 +63,8 @@ private:
     std::vector<std::vector<int> >videoPositionVec;
     boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr;
     boost::shared_ptr<std::vector<std::vector<int> > > videoPositionVecPtr;
-    std::mutex mutex;
-    boost::shared_ptr<std::mutex> mutexPtr;
+    std::mutex* mutexPtr;
+
     void clearQueue(int index);
 
 };
