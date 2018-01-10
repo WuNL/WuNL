@@ -9,7 +9,8 @@ manager::manager():channelVecPtr(boost::make_shared<std::vector<channel> >(CHANN
     pFrameQueueVec(CHANNELNUM),
     videoPositionVec(4, std::vector<int>(CHANNELNUM,-1)),
     pFrameQueueVecPtr(boost::make_shared<std::vector<BUFFERPAIR> >(pFrameQueueVec)),
-    videoPositionVecPtr(boost::make_shared<std::vector<std::vector<int> > >(videoPositionVec))
+    videoPositionVecPtr(boost::make_shared<std::vector<std::vector<int> > >(videoPositionVec)),
+    metexPtr(boost::make_shared<std::mutex>(mutex))
 {
     //ctor
     for(int i = 0; i<4 ; ++i)

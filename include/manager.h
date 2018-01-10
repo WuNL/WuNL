@@ -9,6 +9,7 @@
 #include "glViewer.h"
 #include "viewer.h"
 #include <queue>
+#include <mutex>
 #include <sys/time.h>
 #include <time.h>
 typedef std::vector<boost::shared_ptr<rtpReceiver> > rtpRecvPtrVec;
@@ -62,7 +63,8 @@ private:
     std::vector<std::vector<int> >videoPositionVec;
     boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr;
     boost::shared_ptr<std::vector<std::vector<int> > > videoPositionVecPtr;
-
+    std::mutex mutex;
+    boost::shared_ptr<std::mutex> mutexPtr;
     void clearQueue(int index);
 
 };
