@@ -5,9 +5,9 @@
 #include "channel.h"
 #include "fmDecoder.h"
 
-#include "fmDecoder.h"
 #include "glViewer.h"
 #include "viewer.h"
+#include "timer.h"
 #include <queue>
 #include <mutex>
 #include <sys/time.h>
@@ -46,6 +46,25 @@ public:
             return;
         (*pFrameQueueVecPtr)[index-1].second = name;
     }
+    void startTimer(int index,int seconds,std::vector<std::vector<std::string> >& pollingVec)
+    {
+        if(seconds<1)
+        {
+            return;
+        }
+        if(mytimer[index]==NULL)
+        {
+            mytimer[index] = new MyTimer(index,std::chrono::seconds(seconds),videoPositionVecPtr,vr[index],pollingVec
+            );
+        }
+        else
+        {
+            delete mytimer[index];
+            mytimer[index] = NULL;
+            mytimer[index] = new MyTimer(index,std::chrono::seconds(seconds),videoPositionVecPtr,vr[index],pollingVec
+            );
+        }
+    }
 
 protected:
 
@@ -55,6 +74,8 @@ private:
     pcapGrepper myPcap;
     fmDecoderPtrVec fv;
     viewer* vr[4];
+    MyTimer* mytimer[4];
+
 
     boost::shared_ptr<std::vector<channel> >  channelVecPtr;
     boost::shared_ptr<std::vector<int> > readIndex;

@@ -13,14 +13,13 @@ manager::manager():channelVecPtr(boost::make_shared<std::vector<channel> >(CHANN
     mutexPtr(new std::mutex)
 {
     //ctor
-
 //    mutexPtr = boost::make_shared<std::mutex> (mutexInstance);
 
     for(int i = 0; i<4 ; ++i)
     {
         vr[i] = NULL;
+        mytimer[i] = NULL;
     }
-
 
     myPcap.setChannelVecPtr(channelVecPtr);
     myPcap.start();

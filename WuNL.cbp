@@ -98,6 +98,7 @@
 		<Unit filename="include/protobufServer.h" />
 		<Unit filename="include/rtpReceiver.h" />
 		<Unit filename="include/textRender.h" />
+		<Unit filename="include/timer.h" />
 		<Unit filename="include/viewer.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="protobuf/hvs.pb.cc" />

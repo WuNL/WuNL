@@ -392,10 +392,10 @@ void fmDecoder::run()
             try
             {
                 len = av_parser_parse2(
-                              pCodecParserCtx, pCodecCtx,
-                              &packet.data, &packet.size,
-                              cur_ptr, cur_size,
-                              AV_NOPTS_VALUE, AV_NOPTS_VALUE, AV_NOPTS_VALUE);
+                          pCodecParserCtx, pCodecCtx,
+                          &packet.data, &packet.size,
+                          cur_ptr, cur_size,
+                          AV_NOPTS_VALUE, AV_NOPTS_VALUE, AV_NOPTS_VALUE);
             }
             catch(...)
             {

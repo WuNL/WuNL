@@ -246,7 +246,7 @@ void viewer::devFun()
         glfwMakeContextCurrent(window);
 //    // set vsync. 0:off max 1000+fps 1: on max 60fps 2: on max 30fps
 //        if(index==0)
-    glfwSwapInterval(2);
+        glfwSwapInterval(2);
         //glfwSetWindowMonitor(window, monitors[index], 0, 0, mode->width, mode->height, mode->refreshRate);
 
     }
@@ -492,7 +492,12 @@ void viewer::devFun()
                 if(ptr)
                 {
                     if(frameWidth==0 || frameHeight==0)
+                    {
+                        printf("viewer continue!\n");
+                        av_frame_free(&pFrame);
                         continue;
+                    }
+
                     memcpy(ptr,pFrame->data[0],frameWidth*frameHeight);
 
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
@@ -513,7 +518,11 @@ void viewer::devFun()
                 if(ptrUV)
                 {
                     if(frameWidth==0 || frameHeight==0)
+                    {
+                        printf("viewer continue!\n");
+                        av_frame_free(&pFrame);
                         continue;
+                    }
                     memcpy(ptrUV,pFrame->data[1],frameWidth*frameHeight/2);
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
                 }
@@ -539,7 +548,7 @@ void viewer::devFun()
             if(cost_time/1000.0 > 1)
             {
                 fps = (float)framecount*1000/cost_time;
-                printf("index %d  fps:    %f    real fps:    %f      frameWidth:%d     cost:%ld\n",index,(float)framecount*1000/cost_time,(float)realcount*1000/cost_time,frameWidth,(end-startTime)/1000);
+                //printf("index %d  fps:    %f    real fps:    %f      frameWidth:%d     cost:%ld\n",index,(float)framecount*1000/cost_time,(float)realcount*1000/cost_time,frameWidth,(end-startTime)/1000);
                 gettimeofday(&t_start,NULL);
                 start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
                 framecount = 0;

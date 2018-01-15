@@ -42,6 +42,20 @@ private:
 
     manager myBoss;
 
+    void timerCallBack(const boost::system::error_code& e,boost::asio::deadline_timer* t)
+    {
+        std::cout<<"ddd"<<std::endl;
+        t->expires_at(t->expires_at()+ boost::posix_time::seconds(5));
+        t->async_wait(boost::bind(&protobufServer::timerCallBack,this,boost::asio::placeholders::error,t));
+    }
+
+    void startTimer()
+    {
+        boost::asio::deadline_timer t(ios, boost::posix_time::seconds(5));
+        t.async_wait(boost::bind(&protobufServer::timerCallBack,this,boost::asio::placeholders::error,&t));
+        ios.run();
+    }
+
     typedef boost::shared_ptr<ip::tcp::socket> sock_ptr;
     void accept_handler(const boost::system::error_code &ec, sock_ptr sock)
     {
@@ -74,6 +88,22 @@ private:
         ss >> value;
     }
 
+    void SplitString(const std::string& s, std::vector<std::string>& v, const std::string& c)
+    {
+      std::string::size_type pos1, pos2;
+      pos2 = s.find(c);
+      pos1 = 0;
+      while(std::string::npos != pos2)
+      {
+        v.push_back(s.substr(pos1, pos2-pos1));
+
+        pos1 = pos2 + c.size();
+        pos2 = s.find(c, pos1);
+      }
+      if(pos1 != s.length())
+        v.push_back(s.substr(pos1));
+    }
+
     void on_read(char * ptr, const boost::system::error_code & err, std::size_t read_bytes)
     {
         printf("recving %d\n",read_bytes);
@@ -97,14 +127,44 @@ private:
                 break;
             }
             myBoss.startViewer(windowIndex);
-            for(int i = 0; i<wm.cpl().terminalid_size(); ++i)
+
+            // is polling message
+            if(wm.cpl().ispolling())
             {
-                std::cout<<"terminal id: "<<wm.cpl().terminalid(i)<<std::endl;
-                int tid = -1;
-                convertFromString(tid,wm.cpl().terminalid(i));
-                myBoss.setViewerPosition(wm.cpl().id(),i,tid);
-                myBoss.setDecoderPara(tid,wm.cpl().saperatenumber());
+
+                std::string splitChar=" ";
+                std::vector<std::vector<std::string> > pollingVec(wm.cpl().terminalid_size());
+
+                for(int i = 0; i<wm.cpl().terminalid_size(); ++i)
+                {
+                    std::cout<<"terminal id: "<<wm.cpl().terminalid(i)<<std::endl;
+
+
+                    SplitString(wm.cpl().terminalid(i),pollingVec[i],splitChar);
+                    for(int j = 0; j < pollingVec[i].size(); ++j)
+                    {
+                        int tid = -1;
+                        convertFromString(tid,pollingVec[i][j]);
+    //                    myBoss.setViewerPosition(wm.cpl().id(),i,tid);
+                        myBoss.setDecoderPara(tid,wm.cpl().saperatenumber());
+                    }
+
+                }
+                myBoss.startTimer(wm.cpl().id(),wm.cpl().pollingtime(),pollingVec);
+
             }
+            else
+            {
+                for(int i = 0; i<wm.cpl().terminalid_size(); ++i)
+                {
+                    std::cout<<"terminal id: "<<wm.cpl().terminalid(i)<<std::endl;
+                    int tid = -1;
+                    convertFromString(tid,wm.cpl().terminalid(i));
+                    myBoss.setViewerPosition(wm.cpl().id(),i,tid);
+                    myBoss.setDecoderPara(tid,wm.cpl().saperatenumber());
+                }
+            }
+
 
             myBoss.setViewerPara(wm.cpl().id(),wm.cpl().saperatenumber());
 //                for(std::vector<boost::shared_ptr<fmDecoder> >::iterator pos =fv_.begin(); pos!=fv_.end()-4; ++pos)
