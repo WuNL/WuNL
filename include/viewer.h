@@ -14,6 +14,7 @@
 #include <thread>
 #include <sys/time.h>
 #include <time.h>
+#include <math.h>
 
 typedef std::pair<std::queue<AVFrame*>,std::string> BUFFERPAIR;
 
@@ -77,6 +78,37 @@ public:
     {
         mutexPtr_ = mutexPtr;
     }
+    void setTextStyle(int fontsize, int location, int color,bool showFps)
+    {
+        curSize = fontsize;
+        curLocation = location;
+        curColor = color;
+        showfps = showFps;
+
+        fontSize = fontsize*0.2f+0.2f;
+        switch(location)
+        {
+            //left top
+            case 0:
+            {
+                leftOffset = 35.0f;
+                topOffset = -35.0f;
+                break;
+            }
+            // left bottom
+            case 1:
+            {
+                leftOffset = 35.0f;
+                topOffset = -(w_height/sqrt(splitNum_))+35.0f;
+                break;
+            }
+
+        }
+    }
+    void ifShowLastFrame(bool marker)
+    {
+
+    }
 protected:
 
 private:
@@ -112,6 +144,11 @@ private:
     int w_width,w_height;
 
     textRender* tr;
+    int curSize,curLocation,curColor;
+    float leftOffset,topOffset;
+    float fontSize;
+    bool showfps;
+    std::vector<glm::vec3> colorVec;
 };
 
 #endif // VIEWER_H

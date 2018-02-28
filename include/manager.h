@@ -55,14 +55,30 @@ public:
         if(mytimer[index]==NULL)
         {
             mytimer[index] = new MyTimer(index,std::chrono::seconds(seconds),videoPositionVecPtr,vr[index],pollingVec
-            );
+                                        );
         }
         else
         {
             delete mytimer[index];
             mytimer[index] = NULL;
             mytimer[index] = new MyTimer(index,std::chrono::seconds(seconds),videoPositionVecPtr,vr[index],pollingVec
-            );
+                                        );
+        }
+    }
+    void stopTimer(int index)
+    {
+        if(mytimer[index]!=NULL)
+            delete mytimer[index];
+        mytimer[index] = NULL;
+    }
+    void setTextStyle(int textsize, int location, int color, bool showfps)
+    {
+        for(int i=0; i<4; ++i)
+        {
+            if(vr[i]!=NULL)
+            {
+                vr[i]->setTextStyle(textsize,location,color,showfps);
+            }
         }
     }
 

@@ -16,6 +16,17 @@ void viewer::updateImage(GLubyte* dst,int x,int y, int w,int h,void* data)
 viewer::viewer(int width,int height,int ind,bool autoS)
 {
     //ctor
+    colorVec.push_back(glm::vec3(1.0, 0.0f, 0.0f));
+    colorVec.push_back(glm::vec3(0.0, 1.0f, 0.0f));
+    colorVec.push_back(glm::vec3(0.0, 0.0f, 1.0f));
+    colorVec.push_back(glm::vec3(0.2, 0.1f, 0.5f));
+    colorVec.push_back(glm::vec3(1.0, 0.4f, 0.1f));
+    curSize = 1;
+    curLocation = 0;
+    curColor = 0;
+    leftOffset = 35.0f;
+    topOffset = 35.0f;
+
     w = width;
     h = height;
     index = ind;
@@ -83,6 +94,24 @@ void viewer::setStyleInter()
 void viewer::setStyle(int splitNum)
 {
     splitNum_ = splitNum;
+        switch(curLocation)
+        {
+            //left top
+            case 0:
+            {
+                leftOffset = 35.0f;
+                topOffset = -35.0f;
+                break;
+            }
+            // left bottom
+            case 1:
+            {
+                leftOffset = 35.0f;
+                topOffset = -(w_height/sqrt(splitNum_))+35.0f;
+                break;
+            }
+
+        }
     printf("setStyle: splitNum=%d\n",splitNum);
 }
 
@@ -246,7 +275,7 @@ void viewer::devFun()
         glfwMakeContextCurrent(window);
 //    // set vsync. 0:off max 1000+fps 1: on max 60fps 2: on max 30fps
 //        if(index==0)
-        glfwSwapInterval(2);
+        glfwSwapInterval(-1);
         //glfwSetWindowMonitor(window, monitors[index], 0, 0, mode->width, mode->height, mode->refreshRate);
 
     }
@@ -482,6 +511,11 @@ void viewer::devFun()
 
                     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, frameWidth/2,frameHeight/2, splitNum_, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
 
+                    av_frame_free(&pFrame);
+                    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                    glBindVertexArray(0);
+                    continue;
+
                 }
 
                 glBindVertexArray(VAO[i]);
@@ -548,7 +582,7 @@ void viewer::devFun()
             if(cost_time/1000.0 > 1)
             {
                 fps = (float)framecount*1000/cost_time;
-                //printf("index %d  fps:    %f    real fps:    %f      frameWidth:%d     cost:%ld\n",index,(float)framecount*1000/cost_time,(float)realcount*1000/cost_time,frameWidth,(end-startTime)/1000);
+                printf("index %d  fps:    %f    real fps:    %f      frameWidth:%d     cost:%ld\n",index,(float)framecount*1000/cost_time,(float)realcount*1000/cost_time,frameWidth,(end-startTime)/1000);
                 gettimeofday(&t_start,NULL);
                 start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
                 framecount = 0;
@@ -641,6 +675,11 @@ void viewer::renderTexts(int splitNum,float fps)
     assert(splitNum==splitNum_);
     //std::cout<<"(*videoPositionVecPtr_) = "<<(*videoPositionVecPtr_)[0][0]<<std::endl;
     int j = 0;
+//    if(w_width==1920)
+//    {
+//        topOffset*=1.5;
+//        leftOffset*=1.5;
+//    }
     switch(splitNum)
     {
     case 1:
@@ -649,7 +688,7 @@ void viewer::renderTexts(int splitNum,float fps)
         if(j>=0)
         {
             std::string s = (*pFrameQueueVecPtr_)[j].second;
-            tr->RenderText(s,(GLfloat)0.0f, (GLfloat)w_height-35, 0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+            tr->RenderText(s,(GLfloat)(leftOffset), (GLfloat)w_height+topOffset, fontSize, colorVec[curColor]);
         }
 
         break;
@@ -662,7 +701,7 @@ void viewer::renderTexts(int splitNum,float fps)
             if(j<0)
                 continue;
             std::string s = (*pFrameQueueVecPtr_)[j].second;
-            tr->RenderText(s,(GLfloat)(w_width*(i%2)/2+25.0f),(GLfloat)(w_height/(int(i/2)+1)-25.0f),0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+            tr->RenderText(s,(GLfloat)(w_width*(i%2)/2+leftOffset),(GLfloat)(w_height/(int(i/2)+1)+topOffset),fontSize, colorVec[curColor]);
         }
         break;
     }
@@ -674,7 +713,7 @@ void viewer::renderTexts(int splitNum,float fps)
             if(j<0)
                 continue;
             std::string s = (*pFrameQueueVecPtr_)[j].second;
-            tr->RenderText(s,(GLfloat)(w_width*(i%3)/3+25.0f),(GLfloat)(w_height*(3-int(i/3))/3-25.0f),0.4f, glm::vec3(0.5, 0.8f, 0.2f));
+            tr->RenderText(s,(GLfloat)(w_width*(i%3)/3+leftOffset),(GLfloat)(w_height*(3-int(i/3))/3)+topOffset,fontSize, colorVec[curColor]);
         }
         break;
     }
@@ -686,7 +725,7 @@ void viewer::renderTexts(int splitNum,float fps)
             if(j<0)
                 continue;
             std::string s = (*pFrameQueueVecPtr_)[j].second;
-            tr->RenderText(s,(GLfloat)(w_width*(i%4)/4+25.0f),(GLfloat)(w_height*(4-int(i/4))/4-25.0f),0.3f, glm::vec3(0.5, 0.8f, 0.2f));
+            tr->RenderText(s,(GLfloat)(w_width*(i%4)/4+leftOffset),(GLfloat)(w_height*(4-int(i/4))/4)+topOffset,fontSize, colorVec[curColor]);
         }
         break;
     }
@@ -696,7 +735,7 @@ void viewer::renderTexts(int splitNum,float fps)
     }
     }
 
-    if(showFPS)
+    if(showfps)
     {
         if(index == 0)
         {

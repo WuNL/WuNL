@@ -23,6 +23,13 @@ message ChannelPolling{
 	 repeated string terminalID = 8;
 }
 
+message TextStyle{
+	int32 size = 1;
+	int32 location = 2;
+	int32 color = 3;
+	bool showfps = 4;
+}
+
 message WrapperMessage{
 	oneof msg{
 		ChannelPolling  cpl= 3;
@@ -30,6 +37,6 @@ message WrapperMessage{
 		Terminal tml = 5;
 		int64 debugStatus = 6;
 		int64 packetGrepperStatus = 7;
+		TextStyle textstyle = 8;
 	}
 }
-

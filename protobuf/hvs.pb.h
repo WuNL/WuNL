@@ -40,6 +40,9 @@ extern TerminalDefaultTypeInternal _Terminal_default_instance_;
 class TerminalArray;
 class TerminalArrayDefaultTypeInternal;
 extern TerminalArrayDefaultTypeInternal _TerminalArray_default_instance_;
+class TextStyle;
+class TextStyleDefaultTypeInternal;
+extern TextStyleDefaultTypeInternal _TextStyle_default_instance_;
 class WrapperMessage;
 class WrapperMessageDefaultTypeInternal;
 extern WrapperMessageDefaultTypeInternal _WrapperMessage_default_instance_;
@@ -463,6 +466,124 @@ class ChannelPolling : public ::google::protobuf::Message /* @@protoc_insertion_
 };
 // -------------------------------------------------------------------
 
+class TextStyle : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:hvs.TextStyle) */ {
+ public:
+  TextStyle();
+  virtual ~TextStyle();
+
+  TextStyle(const TextStyle& from);
+
+  inline TextStyle& operator=(const TextStyle& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  TextStyle(TextStyle&& from) noexcept
+    : TextStyle() {
+    *this = ::std::move(from);
+  }
+
+  inline TextStyle& operator=(TextStyle&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TextStyle& default_instance();
+
+  static inline const TextStyle* internal_default_instance() {
+    return reinterpret_cast<const TextStyle*>(
+               &_TextStyle_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    3;
+
+  void Swap(TextStyle* other);
+  friend void swap(TextStyle& a, TextStyle& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline TextStyle* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  TextStyle* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const TextStyle& from);
+  void MergeFrom(const TextStyle& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(TextStyle* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // int32 size = 1;
+  void clear_size();
+  static const int kSizeFieldNumber = 1;
+  ::google::protobuf::int32 size() const;
+  void set_size(::google::protobuf::int32 value);
+
+  // int32 location = 2;
+  void clear_location();
+  static const int kLocationFieldNumber = 2;
+  ::google::protobuf::int32 location() const;
+  void set_location(::google::protobuf::int32 value);
+
+  // int32 color = 3;
+  void clear_color();
+  static const int kColorFieldNumber = 3;
+  ::google::protobuf::int32 color() const;
+  void set_color(::google::protobuf::int32 value);
+
+  // bool showfps = 4;
+  void clear_showfps();
+  static const int kShowfpsFieldNumber = 4;
+  bool showfps() const;
+  void set_showfps(bool value);
+
+  // @@protoc_insertion_point(class_scope:hvs.TextStyle)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int32 size_;
+  ::google::protobuf::int32 location_;
+  ::google::protobuf::int32 color_;
+  bool showfps_;
+  mutable int _cached_size_;
+  friend struct protobuf_hvs_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
 class WrapperMessage : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:hvs.WrapperMessage) */ {
  public:
   WrapperMessage();
@@ -498,6 +619,7 @@ class WrapperMessage : public ::google::protobuf::Message /* @@protoc_insertion_
     kTml = 5,
     kDebugStatus = 6,
     kPacketGrepperStatus = 7,
+    kTextstyle = 8,
     MSG_NOT_SET = 0,
   };
 
@@ -506,7 +628,7 @@ class WrapperMessage : public ::google::protobuf::Message /* @@protoc_insertion_
                &_WrapperMessage_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    3;
+    4;
 
   void Swap(WrapperMessage* other);
   friend void swap(WrapperMessage& a, WrapperMessage& b) {
@@ -598,6 +720,15 @@ class WrapperMessage : public ::google::protobuf::Message /* @@protoc_insertion_
   ::google::protobuf::int64 packetgrepperstatus() const;
   void set_packetgrepperstatus(::google::protobuf::int64 value);
 
+  // .hvs.TextStyle textstyle = 8;
+  bool has_textstyle() const;
+  void clear_textstyle();
+  static const int kTextstyleFieldNumber = 8;
+  const ::hvs::TextStyle& textstyle() const;
+  ::hvs::TextStyle* mutable_textstyle();
+  ::hvs::TextStyle* release_textstyle();
+  void set_allocated_textstyle(::hvs::TextStyle* textstyle);
+
   MsgCase msg_case() const;
   // @@protoc_insertion_point(class_scope:hvs.WrapperMessage)
  private:
@@ -606,6 +737,7 @@ class WrapperMessage : public ::google::protobuf::Message /* @@protoc_insertion_
   void set_has_tml();
   void set_has_debugstatus();
   void set_has_packetgrepperstatus();
+  void set_has_textstyle();
 
   inline bool has_msg() const;
   void clear_msg();
@@ -619,6 +751,7 @@ class WrapperMessage : public ::google::protobuf::Message /* @@protoc_insertion_
     ::hvs::Terminal* tml_;
     ::google::protobuf::int64 debugstatus_;
     ::google::protobuf::int64 packetgrepperstatus_;
+    ::hvs::TextStyle* textstyle_;
   } msg_;
   mutable int _cached_size_;
   ::google::protobuf::uint32 _oneof_case_[1];
@@ -978,6 +1111,66 @@ ChannelPolling::mutable_terminalid() {
 
 // -------------------------------------------------------------------
 
+// TextStyle
+
+// int32 size = 1;
+inline void TextStyle::clear_size() {
+  size_ = 0;
+}
+inline ::google::protobuf::int32 TextStyle::size() const {
+  // @@protoc_insertion_point(field_get:hvs.TextStyle.size)
+  return size_;
+}
+inline void TextStyle::set_size(::google::protobuf::int32 value) {
+  
+  size_ = value;
+  // @@protoc_insertion_point(field_set:hvs.TextStyle.size)
+}
+
+// int32 location = 2;
+inline void TextStyle::clear_location() {
+  location_ = 0;
+}
+inline ::google::protobuf::int32 TextStyle::location() const {
+  // @@protoc_insertion_point(field_get:hvs.TextStyle.location)
+  return location_;
+}
+inline void TextStyle::set_location(::google::protobuf::int32 value) {
+  
+  location_ = value;
+  // @@protoc_insertion_point(field_set:hvs.TextStyle.location)
+}
+
+// int32 color = 3;
+inline void TextStyle::clear_color() {
+  color_ = 0;
+}
+inline ::google::protobuf::int32 TextStyle::color() const {
+  // @@protoc_insertion_point(field_get:hvs.TextStyle.color)
+  return color_;
+}
+inline void TextStyle::set_color(::google::protobuf::int32 value) {
+  
+  color_ = value;
+  // @@protoc_insertion_point(field_set:hvs.TextStyle.color)
+}
+
+// bool showfps = 4;
+inline void TextStyle::clear_showfps() {
+  showfps_ = false;
+}
+inline bool TextStyle::showfps() const {
+  // @@protoc_insertion_point(field_get:hvs.TextStyle.showfps)
+  return showfps_;
+}
+inline void TextStyle::set_showfps(bool value) {
+  
+  showfps_ = value;
+  // @@protoc_insertion_point(field_set:hvs.TextStyle.showfps)
+}
+
+// -------------------------------------------------------------------
+
 // WrapperMessage
 
 // .hvs.ChannelPolling cpl = 3;
@@ -1182,6 +1375,54 @@ inline void WrapperMessage::set_packetgrepperstatus(::google::protobuf::int64 va
   // @@protoc_insertion_point(field_set:hvs.WrapperMessage.packetGrepperStatus)
 }
 
+// .hvs.TextStyle textstyle = 8;
+inline bool WrapperMessage::has_textstyle() const {
+  return msg_case() == kTextstyle;
+}
+inline void WrapperMessage::set_has_textstyle() {
+  _oneof_case_[0] = kTextstyle;
+}
+inline void WrapperMessage::clear_textstyle() {
+  if (has_textstyle()) {
+    delete msg_.textstyle_;
+    clear_has_msg();
+  }
+}
+inline  const ::hvs::TextStyle& WrapperMessage::textstyle() const {
+  // @@protoc_insertion_point(field_get:hvs.WrapperMessage.textstyle)
+  return has_textstyle()
+      ? *msg_.textstyle_
+      : ::hvs::TextStyle::default_instance();
+}
+inline ::hvs::TextStyle* WrapperMessage::mutable_textstyle() {
+  if (!has_textstyle()) {
+    clear_msg();
+    set_has_textstyle();
+    msg_.textstyle_ = new ::hvs::TextStyle;
+  }
+  // @@protoc_insertion_point(field_mutable:hvs.WrapperMessage.textstyle)
+  return msg_.textstyle_;
+}
+inline ::hvs::TextStyle* WrapperMessage::release_textstyle() {
+  // @@protoc_insertion_point(field_release:hvs.WrapperMessage.textstyle)
+  if (has_textstyle()) {
+    clear_has_msg();
+    ::hvs::TextStyle* temp = msg_.textstyle_;
+    msg_.textstyle_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void WrapperMessage::set_allocated_textstyle(::hvs::TextStyle* textstyle) {
+  clear_msg();
+  if (textstyle) {
+    set_has_textstyle();
+    msg_.textstyle_ = textstyle;
+  }
+  // @@protoc_insertion_point(field_set_allocated:hvs.WrapperMessage.textstyle)
+}
+
 inline bool WrapperMessage::has_msg() const {
   return msg_case() != MSG_NOT_SET;
 }
@@ -1195,6 +1436,8 @@ inline WrapperMessage::MsgCase WrapperMessage::msg_case() const {
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

@@ -25,7 +25,7 @@ public:
     , _videoPositionVecPtr(videoPositionVecPtr)
     , _vr(vr)
     , _pollingVec(pollingVec)
-    , counter(0)
+    , counter(1)
     , _index(index)
     {
         _ios.post([this, duration] { start(duration); });
@@ -66,14 +66,14 @@ private:
 //        }
         for(int i = 0; i<_pollingVec.size(); ++i)
         {
-            std::cout<<_pollingVec[i][counter%_pollingVec[i].size()]<<"\t";
+//            std::cout<<_pollingVec[i][counter%_pollingVec[i].size()]<<"\t";
             int tid = 0;
             convertFromString(tid,_pollingVec[i][counter%_pollingVec[i].size()]);
             if(_index<1)
                 return;
             (*_videoPositionVecPtr)[_index-1][i] = tid-1;
         }
-        printf("\n");
+//        printf("\n");
         counter++;
 
         // NOTE: Be careful here as this is run from inside
@@ -84,7 +84,7 @@ private:
             std::cout << "Stopped" << std::endl;
             return;
         }
-        std::cout << "Timer fired" << std::endl;
+//        std::cout << "Timer fired" << std::endl;
         t->expires_from_now(_duration);
 
         t->async_wait(boost::bind(&MyTimer::timerCallBackv1,this,boost::asio::placeholders::error,t));

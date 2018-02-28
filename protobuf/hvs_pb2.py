@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='hvs.proto',
   package='hvs',
   syntax='proto3',
-  serialized_pb=_b('\n\thvs.proto\x12\x03hvs\"A\n\x08Terminal\x12\n\n\x02id\x18\x01 \x01(\x05\x12\n\n\x02ip\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x0f\n\x07tstatus\x18\x04 \x01(\x08\"0\n\rTerminalArray\x12\x1f\n\x08terminal\x18\x01 \x03(\x0b\x32\r.hvs.Terminal\"\x9e\x01\n\x0e\x43hannelPolling\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x16\n\x0esaperateNumber\x18\x02 \x01(\x05\x12\r\n\x05style\x18\x03 \x01(\x05\x12\x13\n\x0bpollingTime\x18\x04 \x01(\x05\x12\x0e\n\x06\x61\x63tive\x18\x05 \x01(\x08\x12\r\n\x05inuse\x18\x06 \x01(\x08\x12\x11\n\tisPolling\x18\x07 \x01(\x08\x12\x12\n\nterminalID\x18\x08 \x03(\t\"\xb1\x01\n\x0eWrapperMessage\x12\"\n\x03\x63pl\x18\x03 \x01(\x0b\x32\x13.hvs.ChannelPollingH\x00\x12 \n\x02ta\x18\x04 \x01(\x0b\x32\x12.hvs.TerminalArrayH\x00\x12\x1c\n\x03tml\x18\x05 \x01(\x0b\x32\r.hvs.TerminalH\x00\x12\x15\n\x0b\x64\x65\x62ugStatus\x18\x06 \x01(\x03H\x00\x12\x1d\n\x13packetGrepperStatus\x18\x07 \x01(\x03H\x00\x42\x05\n\x03msgb\x06proto3')
+  serialized_pb=_b('\n\thvs.proto\x12\x03hvs\"A\n\x08Terminal\x12\n\n\x02id\x18\x01 \x01(\x05\x12\n\n\x02ip\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x0f\n\x07tstatus\x18\x04 \x01(\x08\"0\n\rTerminalArray\x12\x1f\n\x08terminal\x18\x01 \x03(\x0b\x32\r.hvs.Terminal\"\x9e\x01\n\x0e\x43hannelPolling\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x16\n\x0esaperateNumber\x18\x02 \x01(\x05\x12\r\n\x05style\x18\x03 \x01(\x05\x12\x13\n\x0bpollingTime\x18\x04 \x01(\x05\x12\x0e\n\x06\x61\x63tive\x18\x05 \x01(\x08\x12\r\n\x05inuse\x18\x06 \x01(\x08\x12\x11\n\tisPolling\x18\x07 \x01(\x08\x12\x12\n\nterminalID\x18\x08 \x03(\t\"K\n\tTextStyle\x12\x0c\n\x04size\x18\x01 \x01(\x05\x12\x10\n\x08location\x18\x02 \x01(\x05\x12\r\n\x05\x63olor\x18\x03 \x01(\x05\x12\x0f\n\x07showfps\x18\x04 \x01(\x08\"\xd6\x01\n\x0eWrapperMessage\x12\"\n\x03\x63pl\x18\x03 \x01(\x0b\x32\x13.hvs.ChannelPollingH\x00\x12 \n\x02ta\x18\x04 \x01(\x0b\x32\x12.hvs.TerminalArrayH\x00\x12\x1c\n\x03tml\x18\x05 \x01(\x0b\x32\r.hvs.TerminalH\x00\x12\x15\n\x0b\x64\x65\x62ugStatus\x18\x06 \x01(\x03H\x00\x12\x1d\n\x13packetGrepperStatus\x18\x07 \x01(\x03H\x00\x12#\n\ttextstyle\x18\x08 \x01(\x0b\x32\x0e.hvs.TextStyleH\x00\x42\x05\n\x03msgb\x06proto3')
 )
 
 
@@ -188,6 +188,58 @@ _CHANNELPOLLING = _descriptor.Descriptor(
 )
 
 
+_TEXTSTYLE = _descriptor.Descriptor(
+  name='TextStyle',
+  full_name='hvs.TextStyle',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='size', full_name='hvs.TextStyle.size', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='location', full_name='hvs.TextStyle.location', index=1,
+      number=2, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='color', full_name='hvs.TextStyle.color', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='showfps', full_name='hvs.TextStyle.showfps', index=3,
+      number=4, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=296,
+  serialized_end=371,
+)
+
+
 _WRAPPERMESSAGE = _descriptor.Descriptor(
   name='WrapperMessage',
   full_name='hvs.WrapperMessage',
@@ -230,6 +282,13 @@ _WRAPPERMESSAGE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='textstyle', full_name='hvs.WrapperMessage.textstyle', index=5,
+      number=8, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -245,14 +304,15 @@ _WRAPPERMESSAGE = _descriptor.Descriptor(
       name='msg', full_name='hvs.WrapperMessage.msg',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=297,
-  serialized_end=474,
+  serialized_start=374,
+  serialized_end=588,
 )
 
 _TERMINALARRAY.fields_by_name['terminal'].message_type = _TERMINAL
 _WRAPPERMESSAGE.fields_by_name['cpl'].message_type = _CHANNELPOLLING
 _WRAPPERMESSAGE.fields_by_name['ta'].message_type = _TERMINALARRAY
 _WRAPPERMESSAGE.fields_by_name['tml'].message_type = _TERMINAL
+_WRAPPERMESSAGE.fields_by_name['textstyle'].message_type = _TEXTSTYLE
 _WRAPPERMESSAGE.oneofs_by_name['msg'].fields.append(
   _WRAPPERMESSAGE.fields_by_name['cpl'])
 _WRAPPERMESSAGE.fields_by_name['cpl'].containing_oneof = _WRAPPERMESSAGE.oneofs_by_name['msg']
@@ -268,9 +328,13 @@ _WRAPPERMESSAGE.fields_by_name['debugStatus'].containing_oneof = _WRAPPERMESSAGE
 _WRAPPERMESSAGE.oneofs_by_name['msg'].fields.append(
   _WRAPPERMESSAGE.fields_by_name['packetGrepperStatus'])
 _WRAPPERMESSAGE.fields_by_name['packetGrepperStatus'].containing_oneof = _WRAPPERMESSAGE.oneofs_by_name['msg']
+_WRAPPERMESSAGE.oneofs_by_name['msg'].fields.append(
+  _WRAPPERMESSAGE.fields_by_name['textstyle'])
+_WRAPPERMESSAGE.fields_by_name['textstyle'].containing_oneof = _WRAPPERMESSAGE.oneofs_by_name['msg']
 DESCRIPTOR.message_types_by_name['Terminal'] = _TERMINAL
 DESCRIPTOR.message_types_by_name['TerminalArray'] = _TERMINALARRAY
 DESCRIPTOR.message_types_by_name['ChannelPolling'] = _CHANNELPOLLING
+DESCRIPTOR.message_types_by_name['TextStyle'] = _TEXTSTYLE
 DESCRIPTOR.message_types_by_name['WrapperMessage'] = _WRAPPERMESSAGE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -294,6 +358,13 @@ ChannelPolling = _reflection.GeneratedProtocolMessageType('ChannelPolling', (_me
   # @@protoc_insertion_point(class_scope:hvs.ChannelPolling)
   ))
 _sym_db.RegisterMessage(ChannelPolling)
+
+TextStyle = _reflection.GeneratedProtocolMessageType('TextStyle', (_message.Message,), dict(
+  DESCRIPTOR = _TEXTSTYLE,
+  __module__ = 'hvs_pb2'
+  # @@protoc_insertion_point(class_scope:hvs.TextStyle)
+  ))
+_sym_db.RegisterMessage(TextStyle)
 
 WrapperMessage = _reflection.GeneratedProtocolMessageType('WrapperMessage', (_message.Message,), dict(
   DESCRIPTOR = _WRAPPERMESSAGE,

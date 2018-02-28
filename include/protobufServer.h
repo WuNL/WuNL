@@ -90,18 +90,18 @@ private:
 
     void SplitString(const std::string& s, std::vector<std::string>& v, const std::string& c)
     {
-      std::string::size_type pos1, pos2;
-      pos2 = s.find(c);
-      pos1 = 0;
-      while(std::string::npos != pos2)
-      {
-        v.push_back(s.substr(pos1, pos2-pos1));
+        std::string::size_type pos1, pos2;
+        pos2 = s.find(c);
+        pos1 = 0;
+        while(std::string::npos != pos2)
+        {
+            v.push_back(s.substr(pos1, pos2-pos1));
 
-        pos1 = pos2 + c.size();
-        pos2 = s.find(c, pos1);
-      }
-      if(pos1 != s.length())
-        v.push_back(s.substr(pos1));
+            pos1 = pos2 + c.size();
+            pos2 = s.find(c, pos1);
+        }
+        if(pos1 != s.length())
+            v.push_back(s.substr(pos1));
     }
 
     void on_read(char * ptr, const boost::system::error_code & err, std::size_t read_bytes)
@@ -126,7 +126,10 @@ private:
                 myBoss.shutdownViewer(windowIndex);
                 break;
             }
-            myBoss.startViewer(windowIndex);
+            if(!wm.cpl().inuse())
+                break;
+            if(wm.cpl().active() && wm.cpl().inuse())
+                myBoss.startViewer(windowIndex);
 
             // is polling message
             if(wm.cpl().ispolling())
@@ -145,7 +148,7 @@ private:
                     {
                         int tid = -1;
                         convertFromString(tid,pollingVec[i][j]);
-    //                    myBoss.setViewerPosition(wm.cpl().id(),i,tid);
+                        //                    myBoss.setViewerPosition(wm.cpl().id(),i,tid);
                         myBoss.setDecoderPara(tid,wm.cpl().saperatenumber());
                     }
 
@@ -155,6 +158,7 @@ private:
             }
             else
             {
+                myBoss.stopTimer(wm.cpl().id());
                 for(int i = 0; i<wm.cpl().terminalid_size(); ++i)
                 {
                     std::cout<<"terminal id: "<<wm.cpl().terminalid(i)<<std::endl;
@@ -190,6 +194,12 @@ private:
             }
 
             break;
+        }
+        case 8:
+        {
+            printf("recv text setting message!\n");
+            std::cout<<wm.textstyle().size()<<" "<<wm.textstyle().location()<<std::endl;
+            myBoss.setTextStyle(wm.textstyle().size(),wm.textstyle().location(),wm.textstyle().color(),wm.textstyle().showfps());
         }
         default:
             break;
