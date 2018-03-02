@@ -8,7 +8,7 @@
 #include <boost/thread/tss.hpp>
 #include <boost/asio.hpp>
 #include "channel.h"
-#include "params.h"
+#include "videoBuffer.h"
 #include <queue>
 #include <mutex>
 #include <sched.h>
@@ -42,6 +42,10 @@ public:
     void setMutexPtr(std::mutex* mutexPtr)
     {
         mutexPtr_ = mutexPtr;
+    }
+    void setVideoBufferPtr(boost::shared_ptr<videoBuffer> videoBufferPtr)
+    {
+        videoBufferPtr_ = videoBufferPtr;
     }
 protected:
 
@@ -85,6 +89,8 @@ private:
     boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr_;
 
     std::mutex* mutexPtr_;
+
+    boost::shared_ptr<videoBuffer> videoBufferPtr_;
 
 };
 

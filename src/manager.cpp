@@ -10,7 +10,8 @@ manager::manager():channelVecPtr(boost::make_shared<std::vector<channel> >(CHANN
     videoPositionVec(4, std::vector<int>(CHANNELNUM,-1)),
     pFrameQueueVecPtr(boost::make_shared<std::vector<BUFFERPAIR> >(pFrameQueueVec)),
     videoPositionVecPtr(boost::make_shared<std::vector<std::vector<int> > >(videoPositionVec)),
-    mutexPtr(new std::mutex)
+    mutexPtr(new std::mutex),
+    videoBufferPtr(boost::make_shared<videoBuffer> ())
 {
     //ctor
 //    mutexPtr = boost::make_shared<std::mutex> (mutexInstance);
@@ -37,8 +38,7 @@ manager::manager():channelVecPtr(boost::make_shared<std::vector<channel> >(CHANN
         int position = (pos)-fv.begin();
         (*pos) = boost::make_shared<fmDecoder> ();
         (*pos)->setPtr(channelVecPtr,readIndex,writeIndex);
-        (*pos)->setQueuePtr(pFrameQueueVecPtr);
-        (*pos)->setMutexPtr(mutexPtr);
+        (*pos)->setVideoBufferPtr(videoBufferPtr);
         (*pos)->setThreadSeq(position);
         (*pos)->SetScreanNum(WINDOW_STYLE);
         (*pos)->startDecode();
@@ -84,38 +84,13 @@ void manager::startViewer()
         //glfwSetWindowMonitor(window, NULL, 1440*index, 0, mode->width, mode->height, mode->refreshRate);
 
         vr[index] = new viewer(mode->width,mode->height,index,true);
-        vr[index]->setQueuePtr(pFrameQueueVecPtr,videoPositionVecPtr);
-        vr[index]->setMutexPtr(mutexPtr);
+        vr[index]->setVideoBufferPtr(videoBufferPtr);
         //vr[index]->setContext(offscreen_context[index]);
         vr[index]->run();
         printf("start viewer %d\n",index);
         usleep(3000000);
     }
 
-
-
-
-
-
-//    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-//    GLFWwindow* offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
-//    glfwMakeContextCurrent(offscreen_context);
-//    glfwSwapInterval(1);
-//    //glfwInit();
-//    int count = 2;
-//    //printf("count = %d\n",count);
-//    //GLFWmonitor** monitors = glfwGetMonitors(&count);
-//    //glfwTerminate();
-//    for(int i = 0; i < count; ++i)
-//    //int i = 0;
-//    {
-//        vr[i] = new viewer(1440,900,i,true);
-//        vr[i]->setQueuePtr(pFrameQueueVecPtr,videoPositionVecPtr);
-//        vr[i]->setContext(offscreen_context);
-//        vr[i]->run();
-//        printf("start viewer %d\n",i);
-//        usleep(3000000);
-//    }
 }
 
 void manager::setChannelBuffer(int index, std::string ip_)
@@ -161,7 +136,7 @@ void manager::setViewerPosition(int monitorIndex,int index, int pos)
 {
     if(monitorIndex<1)
         return;
-    (*videoPositionVecPtr)[monitorIndex-1][index] = pos-1;
+    videoBufferPtr->setPosition(monitorIndex-1,index,pos-1);
 }
 
 void manager::startViewer(int index)
@@ -171,8 +146,7 @@ void manager::startViewer(int index)
         return;
     vr[trueIndex] = new viewer(1920,1080,trueIndex,true);
     //clearQueue(trueIndex);
-    vr[trueIndex]->setQueuePtr(pFrameQueueVecPtr,videoPositionVecPtr);
-    vr[trueIndex]->setMutexPtr(mutexPtr);
+    vr[trueIndex]->setVideoBufferPtr(videoBufferPtr);
     vr[trueIndex]->run();
     printf("start viewer %d\n",trueIndex);
 }

@@ -391,14 +391,14 @@
 	<boost/optional.hpp>
 	<boost/asio/steady_timer.hpp>
 
-1516169882 /home/sdt/workspace/WuNL/include/fmDecoder.h
+1519873103 /home/sdt/workspace/WuNL/include/fmDecoder.h
 	"params.h"
 	<boost/thread/thread.hpp>
 	<boost/thread/mutex.hpp>
 	<boost/thread/tss.hpp>
 	<boost/asio.hpp>
 	"channel.h"
-	"params.h"
+	"videoBuffer.h"
 	<queue>
 	<mutex>
 	<sched.h>
@@ -431,7 +431,7 @@
 1507702878 source:/home/sdt/workspace/WuNL/src/channel.cpp
 	"channel.h"
 
-1516171771 source:/home/sdt/workspace/WuNL/src/fmDecoder.cpp
+1519873432 source:/home/sdt/workspace/WuNL/src/fmDecoder.cpp
 	"fmDecoder.h"
 	<math.h>
 
@@ -466,7 +466,7 @@
 	"nv12Viewer.h"
 	<stdio.h>
 
-1516064789 /home/sdt/workspace/WuNL/include/viewer.h
+1519977664 /home/sdt/workspace/WuNL/include/viewer.h
 	<iostream>
 	<GL/glew.h>
 	<GL/glxew.h>
@@ -475,8 +475,10 @@
 	"params.h"
 	"Shader.h"
 	"textRender.h"
+	"audioBarDrawer.h"
 	<mutex>
 	"channel.h"
+	"videoBuffer.h"
 	<sched.h>
 	<thread>
 	<sys/time.h>
@@ -485,7 +487,7 @@
 
 1507702878 /home/sdt/workspace/WuNL/include/GLError.h
 
-1516172509 source:/home/sdt/workspace/WuNL/src/viewer.cpp
+1519981438 source:/home/sdt/workspace/WuNL/src/viewer.cpp
 	"viewer.h"
 	<math.h>
 
@@ -654,7 +656,7 @@
 1507702878 source:/home/sdt/workspace/WuNL/src/textRender.cpp
 	"textRender.h"
 
-1516022233 /home/sdt/workspace/WuNL/include/manager.h
+1519959251 /home/sdt/workspace/WuNL/include/manager.h
 	"rtpReceiver.h"
 	"pcapGrapper.h"
 	"channel.h"
@@ -662,12 +664,13 @@
 	"glViewer.h"
 	"viewer.h"
 	"timer.h"
+	"videoBuffer.h"
 	<queue>
 	<mutex>
 	<sys/time.h>
 	<time.h>
 
-1515739242 source:/home/sdt/workspace/WuNL/src/manager.cpp
+1519952338 source:/home/sdt/workspace/WuNL/src/manager.cpp
 	"manager.h"
 
 1509410864 /home/sdt/workspace/WuNL/include/pcapGrapper.h
@@ -686,12 +689,27 @@
 	"channel.h"
 	"params.h"
 
-1516066200 source:/home/sdt/workspace/WuNL/src/pcapGrapper.cpp
+1519957027 source:/home/sdt/workspace/WuNL/src/pcapGrapper.cpp
 	"pcapGrapper.h"
 
-1516172465 /home/sdt/workspace/WuNL/include/timer.h
+1519959232 /home/sdt/workspace/WuNL/include/timer.h
 	<params.h>
 	"viewer.h"
+	"videoBuffer.h"
 	"timer.h"
 	<iostream>
+
+1519959936 source:/home/sdt/workspace/WuNL/src/videoBuffer.cpp
+	"videoBuffer.h"
+
+1519959945 /home/sdt/workspace/WuNL/include/videoBuffer.h
+	<mutex>
+	"params.h"
+
+1519982184 source:/home/sdt/workspace/WuNL/src/audioBarDrawer.cpp
+	"audioBarDrawer.h"
+
+1519981119 /home/sdt/workspace/WuNL/include/audioBarDrawer.h
+	"Shader.h"
+	<cstring>
 

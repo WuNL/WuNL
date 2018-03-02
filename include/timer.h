@@ -2,6 +2,7 @@
 #define TIMER_H
 #include <params.h>
 #include "viewer.h"
+#include "videoBuffer.h"
 #include "timer.h"
 #include <iostream>
 
@@ -13,7 +14,7 @@ class MyTimer
     using Clock = std::chrono::steady_clock;
 
 public:
-    MyTimer(int index,Clock::duration duration,boost::shared_ptr<std::vector<std::vector<int> > > videoPositionVecPtr,viewer* vr,std::vector<std::vector<std::string> >& pollingVec)
+    MyTimer(int index,Clock::duration duration,boost::shared_ptr<videoBuffer> videoBufferPtr,viewer* vr,std::vector<std::vector<std::string> >& pollingVec)
         : _work(_ios)
         , _timer(_ios)
         , _thread([this]
@@ -22,7 +23,7 @@ public:
     })
     , marker(false)
     , _duration(duration)
-    , _videoPositionVecPtr(videoPositionVecPtr)
+    , _videoBufferPtr(videoBufferPtr)
     , _vr(vr)
     , _pollingVec(pollingVec)
     , counter(1)
@@ -71,7 +72,7 @@ private:
             convertFromString(tid,_pollingVec[i][counter%_pollingVec[i].size()]);
             if(_index<1)
                 return;
-            (*_videoPositionVecPtr)[_index-1][i] = tid-1;
+            _videoBufferPtr->setPosition(_index-1,i,tid-1);
         }
 //        printf("\n");
         counter++;
@@ -110,7 +111,9 @@ private:
     std::thread _thread;
     bool marker;
     Clock::duration _duration;
-    boost::shared_ptr<std::vector<std::vector<int> > > _videoPositionVecPtr;
+
+    boost::shared_ptr<videoBuffer> _videoBufferPtr;
+
     viewer* _vr;
     std::vector<std::vector<std::string> > _pollingVec;
     int counter;

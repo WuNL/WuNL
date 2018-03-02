@@ -8,8 +8,11 @@
 #include "params.h"
 #include "Shader.h"
 #include "textRender.h"
+#include "audioBarDrawer.h"
+
 #include <mutex>
 #include "channel.h"
+#include "videoBuffer.h"
 #include <sched.h>
 #include <thread>
 #include <sys/time.h>
@@ -78,6 +81,10 @@ public:
     {
         mutexPtr_ = mutexPtr;
     }
+    void setVideoBufferPtr(boost::shared_ptr<videoBuffer> videoBufferPtr)
+    {
+        videoBufferPtr_ = videoBufferPtr;
+    }
     void setTextStyle(int fontsize, int location, int color,bool showFps)
     {
         curSize = fontsize;
@@ -88,20 +95,20 @@ public:
         fontSize = fontsize*0.2f+0.2f;
         switch(location)
         {
-            //left top
-            case 0:
-            {
-                leftOffset = 35.0f;
-                topOffset = -35.0f;
-                break;
-            }
-            // left bottom
-            case 1:
-            {
-                leftOffset = 35.0f;
-                topOffset = -(w_height/sqrt(splitNum_))+35.0f;
-                break;
-            }
+        //left top
+        case 0:
+        {
+            leftOffset = 35.0f;
+            topOffset = -35.0f;
+            break;
+        }
+        // left bottom
+        case 1:
+        {
+            leftOffset = 35.0f;
+            topOffset = -(w_height/sqrt(splitNum_))+35.0f;
+            break;
+        }
 
         }
     }
@@ -129,7 +136,7 @@ private:
     boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr_;
     boost::shared_ptr<std::vector<std::vector<int> > > videoPositionVecPtr_;
     std::mutex* mutexPtr_;
-
+    boost::shared_ptr<videoBuffer> videoBufferPtr_;
 //    boost::mutex lock;
 
     GLuint VBO[16], VAO[16], EBO,pboIds[16],pboUV[16];
@@ -144,6 +151,7 @@ private:
     int w_width,w_height;
 
     textRender* tr;
+    audioBarDrawer* ad;
     int curSize,curLocation,curColor;
     float leftOffset,topOffset;
     float fontSize;

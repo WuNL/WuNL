@@ -90,6 +90,7 @@
 		</Compiler>
 		<Unit filename="README.md" />
 		<Unit filename="include/Shader.h" />
+		<Unit filename="include/audioBarDrawer.h" />
 		<Unit filename="include/channel.h" />
 		<Unit filename="include/fmDecoder.h" />
 		<Unit filename="include/glViewer.h" />
@@ -100,10 +101,12 @@
 		<Unit filename="include/rtpReceiver.h" />
 		<Unit filename="include/textRender.h" />
 		<Unit filename="include/timer.h" />
+		<Unit filename="include/videoBuffer.h" />
 		<Unit filename="include/viewer.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="protobuf/hvs.pb.cc" />
 		<Unit filename="src/Shader.cpp" />
+		<Unit filename="src/audioBarDrawer.cpp" />
 		<Unit filename="src/channel.cpp" />
 		<Unit filename="src/fmDecoder.cpp" />
 		<Unit filename="src/glViewer.cpp" />
@@ -112,6 +115,7 @@
 		<Unit filename="src/protobufServer.cpp" />
 		<Unit filename="src/rtpReceiver.cpp" />
 		<Unit filename="src/textRender.cpp" />
+		<Unit filename="src/videoBuffer.cpp" />
 		<Unit filename="src/viewer.cpp" />
 		<Extensions>
 			<envvars />

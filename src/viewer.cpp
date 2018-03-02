@@ -41,6 +41,8 @@ viewer::viewer(int width,int height,int ind,bool autoS)
     {
         verticesVec[i] = new GLfloat[20];
     }
+
+
 }
 
 viewer::~viewer()
@@ -306,7 +308,7 @@ void viewer::devFun()
     {
         tr = new textRender(w,h,"/home/sdt/workspace/WuNL/SourceHanSerifCN-Bold.otf");
     }
-
+    ad = new audioBarDrawer(1920,1080);
 
     setVertices(splitNum_,0);
     std::cout<<verticesVec[0][0]<<std::endl;
@@ -437,9 +439,10 @@ void viewer::devFun()
             //int i = 1;
             for(int i = 0; i<splitNum_; ++i)
             {
-                int j = (*videoPositionVecPtr_)[index][i];
+//                int j = (*videoPositionVecPtr_)[index][i];
+                int j = videoBufferPtr_->getPosition(index,i);
 //                printf("j=%d \n",j);
-                if( j<0 || (*pFrameQueueVecPtr_)[j].first.empty())
+                if( j<0 || videoBufferPtr_->needDelay(j))
                 {
                     glBindVertexArray(VAO[i]);
                     glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
@@ -469,28 +472,14 @@ void viewer::devFun()
                     glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, frameWidth/2,frameHeight/2, 1, GL_RG, GL_UNSIGNED_BYTE, 0);
                     glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureUV"), 1);
                     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-
+                    //ad->draw();
                     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
                     glBindVertexArray(0);
                     continue;
                 }
+                AVFrame* pFrame;
+                videoBufferPtr_->get(j,pFrame);
 
-                mutexPtr_->lock();
-                AVFrame* pFrame=(*pFrameQueueVecPtr_)[j].first.front();
-
-//                AVFrame *pFrame = av_frame_alloc();
-//                pFrame->format = pFrame->format;
-//                pFrame->width = pFrame->width;
-//                pFrame->height = pFrame->height;
-//                av_frame_get_buffer(pFrame, 32);
-//                av_frame_copy(pFrame, pFrame);
-//                av_frame_copy_props(pFrame, pFrame);
-//
-//
-//                av_frame_free(&pFrame);
-
-                (*pFrameQueueVecPtr_)[j].first.pop();
-                mutexPtr_->unlock();
                 realcount++;
                 if(pFrame->width!=1920/sqrt(splitNum_) || pFrame->height!=1080/sqrt(splitNum_))
                 {
@@ -592,6 +581,7 @@ void viewer::devFun()
 //    GLXDrawable drawable = glXGetCurrentDrawable();
 //    const int interval = 1;
             renderTexts(splitNum_,fps);
+            ad->draw();
             //glXSwapBuffers(glXGetCurrentDisplay(),glXGetCurrentDrawable());
             //glfwMakeContextCurrent(window);
             glfwSwapBuffers(window);
@@ -684,10 +674,10 @@ void viewer::renderTexts(int splitNum,float fps)
     {
     case 1:
     {
-        j = (*videoPositionVecPtr_)[index][0];
+        j = videoBufferPtr_->getPosition(index,0);
         if(j>=0)
         {
-            std::string s = (*pFrameQueueVecPtr_)[j].second;
+            std::string s = videoBufferPtr_->getString(j);
             tr->RenderText(s,(GLfloat)(leftOffset), (GLfloat)w_height+topOffset, fontSize, colorVec[curColor]);
         }
 
@@ -697,10 +687,10 @@ void viewer::renderTexts(int splitNum,float fps)
     {
         for(int i = 0; i<splitNum_; ++i)
         {
-            j = (*videoPositionVecPtr_)[index][i];
+            j = videoBufferPtr_->getPosition(index,i);
             if(j<0)
                 continue;
-            std::string s = (*pFrameQueueVecPtr_)[j].second;
+            std::string s = videoBufferPtr_->getString(j);
             tr->RenderText(s,(GLfloat)(w_width*(i%2)/2+leftOffset),(GLfloat)(w_height/(int(i/2)+1)+topOffset),fontSize, colorVec[curColor]);
         }
         break;
@@ -709,10 +699,10 @@ void viewer::renderTexts(int splitNum,float fps)
     {
         for(int i = 0; i<splitNum_; ++i)
         {
-            j = (*videoPositionVecPtr_)[index][i];
+            j = videoBufferPtr_->getPosition(index,i);
             if(j<0)
                 continue;
-            std::string s = (*pFrameQueueVecPtr_)[j].second;
+            std::string s = videoBufferPtr_->getString(j);
             tr->RenderText(s,(GLfloat)(w_width*(i%3)/3+leftOffset),(GLfloat)(w_height*(3-int(i/3))/3)+topOffset,fontSize, colorVec[curColor]);
         }
         break;
@@ -721,10 +711,10 @@ void viewer::renderTexts(int splitNum,float fps)
     {
         for(int i = 0; i<splitNum_; ++i)
         {
-            j = (*videoPositionVecPtr_)[index][i];
+            j = videoBufferPtr_->getPosition(index,i);
             if(j<0)
                 continue;
-            std::string s = (*pFrameQueueVecPtr_)[j].second;
+            std::string s = videoBufferPtr_->getString(j);
             tr->RenderText(s,(GLfloat)(w_width*(i%4)/4+leftOffset),(GLfloat)(w_height*(4-int(i/4))/4)+topOffset,fontSize, colorVec[curColor]);
         }
         break;

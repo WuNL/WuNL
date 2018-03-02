@@ -496,22 +496,7 @@ void fmDecoder::run()
 
                         av_frame_free(&pFrame);
 
-                        if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=FRAME_BUFFER)
-                        {
-                            mutexPtr_->lock();
-                            (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
-                            mutexPtr_->unlock();
-                        }
-                        else
-                        {
-                            mutexPtr_->lock();
-                            AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].first.front();
-                            (*pFrameQueueVecPtr_)[threadSeq_].first.pop();
-                            av_frame_free(&tmp);
-
-                            (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
-                            mutexPtr_->unlock();
-                        }
+                        videoBufferPtr_->push(threadSeq_,copyFrame);
 
 
                     }
@@ -534,22 +519,7 @@ void fmDecoder::run()
 
                             av_frame_free(&pFrame);
 
-                            if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=FRAME_BUFFER)
-                            {
-                                mutexPtr_->lock();
-                                (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
-                                mutexPtr_->unlock();
-                            }
-                            else
-                            {
-                                mutexPtr_->lock();
-                                AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].first.front();
-                                (*pFrameQueueVecPtr_)[threadSeq_].first.pop();
-                                av_frame_free(&tmp);
-
-                                (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
-                                mutexPtr_->unlock();
-                            }
+                            videoBufferPtr_->push(threadSeq_,copyFrame);
                         }
                         else if(pFrame->width==1920 && pFrame->height==1080)
                         {
@@ -564,21 +534,7 @@ void fmDecoder::run()
 
                             av_frame_free(&pFrame);
 
-                            if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=FRAME_BUFFER)
-                            {
-                                mutexPtr_->lock();
-                                (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
-                                mutexPtr_->unlock();
-                            }
-                            else
-                            {
-                                mutexPtr_->lock();
-                                AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].first.front();
-                                (*pFrameQueueVecPtr_)[threadSeq_].first.pop();
-                                av_frame_free(&tmp);
-                                (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
-                                mutexPtr_->unlock();
-                            }
+                            videoBufferPtr_->push(threadSeq_,copyFrame);
                         }
                         else if(pFrame->width==1024 && pFrame->height==576)
                         {
@@ -597,22 +553,7 @@ void fmDecoder::run()
 
                             av_frame_free(&pFrame);
 
-                            if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=FRAME_BUFFER)
-                            {
-                                mutexPtr_->lock();
-                                (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
-                                mutexPtr_->unlock();
-                            }
-                            else
-                            {
-                                mutexPtr_->lock();
-                                AVFrame* tmp = (*pFrameQueueVecPtr_)[threadSeq_].first.front();
-                                (*pFrameQueueVecPtr_)[threadSeq_].first.pop();
-                                av_frame_free(&tmp);
-
-                                (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
-                                mutexPtr_->unlock();
-                            }
+                            videoBufferPtr_->push(threadSeq_,copyFrame);
                         }
                     }
 

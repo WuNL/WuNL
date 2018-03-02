@@ -8,6 +8,7 @@
 #include "glViewer.h"
 #include "viewer.h"
 #include "timer.h"
+#include "videoBuffer.h"
 #include <queue>
 #include <mutex>
 #include <sys/time.h>
@@ -44,7 +45,8 @@ public:
     {
         if( index <1 )
             return;
-        (*pFrameQueueVecPtr)[index-1].second = name;
+//        (*pFrameQueueVecPtr)[index-1].second = name;
+        videoBufferPtr->setString(index-1,name);
     }
     void startTimer(int index,int seconds,std::vector<std::vector<std::string> >& pollingVec)
     {
@@ -54,14 +56,14 @@ public:
         }
         if(mytimer[index]==NULL)
         {
-            mytimer[index] = new MyTimer(index,std::chrono::seconds(seconds),videoPositionVecPtr,vr[index],pollingVec
+            mytimer[index] = new MyTimer(index,std::chrono::seconds(seconds),videoBufferPtr,vr[index],pollingVec
                                         );
         }
         else
         {
             delete mytimer[index];
             mytimer[index] = NULL;
-            mytimer[index] = new MyTimer(index,std::chrono::seconds(seconds),videoPositionVecPtr,vr[index],pollingVec
+            mytimer[index] = new MyTimer(index,std::chrono::seconds(seconds),videoBufferPtr,vr[index],pollingVec
                                         );
         }
     }
@@ -96,11 +98,14 @@ private:
     boost::shared_ptr<std::vector<channel> >  channelVecPtr;
     boost::shared_ptr<std::vector<int> > readIndex;
     boost::shared_ptr<std::vector<int> > writeIndex;
+
     std::vector<BUFFERPAIR> pFrameQueueVec;
     std::vector<std::vector<int> >videoPositionVec;
     boost::shared_ptr<std::vector<BUFFERPAIR> > pFrameQueueVecPtr;
     boost::shared_ptr<std::vector<std::vector<int> > > videoPositionVecPtr;
     std::mutex* mutexPtr;
+
+    boost::shared_ptr<videoBuffer> videoBufferPtr;
 
     void clearQueue(int index);
 
