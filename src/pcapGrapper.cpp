@@ -1,5 +1,26 @@
 #include "pcapGrapper.h"
+#include <math.h>
+#include <stdint.h>
 
+#define	SIGN_BIT	(0x80)		/* Sign bit for a A-law byte. */
+#define	QUANT_MASK	(0xf)		/* Quantization field mask. */
+#define	NSEGS		(8)		/* Number of A-law segments. */
+#define	SEG_SHIFT	(4)		/* Left shift for segment number. */
+#define	SEG_MASK	(0x70)		/* Segment field mask. */
+#define	ULAW_BIAS		(0x84)		/* Bias for linear code. */
+#define CLIP        8159
+
+int16_t ulaw_to_linear(uint8_t ulaw) {
+  int t;
+  /* Complement to obtain normal u-law value. */
+  ulaw = ~ulaw;
+  /*
+   * Extract and bias the quantization bits. Then
+   * shift up by the segment number and subtract out the bias.
+   */
+  t = (((ulaw & 0x0F) << 3) + ULAW_BIAS) << (((int) ulaw & 0x70) >> 4);
+  return (int16_t)((ulaw & 0x80) ? (ULAW_BIAS - t) : (t - ULAW_BIAS));
+}
 
 
 pcapGrepper::pcapGrepper()
@@ -64,7 +85,7 @@ void pcapGrepper::capture_callback(u_char *useless,const struct pcap_pkthdr* hea
 {
     std::vector<channel>* myPtr = (std::vector<channel> *)useless;
 
-    if (!((pkt_data[42] == 0x80) && ((pkt_data[43] == 0x60) || (pkt_data[43] == 0xe0))))
+    if (!((pkt_data[42] == 0x80) && ((pkt_data[43] == 0x6A) || (pkt_data[43] == 0xeA) || (pkt_data[43] == 0x00) || (pkt_data[43] == 0x08) )))
     {
         return;
     }
@@ -76,37 +97,84 @@ void pcapGrepper::capture_callback(u_char *useless,const struct pcap_pkthdr* hea
     port[1] = pkt_data[36];
     unsigned short *portNum = (unsigned short *)&port;
 
-    for (int i = 0; i < CHANNELNUM; ++i)
-    {
-        if((*myPtr)[i].port == (*portNum))
-        {
-            position = i;
-            found = true;
-            break;
-        }
-    }
-
 //    for (int i = 0; i < CHANNELNUM; ++i)
 //    {
-//        int count = 0;
-//        for (int j = 0; j < 4; ++j)
-//        {
-//            if ((*myPtr)[i].ip[j] == ip[j])
-//            {
-//                ++count;
-//            }
-//        }
-//        if (count == 4)
+//        if((*myPtr)[i].port == (*portNum))
 //        {
 //            position = i;
 //            found = true;
 //            break;
 //        }
 //    }
+
+    for (int i = 0; i < CHANNELNUM; ++i)
+    {
+        int count = 0;
+        for (int j = 0; j < 4; ++j)
+        {
+            if ((*myPtr)[i].ip[j] == ip[j])
+            {
+                ++count;
+            }
+        }
+        if (count == 4)
+        {
+            position = i;
+            found = true;
+            break;
+        }
+    }
     if (!found)
     {
         return;
     }
+
+	if (pkt_data[43] == 0x00 || pkt_data[43] == 0x08)
+	{
+		std::vector<uint8_t> vc;
+		for(int i = 54; i < header->len - 54; ++i)
+		{
+			{
+				vc.push_back((uint8_t)abs(ulaw_to_linear((uint8_t)pkt_data[i])));
+			}
+		}
+//		uint16_t sum = 0;
+//		for(int i = 0; i < vc.size(); ++i)
+//		{
+//			sum += vc[i];
+//		}
+//		if(vc.size() != 0)
+//		{
+//            (*myPtr)[position].audio = sum / vc.size();
+//		}
+//		//isAudio = true;
+//		return;
+
+
+
+        short int value;
+
+        int i;
+        long v = 0;
+        for(i=0; i<vc.size(); i+=2)
+        {
+            memcpy((char*)&value, &vc+i, 1);
+            memcpy((char*)&value+1, &vc+i+1, 1);
+            v += abs(value);
+        }
+
+        v = v/(vc.size()/2);
+		(*myPtr)[position].audio = v;
+        return;
+
+
+
+
+	}
+
+
+
+
     //Í³¼Æ¶ª°üÇé¿ö
     unsigned char seq[2];
     seq[0] = pkt_data[45];

@@ -18,6 +18,7 @@ public:
     unsigned int lostPacketNumber;
     unsigned int recvPacketNumber;
     unsigned short packetNumber;
+    unsigned int audio;
     bool isStart;
     int writeIndex;
     int readIndex;

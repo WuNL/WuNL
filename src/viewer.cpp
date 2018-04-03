@@ -96,24 +96,24 @@ void viewer::setStyleInter()
 void viewer::setStyle(int splitNum)
 {
     splitNum_ = splitNum;
-        switch(curLocation)
-        {
-            //left top
-            case 0:
-            {
-                leftOffset = 35.0f;
-                topOffset = -35.0f;
-                break;
-            }
-            // left bottom
-            case 1:
-            {
-                leftOffset = 35.0f;
-                topOffset = -(w_height/sqrt(splitNum_))+35.0f;
-                break;
-            }
+    switch(curLocation)
+    {
+    //left top
+    case 0:
+    {
+        leftOffset = 35.0f;
+        topOffset = -35.0f;
+        break;
+    }
+    // left bottom
+    case 1:
+    {
+        leftOffset = 35.0f;
+        topOffset = -(w_height/sqrt(splitNum_))+35.0f;
+        break;
+    }
 
-        }
+    }
     printf("setStyle: splitNum=%d\n",splitNum);
 }
 
@@ -308,7 +308,7 @@ void viewer::devFun()
     {
         tr = new textRender(w,h,"/home/sdt/workspace/WuNL/SourceHanSerifCN-Bold.otf");
     }
-    ad = new audioBarDrawer(1920,1080);
+    ad = new audioBarDrawer(w,h);
 
     setVertices(splitNum_,0);
     std::cout<<verticesVec[0][0]<<std::endl;
@@ -420,9 +420,12 @@ void viewer::devFun()
     long start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
     long startTime = start;
     printf("start time:%ld ms\n",start);
+    int audioScale = 0;
     while (active)
     {
-
+        if(audioScale>255)
+            audioScale = 0;
+        audioScale++;
 
         if(splitNum_!=splitNum_old)
         {
@@ -577,17 +580,10 @@ void viewer::devFun()
                 framecount = 0;
                 realcount = 0;
             }
-//    Display *dpy = glXGetCurrentDisplay();
-//    GLXDrawable drawable = glXGetCurrentDrawable();
-//    const int interval = 1;
+
             renderTexts(splitNum_,fps);
-            ad->draw();
-            //glXSwapBuffers(glXGetCurrentDisplay(),glXGetCurrentDrawable());
-            //glfwMakeContextCurrent(window);
+            renderBars(splitNum_);
             glfwSwapBuffers(window);
-
-            //glfwPollEvents();
-
         }
     }
 }
@@ -740,6 +736,80 @@ void viewer::renderTexts(int splitNum,float fps)
             tr->RenderText(fpsStr,(GLfloat)(w_width-300),(GLfloat)(w_height-25),0.5f, glm::vec3(0.5, 0.1f, 0.5f));
         }
 
+    }
+
+
+
+    ourShader->Use();
+
+}
+
+#define random(x) (rand()%x)
+
+void viewer::renderBars(int splitNum)
+{
+    assert(splitNum==splitNum_);
+    int j = 0;
+    int maxHeight = 0;
+    int xOffset = 0;
+    int yOffset = 0;
+
+
+
+    switch(splitNum)
+    {
+    case 1:
+    {
+        xOffset = 10;
+        yOffset = (int)w_height*0.1;
+        maxHeight = (int)w_height*0.8;
+        j = videoBufferPtr_->getAudio(0);
+        ad->draw(j,xOffset,yOffset,maxHeight);
+        break;
+    }
+    case 4:
+    {
+        for(int i = 0; i<splitNum_; ++i)
+        {
+            xOffset = (int)w_width*(i%2)/2+10;
+            yOffset = (int)w_height/(int(i/2)+1) - w_height/2 + w_height*0.1/2;
+            maxHeight = (int)w_height*0.8f/2;
+            j = videoBufferPtr_->getAudio(i);
+            ad->draw(j,xOffset,yOffset,maxHeight);
+        }
+        break;
+    }
+    case 9:
+    {
+        for(int i = 0; i<splitNum_; ++i)
+        {
+            xOffset = (int)w_width*(i%3)/3+10;
+            yOffset = (int)w_height*(3-int(i/3))/3 - w_height/3 + w_height*0.1/3;
+            maxHeight = (int)w_height*0.8f/3;
+            j = videoBufferPtr_->getAudio(i);
+            ad->draw(j,xOffset,yOffset,maxHeight);
+
+
+        }
+        break;
+    }
+    case 16:
+    {
+        for(int i = 0; i<splitNum_; ++i)
+        {
+
+            xOffset = (int)w_width*(i%4)/4+10;
+            yOffset = (int)w_height*(4-int(i/4))/4 - w_height/4 + w_height*0.1/4;
+            maxHeight = (int)w_height*0.8f/4;
+            j = videoBufferPtr_->getAudio(i);
+            ad->draw(j,xOffset,yOffset,maxHeight);
+        }
+        break;
+    }
+    default:
+    {
+        break;
+    }
     }
 
 

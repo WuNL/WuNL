@@ -7,9 +7,15 @@ videoBuffer::videoBuffer():
     videoPositionVec(4, std::vector<int>(CHANNELNUM,-1)),
     pFrameQueueVecPtr(boost::make_shared<std::vector<BUFFERPAIR> >(pFrameQueueVec)),
     videoPositionVecPtr(boost::make_shared<std::vector<std::vector<int> > >(videoPositionVec)),
-    mutexPtr(new std::mutex)
+    audioNumber(CHANNELNUM),
+    t_lastAudio(CHANNELNUM),
+    t_lastVideo(CHANNELNUM)
 {
     //ctor
+    for(int i =0; i < CHANNELNUM; ++i)
+    {
+        mutexPtr[i] = new std::mutex;
+    }
 }
 
 videoBuffer::~videoBuffer()
@@ -40,13 +46,13 @@ void videoBuffer::push(int frameQueueIndex,AVFrame* pFrame)
     }
     else
     {
-        mutexPtr->lock();
+        mutexPtr[frameQueueIndex]->lock();
         AVFrame* tmp = pFrameQueueVec[frameQueueIndex].first.front();
         pFrameQueueVec[frameQueueIndex].first.pop();
         av_frame_free(&tmp);
 
         pFrameQueueVec[frameQueueIndex].first.push(pFrame);
-        mutexPtr->unlock();
+        mutexPtr[frameQueueIndex]->unlock();
     }
 }
 
@@ -56,9 +62,9 @@ int videoBuffer::get(int frameQueueIndex,AVFrame* &pFrame)
         return -1;
     if(needDelay(frameQueueIndex))
         return 0;
-    mutexPtr->lock();
+    mutexPtr[frameQueueIndex]->lock();
     pFrame=pFrameQueueVec[frameQueueIndex].first.front();
     pFrameQueueVec[frameQueueIndex].first.pop();
-    mutexPtr->unlock();
+    mutexPtr[frameQueueIndex]->unlock();
     return 1;
 }

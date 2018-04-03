@@ -1,9 +1,10 @@
 #include "audioBarDrawer.h"
-
+#include <algorithm>
 barDrawer::barDrawer(int window_width, int window_height):shader("shaders/drawer.vert", "shaders/drawer.frag")
 {
+    window_width_ = window_width;
 
-
+    window_height_ = window_height;
 }
 
 barDrawer::~barDrawer()
@@ -18,7 +19,6 @@ audioBarDrawer::audioBarDrawer(int window_width, int window_height):barDrawer(wi
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -29,18 +29,38 @@ audioBarDrawer::~audioBarDrawer()
     //dtor
 }
 
-void audioBarDrawer::draw()
+void audioBarDrawer::draw(int audioScale,int xOffset, int yOffset, int height)
 {
+
+    float w = window_width_/2;
+    float h = window_height_/2;
+
+    float xOffset21 = (float)(xOffset-w)/w;
+    float yOffset21 = (float)(yOffset-h)/h;
+    float height21 = (float)(height)/h;
+
+
+
+    float audioScale21 = (float)(audioScale/255.0f);
+
+
+    float red   = (audioScale21>0.3f ? 1.0f : 0.0f);
+    float green = (audioScale21 < 0.7f ? 1.0f : 0.0f);
+    float blue  = 0.0f;
+    audioScale21*=height21;
+    float topHeight = std::min(yOffset21+audioScale21,yOffset21+height21);
     // update vertices
     shader.Use();
-    float vertices[] = {
-            // positions          // colors           // texture coords
-             0.1f,  0.1f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-             0.1f, -0.1f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-            -0.1f, -0.1f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-            -0.1f,  0.1f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
-        };
-    unsigned int indices[] = {
+    float vertices[] =
+    {
+        // positions          // colors                            // texture coords
+        xOffset21+0.01f, topHeight, 0.0f,   red, green, blue,   1.0f, 1.0f, // top right
+        xOffset21+0.01f, yOffset21, 0.0f,          red, green, blue,   1.0f, 0.0f, // bottom right
+        xOffset21,       yOffset21, 0.0f,          red, green, blue,   0.0f, 0.0f, // bottom left
+        xOffset21,       topHeight, 0.0f,   red, green, blue,   0.0f, 1.0f  // top left
+    };
+    unsigned int indices[] =
+    {
         0, 1, 3, // first triangle
         1, 2, 3  // second triangle
     };
@@ -69,5 +89,7 @@ void audioBarDrawer::draw()
 
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    glBindVertexArray(0);
 
 }

@@ -18,6 +18,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <math.h>
+#include <stdlib.h>
 
 typedef std::pair<std::queue<AVFrame*>,std::string> BUFFERPAIR;
 
@@ -129,6 +130,7 @@ private:
      *
      */
     void renderTexts(int splintNum,float fps = 0);
+    void renderBars(int splintNum);
 
     GLFWwindow* window;
     GLFWwindow* context;
