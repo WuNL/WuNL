@@ -421,13 +421,13 @@ void viewer::devFun()
     while (active)
     {
 
-
+//        glfwWaitEvents();
         if(splitNum_!=splitNum_old)
         {
             setStyleInter();
             splitNum_old = splitNum_;
         }
-        glfwPollEvents();
+//        glfwPollEvents();
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -595,8 +595,9 @@ void viewer::devFun()
             //glXSwapBuffers(glXGetCurrentDisplay(),glXGetCurrentDrawable());
             //glfwMakeContextCurrent(window);
             glfwSwapBuffers(window);
+//            usleep(100);
 
-            //glfwPollEvents();
+            glfwPollEvents();
 
         }
     }

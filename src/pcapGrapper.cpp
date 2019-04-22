@@ -62,12 +62,15 @@ void pcapGrepper::run()
 
 void pcapGrepper::capture_callback(u_char *useless,const struct pcap_pkthdr* header,const u_char* pkt_data)
 {
-    std::vector<channel>* myPtr = (std::vector<channel> *)useless;
+
 
     if (!((pkt_data[42] == 0x80) && ((pkt_data[43] == 0x6A) || (pkt_data[43] == 0xeA))))
     {
         return;
     }
+
+    std::vector<channel>* myPtr = (std::vector<channel> *)useless;
+
     int position = 0;
     bool found = false;
     unsigned char *ip = (unsigned char *)(&pkt_data[26]);
@@ -76,33 +79,33 @@ void pcapGrepper::capture_callback(u_char *useless,const struct pcap_pkthdr* hea
     port[1] = pkt_data[36];
     unsigned short *portNum = (unsigned short *)&port;
 
-    for (int i = 0; i < CHANNELNUM; ++i)
-    {
-        if((*myPtr)[i].port == (*portNum))
-        {
-            position = i;
-            found = true;
-            break;
-        }
-    }
-
 //    for (int i = 0; i < CHANNELNUM; ++i)
 //    {
-//        int count = 0;
-//        for (int j = 0; j < 4; ++j)
-//        {
-//            if ((*myPtr)[i].ip[j] == ip[j])
-//            {
-//                ++count;
-//            }
-//        }
-//        if (count == 4)
+//        if((*myPtr)[i].port == (*portNum))
 //        {
 //            position = i;
 //            found = true;
 //            break;
 //        }
 //    }
+
+    for (int i = 0; i < CHANNELNUM; ++i)
+    {
+        int count = 0;
+        for (int j = 0; j < 4; ++j)
+        {
+            if ((*myPtr)[i].ip[j] == ip[j])
+            {
+                ++count;
+            }
+        }
+        if (count == 4)
+        {
+            position = i;
+            found = true;
+            break;
+        }
+    }
     if (!found)
     {
         return;
