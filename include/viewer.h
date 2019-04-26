@@ -88,20 +88,20 @@ public:
         fontSize = fontsize*0.2f+0.2f;
         switch(location)
         {
-            //left top
-            case 0:
-            {
-                leftOffset = 35.0f;
-                topOffset = -35.0f;
-                break;
-            }
-            // left bottom
-            case 1:
-            {
-                leftOffset = 35.0f;
-                topOffset = -(w_height/sqrt(splitNum_))+35.0f;
-                break;
-            }
+        //left top
+        case 0:
+        {
+            leftOffset = 35.0f;
+            topOffset = -35.0f;
+            break;
+        }
+        // left bottom
+        case 1:
+        {
+            leftOffset = 35.0f;
+            topOffset = -(w_height/sqrt(splitNum_))+35.0f;
+            break;
+        }
 
         }
     }

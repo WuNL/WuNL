@@ -17,6 +17,7 @@
 
 #include "channel.h"
 #include "params.h"
+#include "packetBuffer.h"
 
 class basePcap
 {

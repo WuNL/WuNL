@@ -31,6 +31,7 @@ public:
     void startDecode();
     void setThreadSeq(int seq);
     void run();
+    void runSaveFileTest();
     int testFun();
     void setPtr(boost::shared_ptr<std::vector<channel> > cvPtr,
                 boost::shared_ptr<std::vector<int> >readIndex,

@@ -64,7 +64,7 @@ void pcapGrepper::capture_callback(u_char *useless,const struct pcap_pkthdr* hea
 {
 
 
-    if (!((pkt_data[42] == 0x80) && ((pkt_data[43] == 0x6A) || (pkt_data[43] == 0xeA))))
+    if (!((pkt_data[42] == 0x80) && ((pkt_data[43] == 0x60) || (pkt_data[43] == 0xe0))))
     {
         return;
     }
@@ -110,6 +110,10 @@ void pcapGrepper::capture_callback(u_char *useless,const struct pcap_pkthdr* hea
     {
         return;
     }
+
+    (*myPtr)[position].pb_->insertPacket(pkt_data, header->len);
+    return;
+
     //Í³¼Æ¶ª°üÇé¿ö
     unsigned char seq[2];
     seq[0] = pkt_data[45];

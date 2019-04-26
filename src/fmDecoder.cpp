@@ -295,6 +295,11 @@ int fmDecoder::initFilter()
     return ret;
 }
 
+void fmDecoder::runSaveFileTest()
+{
+
+}
+
 void fmDecoder::run()
 {
     //Set pthread_getaffinity_np
@@ -344,7 +349,7 @@ void fmDecoder::run()
         convertCtx720P[i-1] = sws_getContext(1280, 720, AV_PIX_FMT_NV12,
                                              1920/i,1080/i, AV_PIX_FMT_NV12, SWS_POINT, NULL, NULL, NULL);
         convertCtx576P[i-1] = sws_getContext(1024, 576, AV_PIX_FMT_NV12,
-                                         1920/i,1080/i, AV_PIX_FMT_NV12, SWS_POINT, NULL, NULL, NULL);
+                                             1920/i,1080/i, AV_PIX_FMT_NV12, SWS_POINT, NULL, NULL, NULL);
         pFrameYUV[i-2]->format = AV_PIX_FMT_NV12;
     }
     //    unsigned char *out_buffer1080P;
@@ -463,36 +468,36 @@ void fmDecoder::run()
                         AVFrame *copyFrame = av_frame_alloc();
 
 
-                            if(pFrame->width==1920 && pFrame->height==1080)
-                            {
-                                sws_scale(convertCtx[sws_seqTMP], (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
-                                          pFrameYUV[sws_seqTMP]->data, pFrameYUV[sws_seqTMP]->linesize);
-                            }
-                            else if(pFrame->width==1280 && pFrame->height==720)
-                            {
-                                sws_scale(convertCtx720P[sws_seqTMP+1], (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
-                                          pFrameYUV[sws_seqTMP]->data, pFrameYUV[sws_seqTMP]->linesize);
-                            }
-                            else if(pFrame->width==1024 && pFrame->height==576)
-                            {
-                                sws_scale(convertCtx576P[sws_seqTMP+1], (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
-                                          pFrameYUV[sws_seqTMP]->data, pFrameYUV[sws_seqTMP]->linesize);
-                            }
-                            else
-                            {
-                                printf("%dX%d is unsupported resultion!\n",pFrame->width,pFrame->height);
-                                av_frame_free(&pFrame);
-                                continue;
-                            }
+                        if(pFrame->width==1920 && pFrame->height==1080)
+                        {
+                            sws_scale(convertCtx[sws_seqTMP], (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
+                                      pFrameYUV[sws_seqTMP]->data, pFrameYUV[sws_seqTMP]->linesize);
+                        }
+                        else if(pFrame->width==1280 && pFrame->height==720)
+                        {
+                            sws_scale(convertCtx720P[sws_seqTMP+1], (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
+                                      pFrameYUV[sws_seqTMP]->data, pFrameYUV[sws_seqTMP]->linesize);
+                        }
+                        else if(pFrame->width==1024 && pFrame->height==576)
+                        {
+                            sws_scale(convertCtx576P[sws_seqTMP+1], (const unsigned char* const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
+                                      pFrameYUV[sws_seqTMP]->data, pFrameYUV[sws_seqTMP]->linesize);
+                        }
+                        else
+                        {
+                            printf("%dX%d is unsupported resultion!\n",pFrame->width,pFrame->height);
+                            av_frame_free(&pFrame);
+                            continue;
+                        }
 
 
 
-                            copyFrame->format = pFrameYUV[sws_seqTMP]->format;
-                            copyFrame->width = pFrameYUV[sws_seqTMP]->width;
-                            copyFrame->height = pFrameYUV[sws_seqTMP]->height;
-                            av_frame_get_buffer(copyFrame, 32);
-                            av_frame_copy(copyFrame, pFrameYUV[sws_seqTMP]);
-                            av_frame_copy_props(copyFrame, pFrameYUV[sws_seqTMP]);
+                        copyFrame->format = pFrameYUV[sws_seqTMP]->format;
+                        copyFrame->width = pFrameYUV[sws_seqTMP]->width;
+                        copyFrame->height = pFrameYUV[sws_seqTMP]->height;
+                        av_frame_get_buffer(copyFrame, 32);
+                        av_frame_copy(copyFrame, pFrameYUV[sws_seqTMP]);
+                        av_frame_copy_props(copyFrame, pFrameYUV[sws_seqTMP]);
 
                         av_frame_free(&pFrame);
 
@@ -620,11 +625,6 @@ void fmDecoder::run()
             }
             else
                 continue;
-
-
-
-
-
         }
     }
     return;

@@ -94,24 +94,24 @@ void viewer::setStyleInter()
 void viewer::setStyle(int splitNum)
 {
     splitNum_ = splitNum;
-        switch(curLocation)
-        {
-            //left top
-            case 0:
-            {
-                leftOffset = 35.0f;
-                topOffset = -35.0f;
-                break;
-            }
-            // left bottom
-            case 1:
-            {
-                leftOffset = 35.0f;
-                topOffset = -(w_height/sqrt(splitNum_))+35.0f;
-                break;
-            }
+    switch(curLocation)
+    {
+    //left top
+    case 0:
+    {
+        leftOffset = 35.0f;
+        topOffset = -35.0f;
+        break;
+    }
+    // left bottom
+    case 1:
+    {
+        leftOffset = 35.0f;
+        topOffset = -(w_height/sqrt(splitNum_))+35.0f;
+        break;
+    }
 
-        }
+    }
     printf("setStyle: splitNum=%d\n",splitNum);
 }
 

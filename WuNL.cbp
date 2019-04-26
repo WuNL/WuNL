@@ -92,8 +92,11 @@
 		<Unit filename="include/Shader.h" />
 		<Unit filename="include/channel.h" />
 		<Unit filename="include/fmDecoder.h" />
+		<Unit filename="include/frameBuffer.h" />
 		<Unit filename="include/glViewer.h" />
+		<Unit filename="include/helper.h" />
 		<Unit filename="include/manager.h" />
+		<Unit filename="include/packetBuffer.h" />
 		<Unit filename="include/params.h" />
 		<Unit filename="include/pcapGrapper.h" />
 		<Unit filename="include/protobufServer.h" />
@@ -106,8 +109,10 @@
 		<Unit filename="src/Shader.cpp" />
 		<Unit filename="src/channel.cpp" />
 		<Unit filename="src/fmDecoder.cpp" />
+		<Unit filename="src/frameBuffer.cpp" />
 		<Unit filename="src/glViewer.cpp" />
 		<Unit filename="src/manager.cpp" />
+		<Unit filename="src/packetBuffer.cpp" />
 		<Unit filename="src/pcapGrapper.cpp" />
 		<Unit filename="src/protobufServer.cpp" />
 		<Unit filename="src/rtpReceiver.cpp" />
