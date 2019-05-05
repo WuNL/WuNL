@@ -11,7 +11,7 @@
 #include "helper.h"
 //#include "frameBuffer.h"
 
-const uint16_t PACKETBUFFERLEN = 1000;
+const uint16_t PACKETBUFFERLEN = 2048;
 
 namespace
 {
@@ -61,8 +61,9 @@ public:
     VcmPacket():pkt_(nullptr), len_(0) {};
     ~VcmPacket()
     {
-        if(pkt_ != nullptr)
-            free(pkt_);
+//        if(pkt_ != nullptr)
+//            free(pkt_);
+//        pkt_ = nullptr;
     }
 
     uint8_t* pkt_ = nullptr;
@@ -88,7 +89,7 @@ private:
 //        std::cout<< "payloadType "<<payloadType<<" rtp_marker "<<rtp_marker<<std::endl;
         unsigned char seq[2];
         seq[0] = ori_pkt_[45];
-        seq[1] = ori_pkt_[44] & 0x7F;
+        seq[1] = ori_pkt_[44];
         uint16_t *seqNum_t = (uint16_t *)&seq;
         seqNum = *seqNum_t;
 
@@ -158,7 +159,7 @@ private:
                 pkt_ = (uint8_t*)malloc(len_);
 
                 memcpy(pkt_, &naluHeader, 4);
-                memcpy(pkt_+1, &new_fu_header, 1);
+                memcpy(pkt_+4, &new_fu_header, 1);
                 memcpy(pkt_+4+1, &ori_pkt_[56], len-54-2);
             }
             else
@@ -194,7 +195,11 @@ public:
 
     void insertPacket(const u_char* pkt_data, const size_t len);
 
+    void ClearTo(uint16_t seq_num);
+
     bool GetBitstream(const frameObject& frame, uint8_t* destination);
+
+    void ReturnFrame(frameObject* frame);
 
     VcmPacket* GetPacket(uint16_t seq_num)
     {
@@ -234,6 +239,7 @@ private:
         if (sequence_buffer_[prev_index].seq_num !=
                 static_cast<uint16_t>(sequence_buffer_[index].seq_num - 1))
         {
+//            std::cout<<"seq_num problem  "<<sequence_buffer_[prev_index].seq_num<<"   "<<static_cast<uint16_t>(sequence_buffer_[index].seq_num - 1)<<"\n";
             return false;
         }
         if (data_buffer_[prev_index].timestamp != data_buffer_[index].timestamp)
@@ -261,6 +267,7 @@ private:
     bool first_packet_received_ = false;
     bool is_cleared_to_first_seq_num_ = false;
     uint16_t first_seq_num_ = 0;
+    webrtc::SeqNumUnwrapper<uint16_t> rtp_seq_num_unwrapper_;
 
 };
 

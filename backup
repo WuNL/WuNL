@@ -1,5 +1,7 @@
 #include "fmDecoder.h"
 #include <math.h>
+# include <stdio.h>
+# include <stdlib.h>
 
 FILE *fp_out;
 int mycount = 0;
@@ -18,6 +20,8 @@ fmDecoder::fmDecoder()
     sws_seq = sqrt(WINDOW_STYLE) - 2;
 
     fp_out = fopen("out.yuv", "wb");
+
+
 
 }
 
@@ -305,6 +309,11 @@ int fmDecoder::initFilter()
     return ret;
 }
 
+void fmDecoder::runSaveFileTest()
+{
+
+}
+
 void fmDecoder::run()
 {
     //Set pthread_getaffinity_np
@@ -377,68 +386,68 @@ void fmDecoder::run()
 //    pFrame->format = AV_PIX_FMT_NV12;
     while(1)
     {
-        int cur_size = 0;
-        uint8_t *cur_ptr = NULL;
-
-
-        std::unique_ptr<frameObject> frame;
-        if(use_webrtc)
+//        int cur_size = 0;
+//        uint8_t *cur_ptr = NULL;
+//
+//        if ((*cvPtr_)[threadSeq_].writeIndex != (*cvPtr_)[threadSeq_].readIndex)
+//        {
+//            cur_size = (*cvPtr_)[threadSeq_].showBufferLen[((*cvPtr_)[threadSeq_].readIndex)];
+//            cur_ptr = (*cvPtr_)[threadSeq_].showBuffer[((*cvPtr_)[threadSeq_].readIndex)];
+//            ++((*cvPtr_)[threadSeq_].readIndex);
+//            if ((*cvPtr_)[threadSeq_].readIndex == BUFFER_LEN)
+//            {
+//                (*cvPtr_)[threadSeq_].readIndex = 0;
+//            }
+//        }
+//        else
+//        {
+//            usleep(100);
+//            continue;
+//        }
+//        if (cur_size == 0)
+//            break;
+        int ret = 0;
+        while (1)
         {
-            frame =  (*cvPtr_)[threadSeq_].fb_->get_available_frame();
+//            int len = 0;
+//            try
+//            {
+//                len = av_parser_parse2(
+//                          pCodecParserCtx, pCodecCtx,
+//                          &packet.data, &packet.size,
+//                          cur_ptr, cur_size,
+//                          AV_NOPTS_VALUE, AV_NOPTS_VALUE, AV_NOPTS_VALUE);
+//            }
+//            catch(...)
+//            {
+//                printf(" av_parser_parse2 error occus! \n");
+//            }
+//            cur_ptr += len;
+//            cur_size -= len;
+
+            std::unique_ptr<frameObject> frame = (*cvPtr_)[threadSeq_].fb_->get_available_frame();
             if(frame == nullptr)
             {
-                usleep(5);
+                //usleep(5);
                 continue;
             }
+
+//            if(frame->buffer_len_>10000)
+//                std::cout<<"--------------------------------------ondecode buffer_len_ "<<frame->buffer_len_<<std::endl;
+            fwrite(frame->data(), 1, frame->buffer_len_, fp_out_264);
 
             uint16_t last_seq_in_frame = frame->get_last_seq_num();
             (*cvPtr_)[threadSeq_].fb_->ClearTo(last_seq_in_frame);
             (*cvPtr_)[threadSeq_].pb_->ClearTo(last_seq_in_frame);
-            fwrite(frame->data(), 1, frame->buffer_len_, fp_out_264);
 
-            cur_ptr = frame->data();
-            cur_size = static_cast<int>(frame->buffer_len_);
-        }
-        else
-        {
-            if ((*cvPtr_)[threadSeq_].writeIndex != (*cvPtr_)[threadSeq_].readIndex)
-            {
-                cur_size = (*cvPtr_)[threadSeq_].showBufferLen[((*cvPtr_)[threadSeq_].readIndex)];
-                cur_ptr = (*cvPtr_)[threadSeq_].showBuffer[((*cvPtr_)[threadSeq_].readIndex)];
-                ++((*cvPtr_)[threadSeq_].readIndex);
-                if ((*cvPtr_)[threadSeq_].readIndex == BUFFER_LEN)
-                {
-                    (*cvPtr_)[threadSeq_].readIndex = 0;
-                }
-            }
-            else
-            {
-                usleep(100);
-                continue;
-            }
-            if (cur_size == 0)
-                break;
-        }
+            //continue;
+
+            AVPacket packet;
+            av_init_packet(&packet);
+            packet.data = frame->data();
+            packet.size = static_cast<int>(frame->buffer_len_);
 
 
-        int ret = 0;
-        while (cur_size>0)
-        {
-            int len = 0;
-            try
-            {
-                len = av_parser_parse2(
-                          pCodecParserCtx, pCodecCtx,
-                          &packet.data, &packet.size,
-                          cur_ptr, cur_size,
-                          AV_NOPTS_VALUE, AV_NOPTS_VALUE, AV_NOPTS_VALUE);
-            }
-            catch(...)
-            {
-                printf(" av_parser_parse2 error occus! \n");
-            }
-            cur_ptr += len;
-            cur_size -= len;
 
             if(packet.size)
             {
@@ -468,9 +477,9 @@ void fmDecoder::run()
                     }
                     if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
                     {
-//                        char buf[128]= {0};
-//                        av_make_error_string(buf,128,ret);
-//                        fprintf(stderr, "Error during decoding 0: %s\n", buf);
+                        char buf[128]= {0};
+                        av_make_error_string(buf,128,ret);
+                        fprintf(stderr, "Error during decoding 0: %s\n", buf);
                         av_frame_free(&pFrame);
                         continue;
                     }
@@ -654,11 +663,6 @@ void fmDecoder::run()
             }
             else
                 continue;
-
-
-
-
-
         }
     }
     return;
@@ -726,59 +730,23 @@ int fmDecoder::Init()
         printf("Could not open codec\n");
         return -1;
     }
-    av_init_packet(&packet);
+    //av_init_packet(&packet);
     return 0;
 }
 
 int fmDecoder::Parse(int cur_size, uint8_t *cur_ptr)
 {
-    return av_parser_parse2(
-               pCodecParserCtx, pCodecCtx,
-               &packet.data, &packet.size,
-               cur_ptr, cur_size,
-               AV_NOPTS_VALUE, AV_NOPTS_VALUE, AV_NOPTS_VALUE);
+
 }
 
 int fmDecoder::Decode(AVFrame *pFrame)
 {
-//    static int mc = 0;
-    int got_picture = 0;
 
-    int ret = avcodec_decode_video2(pCodecCtx, pFrame, &got_picture, &packet);
-    if(ret < 0)
-    {
-        printf("DECODE ERROR----%d\n",ret);
-        return ret;
-    }
-    if(!got_picture)
-    {
-        printf("got_picture == 0\n");
-        return ret;
-    }
-    mt.lock();
-    if(1)
-    {
-        AVFrame *copyFrame = av_frame_alloc();
-        copyFrame->format = pFrame->format;
-        copyFrame->width = pFrame->width;
-        copyFrame->height = pFrame->height;
-        copyFrame->channels = pFrame->channels;
-        copyFrame->channel_layout = pFrame->channel_layout;
-        copyFrame->nb_samples = pFrame->nb_samples;
-        av_frame_get_buffer(copyFrame, 32);
-        av_frame_copy(copyFrame, pFrame);
-        av_frame_copy_props(copyFrame, pFrame);
-        (*pFrameQueueVecPtr_)[threadSeq_].first.push(copyFrame);
-        av_frame_free(&pFrame);
-        av_frame_free(&copyFrame);
-    }
-    mt.unlock();
-    return 1;
 }
 
 int fmDecoder::GetPacketSize()
 {
-    return packet.size;
+    //return packet.size;
 }
 
 void fmDecoder::SetScreanNum(int num)
@@ -823,3 +791,4 @@ void fmDecoder::SetScreanNum(int num)
     }
     }
 }
+

@@ -87,6 +87,8 @@ private:
 
     std::mutex* mutexPtr_;
 
+    FILE *fp_out_264 = nullptr;
+
 };
 
 #endif // FMDECODER_H

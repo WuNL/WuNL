@@ -17,7 +17,8 @@ public:
     frameObject(std::shared_ptr<packetBuffer> pb, uint16_t start_index, uint16_t end_index, size_t frame_size):
         buffer_len_(frame_size),
         first_seq_num(start_index),
-        last_seq_num(end_index)
+        last_seq_num(end_index),
+        pb_(pb.get())
     {
         VcmPacket* first_packet = pb->GetPacket(first_seq_num);
         assert(first_packet);
@@ -38,8 +39,15 @@ public:
     }
     virtual ~frameObject()
     {
+//        std::cout<<"~frameObject()\n";
         if(prame_data_ptr_ != nullptr)
             free(prame_data_ptr_);
+        //pb_->ReturnFrame(this);
+    }
+    void ReturnFrame()
+    {
+    if(pb_!=nullptr)
+        pb_->ReturnFrame(this);
     }
     uint8_t* data()
     {
@@ -47,16 +55,16 @@ public:
             return prame_data_ptr_;
     }
 
-    uint16_t get_first_seq_num(){
+    uint16_t get_first_seq_num() const{
         return first_seq_num;
     }
-    uint16_t get_last_seq_num(){
+    uint16_t get_last_seq_num() const{
         return last_seq_num;
     }
 
     uint8_t* prame_data_ptr_ = nullptr;
     uint16_t offset_ = 0;
-    uint16_t buffer_len_ = 0;
+    size_t buffer_len_ = 0;
     uint32_t timestamp_rtp_;
     size_t frame_size = 0;
     frametype frame_type_;
@@ -65,7 +73,7 @@ public:
     uint16_t last_seq_num;
     uint8_t unknown_var;
 private:
-    packetBuffer* pb_;
+    packetBuffer* pb_ = nullptr;
 
 
 };
@@ -89,6 +97,31 @@ public:
 
     void OnAssembledFrame(std::unique_ptr<frameObject> frame);
 
+    std::unique_ptr<frameObject> get_available_frame()
+    {
+        if(available_frames_.empty())
+            return nullptr;
+        mutex_.lock();
+
+//        auto frame_it = available_frames_.begin()
+//        if(frame_it != available_frames_.end())
+//        {
+//
+//            available_frames_.erase(frame_it);
+//        }
+        auto it = std::move(available_frames_.front());
+        available_frames_.pop_front();
+
+        //ClearTo(it.get_last_seq_num());
+
+        mutex_.unlock();
+        return std::move(it);
+
+
+    }
+
+    void ClearTo(uint16_t seq_num);
+
 protected:
 
 private:
@@ -105,12 +138,14 @@ private:
     std::deque<std::unique_ptr<frameObject>> stashed_frames_;
 
     std::deque<std::unique_ptr<frameObject>> available_frames_;
+    //default shengxu
   std::map<uint16_t,
            std::pair<uint16_t, uint16_t>,
            webrtc::DescendingSeqNumComp<uint16_t>>
       last_seq_num_gop_;
 
       std::mutex mutex_;
+      int cleared_to_seq_num_ ;
 };
 
 #endif // FRAMEBUFFER_H
