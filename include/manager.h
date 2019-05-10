@@ -18,7 +18,7 @@ typedef std::vector<boost::shared_ptr<fmDecoder> > fmDecoderPtrVec;
 
 typedef std::vector<boost::shared_ptr<int> > vs;
 typedef boost::shared_ptr<std::vector<std::queue<AVFrame*> > > queuePtr;
-typedef std::pair<std::queue<AVFrame*>,std::string> BUFFERPAIR;
+typedef std::pair<std::queue<AVFrame*>,std::pair<std::string,std::string> > BUFFERPAIR;
 
 /** \brief
  *  管理电视墙资源的类
@@ -44,7 +44,7 @@ public:
     {
         if( index <1 )
             return;
-        (*pFrameQueueVecPtr)[index-1].second = name;
+        (*pFrameQueueVecPtr)[index-1].second.first = name;
     }
     void startTimer(int index,int seconds,std::vector<std::vector<std::string> >& pollingVec)
     {

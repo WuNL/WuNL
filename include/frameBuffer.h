@@ -46,8 +46,8 @@ public:
     }
     void ReturnFrame()
     {
-    if(pb_!=nullptr)
-        pb_->ReturnFrame(this);
+        if(pb_!=nullptr)
+            pb_->ReturnFrame(this);
     }
     uint8_t* data()
     {
@@ -55,10 +55,12 @@ public:
             return prame_data_ptr_;
     }
 
-    uint16_t get_first_seq_num() const{
+    uint16_t get_first_seq_num() const
+    {
         return first_seq_num;
     }
-    uint16_t get_last_seq_num() const{
+    uint16_t get_last_seq_num() const
+    {
         return last_seq_num;
     }
 
@@ -139,13 +141,13 @@ private:
 
     std::deque<std::unique_ptr<frameObject>> available_frames_;
     //default shengxu
-  std::map<uint16_t,
-           std::pair<uint16_t, uint16_t>,
-           webrtc::DescendingSeqNumComp<uint16_t>>
-      last_seq_num_gop_;
+    std::map<uint16_t,
+        std::pair<uint16_t, uint16_t>,
+        webrtc::DescendingSeqNumComp<uint16_t>>
+        last_seq_num_gop_;
 
-      std::mutex mutex_;
-      int cleared_to_seq_num_ ;
+    std::mutex mutex_;
+    int cleared_to_seq_num_ ;
 };
 
 #endif // FRAMEBUFFER_H

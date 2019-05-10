@@ -320,25 +320,27 @@ void packetBuffer::ReturnFrame(frameObject* frame)
 {
     //std::lock_guard<std::mutex> lock(mutex_);
     size_t size_ = PACKETBUFFERLEN;
-  size_t index = frame->get_first_seq_num() % size_;
-  size_t end = (frame->get_last_seq_num() + 1) % size_;
-  uint16_t seq_num = frame->get_first_seq_num();
-  uint32_t timestamp = frame->timestamp_rtp_;
-  while (index != end) {
-    // Check both seq_num and timestamp to handle the case when seq_num wraps
-    // around too quickly for high packet rates.
-    //std::cout<<sequence_buffer_[index].seq_num<<std::endl;
-    if (sequence_buffer_[index].seq_num == seq_num &&
-        data_buffer_[index].timestamp == timestamp) {
-        if(data_buffer_[index].pkt_!=nullptr)
-            free(data_buffer_[index].pkt_);
-        data_buffer_[index].pkt_= nullptr;
-      sequence_buffer_[index].used = false;
-    }
+    size_t index = frame->get_first_seq_num() % size_;
+    size_t end = (frame->get_last_seq_num() + 1) % size_;
+    uint16_t seq_num = frame->get_first_seq_num();
+    uint32_t timestamp = frame->timestamp_rtp_;
+    while (index != end)
+    {
+        // Check both seq_num and timestamp to handle the case when seq_num wraps
+        // around too quickly for high packet rates.
+        //std::cout<<sequence_buffer_[index].seq_num<<std::endl;
+        if (sequence_buffer_[index].seq_num == seq_num &&
+                data_buffer_[index].timestamp == timestamp)
+        {
+            if(data_buffer_[index].pkt_!=nullptr)
+                free(data_buffer_[index].pkt_);
+            data_buffer_[index].pkt_= nullptr;
+            sequence_buffer_[index].used = false;
+        }
 
-    index = (index + 1) % size_;
-    ++seq_num;
-  }
+        index = (index + 1) % size_;
+        ++seq_num;
+    }
 }
 
 

@@ -210,33 +210,40 @@ struct DescendingSeqNumComp
 // A sequence number unwrapper where the first unwrapped value equals the
 // first value being unwrapped.
 template <typename T, T M = 0>
-class SeqNumUnwrapper {
-  static_assert(
-      std::is_unsigned<T>::value &&
-          std::numeric_limits<T>::max() < std::numeric_limits<int64_t>::max(),
-      "Type unwrapped must be an unsigned integer smaller than int64_t.");
+class SeqNumUnwrapper
+{
+    static_assert(
+        std::is_unsigned<T>::value &&
+        std::numeric_limits<T>::max() < std::numeric_limits<int64_t>::max(),
+        "Type unwrapped must be an unsigned integer smaller than int64_t.");
 
- public:
-  int64_t Unwrap(T value) {
-    if (!last_value_) {
-      last_unwrapped_ = {value};
-    } else {
-      last_unwrapped_ += ForwardDiff<T, M>(last_value_, value);
+public:
+    int64_t Unwrap(T value)
+    {
+        if (!last_value_)
+        {
+            last_unwrapped_ = {value};
+        }
+        else
+        {
+            last_unwrapped_ += ForwardDiff<T, M>(last_value_, value);
 
-      if (!AheadOrAt<T, M>(value, last_value_)) {
-        constexpr int64_t kBackwardAdjustment =
-            M == 0 ? int64_t{std::numeric_limits<T>::max()} + 1 : M;
-        last_unwrapped_ -= kBackwardAdjustment;
-      }
+            if (!AheadOrAt<T, M>(value, last_value_))
+            {
+                constexpr int64_t kBackwardAdjustment =
+                    M == 0 ? int64_t{std::numeric_limits<T>::max()} + 1 :
+                    M;
+                last_unwrapped_ -= kBackwardAdjustment;
+            }
+        }
+
+        last_value_ = value;
+        return last_unwrapped_;
     }
 
-    last_value_ = value;
-    return last_unwrapped_;
-  }
-
- private:
-  int64_t last_unwrapped_ = 0;
-  T last_value_;
+private:
+    int64_t last_unwrapped_ = 0;
+    T last_value_;
 };
 
 }  // namespace webrtc

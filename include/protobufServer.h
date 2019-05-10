@@ -8,7 +8,7 @@
 #include <sstream>
 
 using namespace boost::asio;
-typedef std::pair<std::queue<AVFrame*>,std::string> BUFFERPAIR;
+typedef std::pair<std::queue<AVFrame*>,std::pair<std::string,std::string> > BUFFERPAIR;
 typedef std::vector<boost::shared_ptr<fmDecoder> > fmDecoderPtrVec;
 
 class protobufServer

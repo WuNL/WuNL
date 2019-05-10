@@ -205,7 +205,7 @@ public:
     {
         size_t index = seq_num % PACKETBUFFERLEN;
         if (!sequence_buffer_[index].used ||
-          seq_num != sequence_buffer_[index].seq_num)
+                seq_num != sequence_buffer_[index].seq_num)
         {
             return nullptr;
         }

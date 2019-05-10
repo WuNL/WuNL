@@ -16,7 +16,7 @@
 #include <time.h>
 #include <math.h>
 
-typedef std::pair<std::queue<AVFrame*>,std::string> BUFFERPAIR;
+typedef std::pair<std::queue<AVFrame*>,std::pair<std::string,std::string> > BUFFERPAIR;
 
 class baseViewer
 {

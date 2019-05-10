@@ -475,26 +475,28 @@ void viewer::devFun()
                     continue;
                 }
 
+//                std::string thisPos = std::to_string(index) + "_" + std::to_string(j);
+//                bool needFreeFrame = false;
+
                 mutexPtr_->lock();
                 AVFrame* pFrame=(*pFrameQueueVecPtr_)[j].first.front();
 
-//                AVFrame *pFrame = av_frame_alloc();
-//                pFrame->format = pFrame->format;
-//                pFrame->width = pFrame->width;
-//                pFrame->height = pFrame->height;
-//                av_frame_get_buffer(pFrame, 32);
-//                av_frame_copy(pFrame, pFrame);
-//                av_frame_copy_props(pFrame, pFrame);
-//
-//
-//                av_frame_free(&pFrame);
+//                if((*pFrameQueueVecPtr_)[j].second.second == "")
+//                    (*pFrameQueueVecPtr_)[j].second.second = thisPos;
+//                if(thisPos == (*pFrameQueueVecPtr_)[j].second.second)
+//                {
+//                    needFreeFrame = true;
+                    (*pFrameQueueVecPtr_)[j].first.pop();
+//                }
 
-                (*pFrameQueueVecPtr_)[j].first.pop();
                 mutexPtr_->unlock();
+
+
                 realcount++;
                 if(pFrame->width!=1920/sqrt(splitNum_) || pFrame->height!=1080/sqrt(splitNum_))
                 {
-                    av_frame_free(&pFrame);
+//                    if(needFreeFrame)
+                        av_frame_free(&pFrame);
                     continue;
                 }
 
@@ -511,7 +513,8 @@ void viewer::devFun()
 
                     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, frameWidth/2,frameHeight/2, splitNum_, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
 
-                    av_frame_free(&pFrame);
+//                    if(needFreeFrame)
+                        av_frame_free(&pFrame);
                     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
                     glBindVertexArray(0);
                     continue;
@@ -528,6 +531,7 @@ void viewer::devFun()
                     if(frameWidth==0 || frameHeight==0)
                     {
                         printf("viewer continue!\n");
+//                    if(needFreeFrame)
                         av_frame_free(&pFrame);
                         continue;
                     }
@@ -554,13 +558,15 @@ void viewer::devFun()
                     if(frameWidth==0 || frameHeight==0)
                     {
                         printf("viewer continue!\n");
+//                    if(needFreeFrame)
                         av_frame_free(&pFrame);
                         continue;
                     }
                     memcpy(ptrUV,pFrame->data[1],frameWidth*frameHeight/2);
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
                 }
-                av_frame_free(&pFrame);
+//                    if(needFreeFrame)
+                        av_frame_free(&pFrame);
                 glBindTexture(GL_TEXTURE_2D_ARRAY, textureUV);
                 glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, frameWidth/2,frameHeight/2, 1, GL_RG, GL_UNSIGNED_BYTE, 0);
                 glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureUV"), 1);
@@ -688,7 +694,7 @@ void viewer::renderTexts(int splitNum,float fps)
         j = (*videoPositionVecPtr_)[index][0];
         if(j>=0)
         {
-            std::string s = (*pFrameQueueVecPtr_)[j].second;
+            std::string s = (*pFrameQueueVecPtr_)[j].second.first;
             tr->RenderText(s,(GLfloat)(leftOffset), (GLfloat)w_height+topOffset, fontSize, colorVec[curColor]);
         }
 
@@ -701,7 +707,7 @@ void viewer::renderTexts(int splitNum,float fps)
             j = (*videoPositionVecPtr_)[index][i];
             if(j<0)
                 continue;
-            std::string s = (*pFrameQueueVecPtr_)[j].second;
+            std::string s = (*pFrameQueueVecPtr_)[j].second.first;
             tr->RenderText(s,(GLfloat)(w_width*(i%2)/2+leftOffset),(GLfloat)(w_height/(int(i/2)+1)+topOffset),fontSize, colorVec[curColor]);
         }
         break;
@@ -713,7 +719,7 @@ void viewer::renderTexts(int splitNum,float fps)
             j = (*videoPositionVecPtr_)[index][i];
             if(j<0)
                 continue;
-            std::string s = (*pFrameQueueVecPtr_)[j].second;
+            std::string s = (*pFrameQueueVecPtr_)[j].second.first;
             tr->RenderText(s,(GLfloat)(w_width*(i%3)/3+leftOffset),(GLfloat)(w_height*(3-int(i/3))/3)+topOffset,fontSize, colorVec[curColor]);
         }
         break;
@@ -725,7 +731,7 @@ void viewer::renderTexts(int splitNum,float fps)
             j = (*videoPositionVecPtr_)[index][i];
             if(j<0)
                 continue;
-            std::string s = (*pFrameQueueVecPtr_)[j].second;
+            std::string s = (*pFrameQueueVecPtr_)[j].second.first;
             tr->RenderText(s,(GLfloat)(w_width*(i%4)/4+leftOffset),(GLfloat)(w_height*(4-int(i/4))/4)+topOffset,fontSize, colorVec[curColor]);
         }
         break;

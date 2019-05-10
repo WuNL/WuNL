@@ -13,8 +13,8 @@ class channel
 {
 public:
     channel():
-    fb_(new frameBuffer),
-    pb_(new packetBuffer(fb_.get()))
+        fb_(new frameBuffer),
+        pb_(new packetBuffer(fb_.get()))
     {
     }
     virtual ~channel() {};

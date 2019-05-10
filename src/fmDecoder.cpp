@@ -394,7 +394,7 @@ void fmDecoder::run()
             uint16_t last_seq_in_frame = frame->get_last_seq_num();
             (*cvPtr_)[threadSeq_].fb_->ClearTo(last_seq_in_frame);
             (*cvPtr_)[threadSeq_].pb_->ClearTo(last_seq_in_frame);
-            fwrite(frame->data(), 1, frame->buffer_len_, fp_out_264);
+            //fwrite(frame->data(), 1, frame->buffer_len_, fp_out_264);
 
             cur_ptr = frame->data();
             cur_size = static_cast<int>(frame->buffer_len_);
