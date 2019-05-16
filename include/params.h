@@ -2,7 +2,7 @@
 #define PARAMS_H_INCLUDED
 
 #define CHANNELNUM 20
-#define FRAME_BUFFER 20
+#define FRAME_BUFFER 3
 #define VIDEO_SOURCE_WIDTH 1920
 #define VIDEO_SOURCE_HEIGHT 1080
 //output

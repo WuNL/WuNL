@@ -75,7 +75,7 @@ void packetBuffer::insertPacket(const u_char* pkt_data, const size_t len)
 //            if(data_buffer_[index].pkt_!=nullptr)
 //                free(data_buffer_[index].pkt_);
 //            data_buffer_[index].pkt_= nullptr;
-            std::cout<<"is_cleared_to_first_seq_num_! \n";
+            //std::cout<<"is_cleared_to_first_seq_num_! \n";
             if(temp.pkt_ != nullptr)
                 free(temp.pkt_);
             temp.pkt_ = nullptr;
@@ -91,7 +91,7 @@ void packetBuffer::insertPacket(const u_char* pkt_data, const size_t len)
         // Duplicate packet
         if (data_buffer_[index].seqNum == seq_num)
         {
-            std::cout<<"data_buffer_[index].seqNum == seq_num! \n";
+            //std::cout<<"data_buffer_[index].seqNum == seq_num! \n";
             if(temp.pkt_ != nullptr)
                 free(temp.pkt_);
             temp.pkt_ = nullptr;
@@ -107,8 +107,8 @@ void packetBuffer::insertPacket(const u_char* pkt_data, const size_t len)
         }
     }
 
-    sequence_buffer_[index].frame_begin = temp.frame_begin | temp.fu_a_start_;
-    sequence_buffer_[index].frame_end = temp.rtp_marker | temp.fu_a_end_;
+    sequence_buffer_[index].frame_begin = temp.frame_begin || temp.fu_a_start_;
+    sequence_buffer_[index].frame_end = temp.rtp_marker || temp.fu_a_end_;
     sequence_buffer_[index].seq_num = seq_num;
     sequence_buffer_[index].continuous = false;
     sequence_buffer_[index].frame_created = false;

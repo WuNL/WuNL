@@ -14,6 +14,7 @@
 #include <sched.h>
 #include <thread>
 
+
 using namespace boost::asio;
 
 typedef std::pair<std::queue<AVFrame*>,std::pair<std::string,std::string> > BUFFERPAIR;
@@ -32,7 +33,7 @@ public:
     void setThreadSeq(int seq);
     void run();
     void runSaveFileTest();
-    int testFun();
+//    int testFun();
     void setPtr(boost::shared_ptr<std::vector<channel> > cvPtr,
                 boost::shared_ptr<std::vector<int> >readIndex,
                 boost::shared_ptr<std::vector<int> > writeIndex);
@@ -48,7 +49,7 @@ protected:
 
 private:
 
-    int initFilter();
+//    int initFilter();
     AVCodec *pCodec;
     AVCodecContext *pCodecCtx;
     AVCodecParserContext *pCodecParserCtx;
@@ -59,21 +60,13 @@ private:
     struct SwsContext *img_convert_ctx4;
     struct SwsContext *img_convert_ctx1;
 
-    AVFilterContext *buffersink_ctx[3];
-    AVFilterContext *buffersrc_ctx[3];
-    AVFilterGraph *filter_graph[3];
-    AVFilter *buffersrc[3];
-    AVFilter *buffersink[3];
-    AVFilterInOut *outputs[3];
-    AVFilterInOut *inputs[3];
-    AVBufferSinkParams *buffersink_params[3];
 
 
-    struct SwsContext *convertCtx[3];
-    struct SwsContext *convertCtx720P[4];
-    struct SwsContext *convertCtx576P[4];
-    AVFrame	*pFrameYUV[3];
-    AVFrame *pFrameYUV1080P;
+    struct SwsContext *convertCtx;
+    struct SwsContext *convertCtx720P;
+    struct SwsContext *convertCtx576P;
+    AVFrame	*pFrameYUV;
+
     int screanNum,screanNum_old;
     int sws_seq;
     int sws_width_,sws_height_;

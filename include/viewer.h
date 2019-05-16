@@ -132,10 +132,10 @@ private:
 
 //    boost::mutex lock;
 
-    GLuint VBO[16], VAO[16], EBO,pboIds[16],pboUV[16];
+    GLuint VBO[20], VAO[20], EBO,pboIds[20],pboUV[20];
     GLuint vbo;
-    GLfloat* verticesVec[16];
-    GLfloat vertics2D[16][20];
+    GLfloat* verticesVec[20];
+    GLfloat vertics2D[20][20];
     GLuint texture,textureUV;
     Shader* ourShader;
     int frameWidth,frameHeight;

@@ -148,7 +148,7 @@ private:
                     {
                         int tid = -1;
                         convertFromString(tid,pollingVec[i][j]);
-                        //                    myBoss.setViewerPosition(wm.cpl().id(),i,tid);
+                        myBoss.setViewerPosition(wm.cpl().id(),i,tid);
                         myBoss.setDecoderPara(tid,wm.cpl().saperatenumber());
                     }
 
@@ -158,6 +158,14 @@ private:
             }
             else
             {
+                if(wm.cpl().saperatenumber()==1 || wm.cpl().saperatenumber()==4 || wm.cpl().saperatenumber()==9 || wm.cpl().saperatenumber()==16 || wm.cpl().saperatenumber()==20)
+                {
+                }
+                else
+                {
+                    break;
+                }
+
                 myBoss.stopTimer(wm.cpl().id());
                 for(int i = 0; i<wm.cpl().terminalid_size(); ++i)
                 {

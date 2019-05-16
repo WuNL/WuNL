@@ -25,10 +25,10 @@ public:
     unsigned int recvPacketNumber;
     unsigned short packetNumber;
     bool isStart;
-    int writeIndex;
-    int readIndex;
-    int showBufferLen[BUFFER_LEN];
-    unsigned char showBuffer[BUFFER_LEN][BUFFER_SIZE];
+//    int writeIndex;
+//    int readIndex;
+//    int showBufferLen[BUFFER_LEN];
+//    unsigned char showBuffer[BUFFER_LEN][BUFFER_SIZE];
     std::shared_ptr<frameBuffer> fb_;
     std::shared_ptr<packetBuffer> pb_;
 private:

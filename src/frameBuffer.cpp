@@ -34,9 +34,10 @@ void frameBuffer::OnAssembledFrame(std::unique_ptr<frameObject>frame)
     switch (decision)
     {
     case kStash:
+//        std::cout<<"kStash !\n";
         if (stashed_frames_.size() > kMaxStashedFrames)
         {
-            std::cout<<"stashed_frames_ full !\n";
+            //std::cout<<"stashed_frames_ full !\n";
             auto dropedFrame = std::move(stashed_frames_.back());
             dropedFrame.get()->ReturnFrame();
             stashed_frames_.pop_back();
@@ -45,7 +46,7 @@ void frameBuffer::OnAssembledFrame(std::unique_ptr<frameObject>frame)
         stashed_frames_.push_front(std::move(frame));
         break;
     case kHandOff:
-
+        std::cout<<"kHandOff !\n";
         if (available_frames_.size() > kMaxStashedFrames)
             available_frames_.pop_back();
         available_frames_.push_back(std::move(frame));
@@ -53,6 +54,7 @@ void frameBuffer::OnAssembledFrame(std::unique_ptr<frameObject>frame)
         RetryStashedFrames();
         break;
     case kDrop:
+//        std::cout<<"kDrop !\n";
         break;
     }
 
@@ -97,7 +99,7 @@ void frameBuffer::RetryStashedFrames()
 
                 break;
             case kDrop:
-                std::cout<<"------------kDrop-------------- "<<std::endl;
+                //std::cout<<"------------kDrop-------------- "<<std::endl;
 
                 if((*frame_it).get()!=nullptr)
                     (*frame_it).get()->ReturnFrame();
@@ -120,12 +122,16 @@ FrameDecision frameBuffer::ManageFramePidOrSeqNum(frameObject* frame)
         last_seq_num_gop_.insert(std::make_pair(
                                      frame->get_last_seq_num(),
                                      std::make_pair(frame->get_last_seq_num(), frame->get_last_seq_num())));
-//        std::cout<<"last_seq_num_gop_ insert  "<<" "<<frame->get_first_seq_num()<<" "<<frame->get_last_seq_num()<<" "<<frame->get_last_seq_num()<<std::endl;
+        std::cout<<frame->frame_type_ <<" <---type insert keyframe "<<" "<<frame->get_first_seq_num()<<" "<<frame->get_last_seq_num()<<" "<<frame->get_last_seq_num()<<std::endl;
     }
 
     // We have received a frame but not yet a keyframe, stash this frame.
     if (last_seq_num_gop_.empty())
+    {
+//        std::cout<<"last_seq_num_gop_ empty stash  "<<std::endl;
         return kStash;
+    }
+
 
     // Clean up info for old keyframes but make sure to keep info
     // for the last keyframe.
@@ -143,7 +149,6 @@ FrameDecision frameBuffer::ManageFramePidOrSeqNum(frameObject* frame)
 //        std::cout<<frame->get_last_seq_num()<<"second clean gop (first (first second))  "<< it->first <<" "<<it->second.first<<" "<<it->second.second<<" gop size "<<last_seq_num_gop_.size()<<"\n";
         it = last_seq_num_gop_.erase(it);
     }
-
 
     // Find the last sequence number of the last frame for the keyframe
     // that this frame indirectly references.
@@ -194,6 +199,7 @@ FrameDecision frameBuffer::ManageFramePidOrSeqNum(frameObject* frame)
 
     UpdateLastPictureIdWithPadding(frame->get_last_seq_num());
 
+    std::cout<<"------------kHandOff-------------- "<<" "<<frame->get_first_seq_num()<<" "<<frame->get_last_seq_num()<<" "<<std::endl;
     return kHandOff;
 }
 

@@ -37,7 +37,7 @@ viewer::viewer(int width,int height,int ind,bool autoS)
     frameHeight=1080;
     splitNum_ = WINDOW_STYLE;
     splitNum_old = splitNum_;
-    for(int i=0; i<16; ++i)
+    for(int i=0; i<20; ++i)
     {
         verticesVec[i] = new GLfloat[20];
     }
@@ -94,6 +94,8 @@ void viewer::setStyleInter()
 void viewer::setStyle(int splitNum)
 {
     splitNum_ = splitNum;
+
+
     switch(curLocation)
     {
     //left top
@@ -139,6 +141,13 @@ void viewer::setVertices(int splitNum, int style)
         { {-1.0f,0.0f},{-0.5f,0.0f},{0.0f,0.0f},{0.5f,0.0f},{1.0f,0.0f} },
         { {-1.0f,-0.5f},{-0.5f,-0.5f},{0.0f,-0.5f},{0.5f,-0.5f},{1.0f,-0.5f} },
         { {-1.0f,-1.0f},{-0.5f,-1.0f},{0.0f,-1.0f},{0.5f,-1.0f},{1.0f,-1.0f} }
+    };
+    GLfloat cor4X7[4][7][2]=
+    {
+        { {-1.0f,0.0f},{-1.0f*2.0f/3.0f,0.0f}, {-1.0f/3.0f,0.0f},    {0.0f,0.0f},    {1.0f/3.0f,0.0f}, {1.0f*2.0f/3.0f,0.0f}, {1.0f,0.0f} },
+        { {-1.0f,-1.0f/3.0f},{-1.0f*2.0f/3.0f,-1.0f/3.0f}, {-1.0f/3.0f,-1.0f/3.0f},    {0.0f,-1.0f/3.0f},    {1.0f/3.0f,-1.0f/3.0f}, {1.0f*2.0f/3.0f,-1.0f/3.0f}, {1.0f,-1.0f/3.0f} },
+        { {-1.0f,-2.0f/3.0f},{-1.0f*2.0f/3.0f,-2.0f/3.0f}, {-1.0f/3.0f,-2.0f/3.0f},    {0.0f,-2.0f/3.0f},    {1.0f/3.0f,-2.0f/3.0f}, {1.0f*2.0f/3.0f,-2.0f/3.0f}, {1.0f,-2.0f/3.0f} },
+        { {-1.0f,-1.0f},{-1.0f*2.0f/3.0f,-1.0f}, {-1.0f/3.0f,-1.0f},    {0.0f,-1.0f},    {1.0f/3.0f,-1.0f}, {1.0f*2.0f/3.0f,-1.0f}, {1.0f,-1.0f} }
     };
     splitNum_ = splitNum;
     switch(splitNum_)
@@ -209,6 +218,42 @@ void viewer::setVertices(int splitNum, int style)
         }
         break;
     }
+    case 20:
+    {
+        GLfloat tmpVec0[20]=
+        {
+            0.0f,    1.0f,     0.0f, 1.0f, 1.0f,            // Top Right
+            0.0f,    0.0f,     0.0f, 1.0f, 0.0f,            // Bottom Right
+            -1.0f,   0.0f,     0.0f, 0.0f, 0.0f,            // Bottom Left
+            -1.0f,   1.0f,     0.0f, 0.0f, 1.0f            // Top Left
+        };
+        memcpy(verticesVec[0],tmpVec0,20*sizeof(GLfloat));
+
+        GLfloat tmpVec1[20]=
+        {
+            1.0f,    1.0f,     0.0f, 1.0f, 1.0f,            // Top Right
+            1.0f,    0.0f,     0.0f, 1.0f, 0.0f,            // Bottom Right
+            0.0f,    0.0f,     0.0f, 0.0f, 0.0f,            // Bottom Left
+            0.0f,   1.0f,      0.0f, 0.0f, 1.0f            // Top Left
+        };
+        memcpy(verticesVec[1],tmpVec1,20*sizeof(GLfloat));
+
+        for(int i=0; i<18; ++i)
+        {
+
+            int y = i%6;
+            int x = i/6;
+            GLfloat tmpVec[20]=
+            {
+                cor4X7[x][y+1][0],    cor4X7[x][y+1][1],     0.0f, 1.0f, 1.0f,            // Top Right
+                cor4X7[x+1][y+1][0],  cor4X7[x+1][y+1][1],   0.0f, 1.0f, 0.0f,            // Bottom Right
+                cor4X7[x+1][y][0],    cor4X7[x+1][y][1],     0.0f, 0.0f, 0.0f,            // Bottom Left
+                cor4X7[x][y][0],      cor4X7[x][y][1],       0.0f, 0.0f, 1.0f            // Top Left
+            };
+            memcpy(verticesVec[i+2],tmpVec,20*sizeof(GLfloat));
+        }
+        break;
+    }
     default:
     {
         for(int i=0; i<16; ++i)
@@ -234,6 +279,18 @@ void viewer::setVertices(int splitNum, int style)
 
 void viewer::devFun()
 {
+
+    pthread_t thread = pthread_self();
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    thread = pthread_self();
+    CPU_SET(15 + index + 1, &cpuset);
+    int rc = pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
+    if (rc != 0)
+        std::cout << "Error calling pthread_setaffinity_np !!! ";
+
+
+
     // Set all the required options for GLFW
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -323,10 +380,10 @@ void viewer::devFun()
         0, 1, 3, // First Triangle
         1, 2, 3  // Second Triangle
     };
-    glGenBuffers(16, pboIds);
-    glGenBuffers(16, pboUV);
-    glGenVertexArrays(16, VAO);
-    glGenBuffers(16, VBO);
+    glGenBuffers(20, pboIds);
+    glGenBuffers(20, pboUV);
+    glGenVertexArrays(20, VAO);
+    glGenBuffers(20, VBO);
     glGenBuffers(1, &EBO);
     glGenTextures(1, &texture);
     glGenTextures(1, &textureUV);
@@ -346,7 +403,7 @@ void viewer::devFun()
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     //glTexStorage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, frameWidth, frameHeight, 9);
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, frameWidth, frameHeight, 16, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, frameWidth, frameHeight, 20, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
 //    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, frameWidth, frameHeight, 9, )
     //glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 
@@ -359,7 +416,7 @@ void viewer::devFun()
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     //glTexStorage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, frameWidth/2,frameHeight/2, 9);
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, frameWidth/2,frameHeight/2, 16, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, frameWidth/2,frameHeight/2, 20, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
 
     //glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 
@@ -381,7 +438,7 @@ void viewer::devFun()
     av_image_fill_arrays(frame->data, frame->linesize,out_buffer1080P,
                          AV_PIX_FMT_NV12,1920,1080,1);
 
-    for(int i=0; i<16; ++i)
+    for(int i=0; i<20; ++i)
     {
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
         glBufferData(GL_PIXEL_UNPACK_BUFFER, DATA_SIZE, frame->data[0], GL_STREAM_DRAW);
@@ -475,34 +532,27 @@ void viewer::devFun()
                     continue;
                 }
 
-//                std::string thisPos = std::to_string(index) + "_" + std::to_string(j);
-//                bool needFreeFrame = false;
-
                 mutexPtr_->lock();
-                AVFrame* pFrame=(*pFrameQueueVecPtr_)[j].first.front();
+                AVFrame* pFrameOri=(*pFrameQueueVecPtr_)[j].first.front();
 
-//                if((*pFrameQueueVecPtr_)[j].second.second == "")
-//                    (*pFrameQueueVecPtr_)[j].second.second = thisPos;
-//                if(thisPos == (*pFrameQueueVecPtr_)[j].second.second)
-//                {
-//                    needFreeFrame = true;
-                    (*pFrameQueueVecPtr_)[j].first.pop();
-//                }
+                AVFrame *pFrame = av_frame_alloc();
+
+                pFrame->format = pFrameOri->format;
+                pFrame->width = pFrameOri->width;
+                pFrame->height = pFrameOri->height;
+                av_frame_get_buffer(pFrame, 32);
+                av_frame_copy(pFrame, pFrameOri);
+                av_frame_copy_props(pFrame, pFrameOri);
+
 
                 mutexPtr_->unlock();
 
 
                 realcount++;
-                if(pFrame->width!=1920/sqrt(splitNum_) || pFrame->height!=1080/sqrt(splitNum_))
-                {
-//                    if(needFreeFrame)
-                        av_frame_free(&pFrame);
-                    continue;
-                }
 
                 if(frameWidth!=pFrame->width || frameHeight!=pFrame->height)
                 {
-                    std::cout<<i<<"\t"<<frameWidth<<"\t"<<frameHeight<<pFrame->width<<"\t"<<pFrame->height<<std::endl;
+                    std::cout<<index<<"\t"<<i<<"\t"<<frameWidth<<"\t"<<frameHeight<<"\t"<<pFrame->width<<"\t"<<pFrame->height<<std::endl;
                     frameWidth=pFrame->width;
                     frameHeight=pFrame->height;
                     glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
@@ -514,7 +564,7 @@ void viewer::devFun()
                     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, frameWidth/2,frameHeight/2, splitNum_, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
 
 //                    if(needFreeFrame)
-                        av_frame_free(&pFrame);
+                    av_frame_free(&pFrame);
                     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
                     glBindVertexArray(0);
                     continue;
@@ -566,7 +616,7 @@ void viewer::devFun()
                     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer
                 }
 //                    if(needFreeFrame)
-                        av_frame_free(&pFrame);
+                av_frame_free(&pFrame);
                 glBindTexture(GL_TEXTURE_2D_ARRAY, textureUV);
                 glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, frameWidth/2,frameHeight/2, 1, GL_RG, GL_UNSIGNED_BYTE, 0);
                 glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureUV"), 1);
@@ -588,7 +638,7 @@ void viewer::devFun()
             if(cost_time/1000.0 > 1)
             {
                 fps = (float)framecount*1000/cost_time;
-                printf("index %d  fps:    %f    real fps:    %f      frameWidth:%d     cost:%ld\n",index,(float)framecount*1000/cost_time,(float)realcount*1000/cost_time,frameWidth,(end-startTime)/1000);
+                //printf("index %d  fps:    %f    real fps:    %f      frameWidth:%d     cost:%ld\n",index,(float)framecount*1000/cost_time,(float)realcount*1000/cost_time,frameWidth,(end-startTime)/1000);
                 gettimeofday(&t_start,NULL);
                 start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
                 framecount = 0;
@@ -714,25 +764,53 @@ void viewer::renderTexts(int splitNum,float fps)
     }
     case 9:
     {
+        float fontSize_9 = fontSize*0.8f;
+        float leftOffset_9 = 20.5f;
         for(int i = 0; i<splitNum_; ++i)
         {
             j = (*videoPositionVecPtr_)[index][i];
             if(j<0)
                 continue;
             std::string s = (*pFrameQueueVecPtr_)[j].second.first;
-            tr->RenderText(s,(GLfloat)(w_width*(i%3)/3+leftOffset),(GLfloat)(w_height*(3-int(i/3))/3)+topOffset,fontSize, colorVec[curColor]);
+            tr->RenderText(s,(GLfloat)(w_width*(i%3)/3+leftOffset_9),(GLfloat)(w_height*(3-int(i/3))/3)+topOffset,fontSize_9, colorVec[curColor]);
         }
         break;
     }
     case 16:
     {
+        float fontSize_16 = fontSize*0.7f;
+        float leftOffset_16 = 17.5f;
         for(int i = 0; i<splitNum_; ++i)
         {
             j = (*videoPositionVecPtr_)[index][i];
             if(j<0)
                 continue;
             std::string s = (*pFrameQueueVecPtr_)[j].second.first;
-            tr->RenderText(s,(GLfloat)(w_width*(i%4)/4+leftOffset),(GLfloat)(w_height*(4-int(i/4))/4)+topOffset,fontSize, colorVec[curColor]);
+            tr->RenderText(s,(GLfloat)(w_width*(i%4)/4+leftOffset_16),(GLfloat)(w_height*(4-int(i/4))/4)+topOffset,fontSize_16, colorVec[curColor]);
+        }
+        break;
+    }
+
+    case 20:
+    {
+        for(int i = 0; i<2; ++i)
+        {
+            j = (*videoPositionVecPtr_)[index][i];
+            if(j<0)
+                continue;
+            std::string s = (*pFrameQueueVecPtr_)[j].second.first;
+            tr->RenderText(s,(GLfloat)(w_width*(i%2)/2+leftOffset),(GLfloat)(w_height/(int(i/2)+1)+topOffset),fontSize, colorVec[curColor]);
+        }
+        float leftOffset_20 = 17.5f;
+        float topOffset_20 = -w_height/2 - 25.0f;
+        float fontSize_20 = fontSize*0.5f;
+        for(int i = 0; i<splitNum_-2; ++i)
+        {
+            j = (*videoPositionVecPtr_)[index][i+2];
+            if(j<0)
+                continue;
+            std::string s = (*pFrameQueueVecPtr_)[j].second.first;
+            tr->RenderText(s,(GLfloat)(w_width*(i%6)/6+leftOffset_20),(GLfloat)(w_height*(6-int(i/6))/6)+topOffset_20,fontSize_20, colorVec[curColor]);
         }
         break;
     }

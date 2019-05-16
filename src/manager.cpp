@@ -52,8 +52,6 @@ manager::~manager()
 
 void manager::startViewer()
 {
-
-
     // Set all the required options for GLFW
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
