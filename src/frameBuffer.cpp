@@ -46,7 +46,7 @@ void frameBuffer::OnAssembledFrame(std::unique_ptr<frameObject>frame)
         stashed_frames_.push_front(std::move(frame));
         break;
     case kHandOff:
-        std::cout<<"kHandOff !\n";
+//        std::cout<<"kHandOff !\n";
         if (available_frames_.size() > kMaxStashedFrames)
             available_frames_.pop_back();
         available_frames_.push_back(std::move(frame));
@@ -199,7 +199,7 @@ FrameDecision frameBuffer::ManageFramePidOrSeqNum(frameObject* frame)
 
     UpdateLastPictureIdWithPadding(frame->get_last_seq_num());
 
-    std::cout<<"------------kHandOff-------------- "<<" "<<frame->get_first_seq_num()<<" "<<frame->get_last_seq_num()<<" "<<std::endl;
+//    std::cout<<"------------kHandOff-------------- "<<" "<<frame->get_first_seq_num()<<" "<<frame->get_last_seq_num()<<" "<<std::endl;
     return kHandOff;
 }
 

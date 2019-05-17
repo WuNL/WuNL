@@ -64,7 +64,7 @@ void pcapGrepper::capture_callback(u_char *useless,const struct pcap_pkthdr* hea
 {
 
 
-    if (!((pkt_data[42] == 0x80) && ((pkt_data[43] == 0x6A) || (pkt_data[43] == 0xeA) || (pkt_data[43] == 0x60) || (pkt_data[43] == 0xe0) )))
+    if (!((pkt_data[42] == 0x80) && ((pkt_data[43] == 0x6A) || (pkt_data[43] == 0xeA) || (pkt_data[43] == 0x60) || (pkt_data[43] == 0xe0) || (pkt_data[43] == 0x69) || (pkt_data[43] == 0xe9))))
     {
         return;
     }

@@ -32,8 +32,11 @@ packetBuffer::packetBuffer(frameBuffer* assembled_frame_callback):
     assembled_frame_callback_(assembled_frame_callback)
 {
     //ctor
-    allowed_pt.insert(96);
-    allowed_pt.insert(106);
+
+//    allowed_pt.insert(96);
+    allowed_pt.insert(100);
+    allowed_pt.insert(105);
+//    allowed_pt.insert(106);
 
     //po_ = new frameObject(shared_from_this(),1,2,3);
 }
@@ -46,7 +49,7 @@ packetBuffer::~packetBuffer()
 void packetBuffer::insertPacket(const u_char* pkt_data, const size_t len)
 {
     VcmPacket temp(pkt_data,len);
-    std::vector<std::unique_ptr<frameObject>> found_frames;
+
 
     uint16_t seq_num = temp.seqNum;
     size_t index = seq_num % PACKETBUFFERLEN;
@@ -54,9 +57,11 @@ void packetBuffer::insertPacket(const u_char* pkt_data, const size_t len)
     uint8_t payload_type = temp.payloadType;
     if(allowed_pt.find(payload_type)==allowed_pt.end())
     {
-        std::cout<<"unknown payload type! "<<payload_type<<std::endl;
+        std::cout<<"unknown payload type! "<<(int)payload_type<<std::endl;
         return;
     }
+
+    std::vector<std::unique_ptr<frameObject>> found_frames;
 
     std::lock_guard<std::mutex> lock(mutex_);
 
@@ -101,20 +106,43 @@ void packetBuffer::insertPacket(const u_char* pkt_data, const size_t len)
         // Packet buffer is full.
         if (sequence_buffer_[index].used)
         {
-            std::cout<<"packet buffer full! \n";
-            clear();
-            return;
+            //std::cout<<"packet buffer full! \n";
+            //clear();
+            //ClearTo(seq_num);
+            //return;
+
+            sequence_buffer_[index].used = true;
+            if(data_buffer_[index].pkt_ !=nullptr)
+            {
+                free(data_buffer_[index].pkt_);
+                data_buffer_[index].pkt_ = nullptr;
+            }
+
         }
     }
 
-    sequence_buffer_[index].frame_begin = temp.frame_begin || temp.fu_a_start_;
-    sequence_buffer_[index].frame_end = temp.rtp_marker || temp.fu_a_end_;
+    sequence_buffer_[index].frame_begin = temp.frame_begin;// || temp.fu_a_start_;
+    int prev_index = index > 0 ? index - 1 : PACKETBUFFERLEN - 1;
+    if(sequence_buffer_[prev_index].frame_end)
+        sequence_buffer_[index].frame_begin = true;
+
+
+
+    sequence_buffer_[index].frame_end = temp.rtp_marker;
+
+//    if(sequence_buffer_[index].frame_begin)
+//        std::cout<<seq_num<<"   frame_begin "<<sequence_buffer_[index].frame_begin<<std::endl;
+//    if(sequence_buffer_[index].frame_end)
+//        std::cout<<seq_num<<"   frame_end "<<sequence_buffer_[index].frame_end<<std::endl;
+
     sequence_buffer_[index].seq_num = seq_num;
     sequence_buffer_[index].continuous = false;
     sequence_buffer_[index].frame_created = false;
     sequence_buffer_[index].used = true;
 
     data_buffer_[index] = temp;
+
+    UpdateMissingPackets(seq_num);
 
 //    std::cout<<std::endl;
 //    std::cout<<"frame_type_ "<<data_buffer_[index].frame_type_<<std::endl;
@@ -214,6 +242,8 @@ std::vector<std::unique_ptr<frameObject>> packetBuffer::FindFrames(uint16_t seq_
         size_t index = seq_num % size_;
         sequence_buffer_[index].continuous = true;
 
+        bool is_h264_keyframe = false;
+
         // If all packets of the frame is continuous, find the first packet of the
         // frame and create an RtpFrameObject.
         if (sequence_buffer_[index].frame_end)
@@ -250,11 +280,32 @@ std::vector<std::unique_ptr<frameObject>> packetBuffer::FindFrames(uint16_t seq_
                 {
                     break;
                 }
-                if(data_buffer_[start_index].rtp_marker)
-                    break;
+
 
                 --start_seq_num;
             }
+
+
+            if(sequence_buffer_[start_seq_num%size_].frame_begin == false)
+            {
+                continue;
+            }
+
+            is_h264_keyframe = (data_buffer_[start_index].frame_type_==IDR) || (data_buffer_[start_index].frame_type_==SPS) || (data_buffer_[start_index].frame_type_==PPS);
+            // If this is not a keyframe, make sure there are no gaps in the
+            // packet sequence numbers up until this point.
+            if (!is_h264_keyframe && missing_packets_.upper_bound(start_seq_num) !=
+                                         missing_packets_.begin()) {
+              uint16_t stop_index = (index + 1) % size_;
+              while (start_index != stop_index) {
+                sequence_buffer_[start_index].frame_created = false;
+                start_index = (start_index + 1) % size_;
+              }
+
+              return found_frames;
+            }
+
+
 
 
 //            std::cout<<"found frame with start_seq_num, seq_num, frame_size: " <<start_seq_num<< "  " <<

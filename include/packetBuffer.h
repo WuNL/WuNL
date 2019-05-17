@@ -121,19 +121,22 @@ private:
         case 5:
             rtp_type_ = SINGLE_NALU;
             frame_type_ = IDR;
-            frame_begin = true;
+            //frame_begin = true;
             break;
 
         default:
             rtp_type_ = SINGLE_NALU;
             frame_type_ = OTHER;
-            frame_begin = true;
+            //frame_begin = true;
             break;
         }
 
         char naluHeader[4] = {0, 0, 0, 1};
         if(rtp_type_ == SINGLE_NALU)
         {
+            if((pkt_data[55] & 0x80) == 0x80)
+                frame_begin = true;
+
             len_ = 4+len-54;
             pkt_ = (uint8_t*)malloc(len_);
 
@@ -154,6 +157,9 @@ private:
             if(fu_a_start_)
             {
                 unsigned char new_fu_header = (ori_pkt_[54] & 0xe0) | (ori_pkt_[55] & 0x1f);
+
+                if((pkt_data[56] & 0x80) == 0x80)
+                    frame_begin = true;
 
                 len_ = 4 + 1 + len - 54 -2;
                 pkt_ = (uint8_t*)malloc(len_);
@@ -250,12 +256,40 @@ private:
         return false;
     }
 
+    void UpdateMissingPackets(uint16_t seq_num)
+    {
+          if (!newest_inserted_seq_num_)
+            newest_inserted_seq_num_ = seq_num;
+
+          const int kMaxPaddingAge = 1000;
+          if (webrtc::AheadOf(seq_num, newest_inserted_seq_num_)) {
+            uint16_t old_seq_num = seq_num - kMaxPaddingAge;
+            auto erase_to = missing_packets_.lower_bound(old_seq_num);
+            missing_packets_.erase(missing_packets_.begin(), erase_to);
+
+            // Guard against inserting a large amount of missing packets if there is a
+            // jump in the sequence number.
+            if (webrtc::AheadOf(old_seq_num, newest_inserted_seq_num_))
+              newest_inserted_seq_num_ = old_seq_num;
+
+            ++newest_inserted_seq_num_;
+            while (webrtc::AheadOf(seq_num, newest_inserted_seq_num_)) {
+              missing_packets_.insert(newest_inserted_seq_num_);
+              ++newest_inserted_seq_num_;
+            }
+          } else {
+            missing_packets_.erase(seq_num);
+          }
+    }
+
 private:
 
     rtpDepacketer rtp_depacketer;
 
     std::vector<VcmPacket> data_buffer_;
     std::vector<continuityInfo> sequence_buffer_;
+    std::set<uint16_t, webrtc::DescendingSeqNumComp<uint16_t>> missing_packets_;
+    uint16_t newest_inserted_seq_num_ = 0;
 
     std::set<uint8_t> allowed_pt;
 
