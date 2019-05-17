@@ -252,6 +252,11 @@ void fmDecoder::run()
                         av_frame_free(&pFrame);
 //                        av_frame_free(&pFrameYUV);
 
+                        struct timeval t_start;
+                        gettimeofday(&t_start,NULL);
+                        uint64_t start = ((uint64_t)t_start.tv_sec)*1000+(uint64_t)t_start.tv_usec/1000;
+                        pFrameYUV->pts = start;
+
 
                         if((*pFrameQueueVecPtr_)[threadSeq_].first.size()<=FRAME_BUFFER)
                         {

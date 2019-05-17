@@ -475,6 +475,10 @@ void viewer::devFun()
     long start = ((long)t_start.tv_sec)*1000+(long)t_start.tv_usec/1000;
     long startTime = start;
     printf("start time:%ld ms\n",start);
+
+    struct timeval renderTime;
+    uint64_t renderTimeMS;
+
     while (active)
     {
 
@@ -485,8 +489,12 @@ void viewer::devFun()
             splitNum_old = splitNum_;
         }
 //        glfwPollEvents();
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+
+        gettimeofday(&renderTime,NULL);
+        renderTimeMS = ((uint64_t)renderTime.tv_sec)*1000+(uint64_t)renderTime.tv_usec/1000;
 
 
         //if(!(*pFrameQueueVecPtr_)[0].empty() || !(*pFrameQueueVecPtr_)[1].empty())
@@ -498,7 +506,6 @@ void viewer::devFun()
 //                printf("j=%d \n",j);
                 if( j<0 || (*pFrameQueueVecPtr_)[j].first.empty())
                 {
-                    glBindVertexArray(VAO[i]);
                     glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
 
                     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, frameWidth, frameHeight, splitNum_, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
@@ -507,33 +514,31 @@ void viewer::devFun()
 
                     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, frameWidth/2,frameHeight/2, splitNum_, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
 
-                    glActiveTexture(GL_TEXTURE0);
-                    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboIds[i]);
-
-                    glUniform1i(glGetUniformLocation(ourShader->Program, "layer"), 2);
-                    glProgramUniform1i(ourShader->Program, glGetUniformLocation(ourShader->Program, "layer"), i);
-
-
-                    glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
-                    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, frameWidth,frameHeight, 1, GL_RED, GL_UNSIGNED_BYTE, 0);
-                    glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureY"), 0);
-                    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-
-
-                    glActiveTexture(GL_TEXTURE1);
-                    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboUV[i]);
-                    glBindTexture(GL_TEXTURE_2D_ARRAY, textureUV);
-                    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, frameWidth/2,frameHeight/2, 1, GL_RG, GL_UNSIGNED_BYTE, 0);
-                    glUniform1i(glGetUniformLocation(ourShader->Program, "ourTextureUV"), 1);
-                    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-
                     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
                     glBindVertexArray(0);
                     continue;
                 }
 
                 mutexPtr_->lock();
+
                 AVFrame* pFrameOri=(*pFrameQueueVecPtr_)[j].first.front();
+
+                if(abs(renderTimeMS - pFrameOri->pts) > 2000)
+                {
+                    glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
+
+                    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RED, frameWidth, frameHeight, splitNum_, 0, GL_RED, GL_UNSIGNED_BYTE,NULL);
+
+                    glBindTexture(GL_TEXTURE_2D_ARRAY, textureUV);
+
+                    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RG, frameWidth/2,frameHeight/2, splitNum_, 0, GL_RG, GL_UNSIGNED_BYTE,NULL);
+
+                    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                    glBindVertexArray(0);
+                    mutexPtr_->unlock();
+                    continue;
+                }
+
 
                 AVFrame *pFrame = av_frame_alloc();
 
