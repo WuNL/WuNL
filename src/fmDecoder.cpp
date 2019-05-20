@@ -1,4 +1,5 @@
 #include "fmDecoder.h"
+#include <sys/syscall.h>
 #include <math.h>
 
 FILE *fp_out;
@@ -85,11 +86,13 @@ void fmDecoder::run()
     if (rc != 0)
         std::cout << "Error calling pthread_getaffinity_np !!!";
 
+    auto tid = syscall(SYS_gettid);
+
     for (i = 0; i < CPU_SETSIZE; i++)
     {
         if (CPU_ISSET(i, &cpuset))
         {
-            std::cout << " CPU " << i << std::endl;
+            std::cout << " TID " << tid << std::endl;
             std::cout << "This program (main thread) is on CPU " << sched_getcpu() << std::endl;
         }
     }
@@ -393,17 +396,16 @@ int fmDecoder::Init()
 //    pCodecCtx->hwaccel = ff_find_hwaccel();
     if (pCodecCtx->codec_id == AV_CODEC_ID_H264)
     {
-//        if(threadSeq_<8)
+        if(threadSeq_<4)
         {
             printf("seq %d using gpu 0\n",threadSeq_);
             av_opt_set(pCodecCtx->priv_data, "gpu", "0", 0);
         }
-
-//        if(threadSeq_>=8)
-//        {
-//            printf("seq %d using gpu 1\n",threadSeq_);
-//            av_opt_set(pCodecCtx->priv_data, "gpu", "1", 1);
-//        }
+        else
+        {
+            printf("seq %d using gpu 1\n",threadSeq_);
+            av_opt_set(pCodecCtx->priv_data, "gpu", "1", 1);
+        }
     }
 
     if (!pCodecCtx)

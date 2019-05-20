@@ -57,7 +57,7 @@ void packetBuffer::insertPacket(const u_char* pkt_data, const size_t len)
     uint8_t payload_type = temp.payloadType;
     if(allowed_pt.find(payload_type)==allowed_pt.end())
     {
-        std::cout<<"unknown payload type! "<<(int)payload_type<<std::endl;
+//         std::cout<<"unknown payload type! "<<(int)payload_type<<std::endl;
         return;
     }
 
