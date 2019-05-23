@@ -326,6 +326,7 @@ void viewer::devFun()
         w = mode->width;
         h = mode->height;
         window = glfwCreateWindow(mode->width, mode->height, s,NULL, NULL);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
         glfwSetWindowPos(window, index*1920, 0);
         //glfwSetWindowPos(window,1440*index,0);
 //        glfwSetWindowMonitor(window, NULL, 1920*index, 0, mode->width, mode->height, 0);
@@ -734,6 +735,8 @@ void viewer::displayFun()
 
 void viewer::renderTexts(int splitNum,float fps)
 {
+    if(!showtext)
+        return;
     assert(splitNum==splitNum_);
     //std::cout<<"(*videoPositionVecPtr_) = "<<(*videoPositionVecPtr_)[0][0]<<std::endl;
     int j = 0;

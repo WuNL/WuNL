@@ -78,12 +78,13 @@ public:
     {
         mutexPtr_ = mutexPtr;
     }
-    void setTextStyle(int fontsize, int location, int color,bool showFps)
+    void setTextStyle(int fontsize, int location, int color,bool showFps, bool showText)
     {
         curSize = fontsize;
         curLocation = location;
         curColor = color;
         showfps = showFps;
+        showtext = showText;
 
         fontSize = fontsize*0.2f+0.2f;
         switch(location)
@@ -147,7 +148,8 @@ private:
     int curSize,curLocation,curColor;
     float leftOffset,topOffset;
     float fontSize;
-    bool showfps;
+    bool showfps = false;
+    bool showtext = false;
     std::vector<glm::vec3> colorVec;
 };
 

@@ -71,13 +71,13 @@ public:
             delete mytimer[index];
         mytimer[index] = NULL;
     }
-    void setTextStyle(int textsize, int location, int color, bool showfps)
+    void setTextStyle(int textsize, int location, int color, bool showfps, bool showtext)
     {
         for(int i=0; i<4; ++i)
         {
             if(vr[i]!=NULL)
             {
-                vr[i]->setTextStyle(textsize,location,color,showfps);
+                vr[i]->setTextStyle(textsize,location,color,showfps, showtext);
             }
         }
     }

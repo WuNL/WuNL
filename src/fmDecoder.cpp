@@ -129,7 +129,7 @@ void fmDecoder::run()
             uint16_t last_seq_in_frame = frame->get_last_seq_num();
             (*cvPtr_)[threadSeq_].fb_->ClearTo(last_seq_in_frame);
             (*cvPtr_)[threadSeq_].pb_->ClearTo(last_seq_in_frame);
-            fwrite(frame->data(), 1, frame->buffer_len_, fp_out_264);
+            //fwrite(frame->data(), 1, frame->buffer_len_, fp_out_264);
 
             cur_ptr = frame->data();
             cur_size = static_cast<int>(frame->buffer_len_);
@@ -396,7 +396,7 @@ int fmDecoder::Init()
 //    pCodecCtx->hwaccel = ff_find_hwaccel();
     if (pCodecCtx->codec_id == AV_CODEC_ID_H264)
     {
-        if(threadSeq_<4)
+        if(threadSeq_<=6)
         {
             printf("seq %d using gpu 0\n",threadSeq_);
             av_opt_set(pCodecCtx->priv_data, "gpu", "0", 0);
@@ -484,7 +484,7 @@ int fmDecoder::GetPacketSize()
 
 void fmDecoder::SetScreanNum(int num)
 {
-    screanNum = 4;
+    screanNum = 9;
     switch(screanNum)
     {
     case 1:

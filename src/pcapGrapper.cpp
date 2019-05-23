@@ -22,6 +22,10 @@ void pcapGrepper::run()
     printf("running!\n");
     /* grab a device to peak into... */
     dev = pcap_lookupdev(errbuf);
+    if(dev)
+    {
+        printf("success: device: %s\n", dev);
+    }
     if(dev == NULL)
     {
         printf("%s\n",errbuf);
@@ -79,33 +83,33 @@ void pcapGrepper::capture_callback(u_char *useless,const struct pcap_pkthdr* hea
     port[1] = pkt_data[36];
     unsigned short *portNum = (unsigned short *)&port;
 
-//    for (int i = 0; i < CHANNELNUM; ++i)
-//    {
-//        if((*myPtr)[i].port == (*portNum))
-//        {
-//            position = i;
-//            found = true;
-//            break;
-//        }
-//    }
-
     for (int i = 0; i < CHANNELNUM; ++i)
     {
-        int count = 0;
-        for (int j = 0; j < 4; ++j)
-        {
-            if ((*myPtr)[i].ip[j] == ip[j])
-            {
-                ++count;
-            }
-        }
-        if (count == 4)
+        if((*myPtr)[i].port == (*portNum))
         {
             position = i;
             found = true;
             break;
         }
     }
+
+//    for (int i = 0; i < CHANNELNUM; ++i)
+//    {
+//        int count = 0;
+//        for (int j = 0; j < 4; ++j)
+//        {
+//            if ((*myPtr)[i].ip[j] == ip[j])
+//            {
+//                ++count;
+//            }
+//        }
+//        if (count == 4)
+//        {
+//            position = i;
+//            found = true;
+//            break;
+//        }
+//    }
     if (!found)
     {
         return;

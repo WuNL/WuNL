@@ -30,6 +30,7 @@ int main()
     if (rc != 0)
         std::cout << "Error calling pthread_setaffinity_np !!! ";
     assert(glfwInit() == GL_TRUE);
+
     try
     {
         //定义io_service对象

@@ -207,13 +207,13 @@ private:
         {
             printf("recv text setting message!\n");
             std::cout<<wm.textstyle().size()<<" "<<wm.textstyle().location()<<std::endl;
-            myBoss.setTextStyle(wm.textstyle().size(),wm.textstyle().location(),wm.textstyle().color(),wm.textstyle().showfps());
+            bool showtext = wm.textstyle().location()==0;
+            myBoss.setTextStyle(wm.textstyle().size(),wm.textstyle().location(),wm.textstyle().color(),wm.textstyle().showfps(), showtext);
         }
         default:
             break;
         }
         delete[] ptr;
-
     }
 };
 
